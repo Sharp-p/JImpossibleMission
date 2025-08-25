@@ -1,5 +1,6 @@
 package Controller;
 
+import Model.GameModel;
 import Model.MenuModel;
 import View.View;
 import javafx.scene.input.KeyCode;
@@ -27,26 +28,8 @@ public class MenuController {
     public MenuController(MenuModel menuModel, View view) {
         this.menuModel = menuModel;
         this.view = view;
-        System.out.println("Sono un controler vivo");
-        view.getMenuView().setOnKeyPressed(e -> {
-        System.out.println("Sono stato premuto: " + e.getCode());
-            switch(e.getCode()) {
-                case KeyCode.UP -> menuModel.moveUp();
-                case KeyCode.DOWN -> menuModel.moveDown();
-                case KeyCode.ENTER -> {
-                    int choice = menuModel.getSelectedIndex();
-                    System.out.println("Hai scelto: " + menuModel.getOptions().get(choice));
 
-                    switch (choice) {
-                        case 0 -> view.showGame();
-                        case 1 -> view.showScoreboard();
-                        case 3 -> System.exit(0);
-                        default -> System.out.println("CON CALMA ANCORA NON LI HO FATTI STI PANNELLI");
-                    }
-
-                }
-            }
-        });
+        setMenuListener();
     }
 
     /**
@@ -56,7 +39,12 @@ public class MenuController {
     public void setMenuModel(MenuModel menuModel) {
         this.menuModel = menuModel;
 
+        setMenuListener();
+    }
+
+    private void setMenuListener(){
         view.getMenuView().setOnKeyPressed(e -> {
+            System.out.println("Sono stato premuto: " + e.getCode());
             switch(e.getCode()) {
                 case KeyCode.UP -> menuModel.moveUp();
                 case KeyCode.DOWN -> menuModel.moveDown();
@@ -65,7 +53,12 @@ public class MenuController {
                     System.out.println("Hai scelto: " + menuModel.getOptions().get(choice));
 
                     switch (choice) {
-                        case 0 -> view.showGame();
+                        case 0 -> {
+                            GameModel gameModel = new GameModel();
+                            GameController gameController = new GameController(gameModel, view);
+                            view.getGameView().setGameModel(gameModel);
+                            view.showGame();
+                        }
                         case 1 -> view.showScoreboard();
                         case 3 -> System.exit(0);
                         default -> System.out.println("CON CALMA ANCORA NON LI HO FATTI STI PANNELLI");

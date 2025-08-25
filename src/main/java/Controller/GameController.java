@@ -8,13 +8,18 @@ import javafx.scene.input.KeyCode;
 import java.util.HashSet;
 import java.util.Set;
 
+import static Model.Direction.*;
+
 public class GameController {
-    private final GameModel model;
+    private final GameModel gameModel;
     private final View view;
     private final Set<KeyCode> pressedKeys = new HashSet<>();
 
-    public GameController(GameModel model, View view) {
-        this.model = model;
+    private Double deltaTime;
+    private long lastTime;
+
+    public GameController(GameModel gameModel, View view) {
+        this.gameModel = gameModel;
         this.view = view;
 
         // gestione input
@@ -22,6 +27,8 @@ public class GameController {
         view.getGameView().setOnKeyReleased(e -> pressedKeys.remove(e.getCode()));
         view.getGameView().setFocusTraversable(true);
 
+        // gets the system time needed for the deltaTime in the game loop
+        lastTime = System.nanoTime();
         // gameloop
         new AnimationTimer() {
             @Override
@@ -32,12 +39,16 @@ public class GameController {
     }
 
     private void gameLoop() {
-        if (pressedKeys.contains(KeyCode.RIGHT)) model.movePlayer(3, 0);
-        if (pressedKeys.contains(KeyCode.LEFT))  model.movePlayer(-3, 0);
-        if (pressedKeys.contains(KeyCode.UP))    model.movePlayer(0, -3);
-        if (pressedKeys.contains(KeyCode.DOWN))  model.movePlayer(0, 3);
+        long now = System.nanoTime();
+        deltaTime = (now - lastTime) / 1_000_000_000.0;
 
-        // aggiorna la view
-        view.getGameView().updatePlayerPosition(model.getPlayerX(), model.getPlayerY());
+        if (pressedKeys.contains(KeyCode.RIGHT)) gameModel.moveAgent(RIGHT, deltaTime);
+        if (pressedKeys.contains(KeyCode.LEFT))  gameModel.moveAgent(LEFT, deltaTime);
+        if (pressedKeys.contains(KeyCode.UP))    gameModel.moveAgent(UP, deltaTime);
+        if (pressedKeys.contains(KeyCode.DOWN))  gameModel.moveAgent(DOWN, deltaTime);
+
+        gameModel.loopUpdate(deltaTime);
+
+        lastTime = now;
     }
 }

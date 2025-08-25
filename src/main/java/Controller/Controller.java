@@ -30,12 +30,11 @@ public class Controller extends Application {
 
         // set-ups the Game section
         GameModel gameModel = new GameModel();
-        GameView gameView = new GameView(gameModel, view);
+        GameView gameView = new GameView(view);
 
         view.setUp(menuView, gameView, scoreboardView);
 
         MenuController menuController = new MenuController(menuModel, view);
-        GameController gameController = new GameController(gameModel, view);
 
         view.showMenu();
     }

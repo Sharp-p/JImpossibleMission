@@ -4,7 +4,10 @@ import Controller.GameController;
 import Controller.MenuController;
 import Model.GameModel;
 import javafx.scene.Scene;
+import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
+
+import static config.GameConstants.*;
 
 public class View {
     private final Stage stage;
@@ -23,7 +26,19 @@ public class View {
         this.gameView = gameView;
         this.scoreboardView = scoreboardView;
 
-        this.scene = new Scene(menuView, 800, 600);
+        menuView.setPrefSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
+        gameView.setPrefSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
+        scoreboardView.setPrefSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
+
+        this.scene = new Scene(menuView, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        double scaleFactor = Math.min(SCREEN_WIDTH / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
+        Scale scale = new Scale(scaleFactor, scaleFactor, 0, 0);
+
+        //menuView.getTransforms().add(scale);
+        gameView.getTransforms().add(scale);
+        //scoreboardView.getTransforms().add(scale);
+
         stage.setScene(scene);
         stage.show();
     }
