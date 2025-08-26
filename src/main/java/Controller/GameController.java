@@ -15,7 +15,7 @@ public class GameController {
     private final View view;
     private final Set<KeyCode> pressedKeys = new HashSet<>();
 
-    private Double deltaTime;
+    private Double deltaTime = 0.0;
     private long lastTime;
 
     public GameController(GameModel gameModel, View view) {
@@ -33,6 +33,7 @@ public class GameController {
 
         // gets the system time needed for the deltaTime in the game loop
         lastTime = System.nanoTime();
+
         // gameloop
         new AnimationTimer() {
             @Override

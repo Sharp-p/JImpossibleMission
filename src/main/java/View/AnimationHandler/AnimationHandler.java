@@ -62,15 +62,19 @@ public class AnimationHandler {
         if (current == null || current.frames.isEmpty()) return;
         Frame f = current.frames.get(frameIndex);
 
-
+        // coordinates, width and height of the frame in the sprite sheet
         double sx = f.src.getMinX(),  sy = f.src.getMinY();
         double sw = f.src.getWidth(), sh = f.src.getHeight();
 
+        // scaled coordinates (plus anchor offset) of the drawing in the actual canvas
         double dx = Math.round((x + f.ox) * scale);
         double dy = Math.round((y + f.oy) * scale);
         double dw = Math.round(sw * scale);
         double dh = Math.round(sh * scale);
 
+        System.out.println("Posizione: " + x + "," + y + "\n" +
+                "\tPozione scalata: " + dx + "," + dy + "\n" +
+                "\tFrame size: " + getCurrentFrameWidth());
         gc.drawImage(sheet, sx, sy, sw, sh, dx, dy, dw, dh);
     }
 
@@ -78,4 +82,6 @@ public class AnimationHandler {
         if (current == null || current.frames.isEmpty()) return 0;
         return current.frames.get(frameIndex).src.getWidth();
     }
+
+    public Animation getCurrentAnimation() { return current; }
 }

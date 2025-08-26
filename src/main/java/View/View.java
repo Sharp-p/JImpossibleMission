@@ -16,7 +16,6 @@ public class View {
     private MenuView menuView;
     private GameView gameView;
     private ScoreboardView scoreboardView;
-    private Scale scale;
 
     public View(Stage stage) {
         this.stage = stage;
@@ -27,17 +26,18 @@ public class View {
         this.gameView = gameView;
         this.scoreboardView = scoreboardView;
 
-        menuView.setPrefSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
+        //menuView.setPrefSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
         gameView.setPrefSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
-        scoreboardView.setPrefSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
+        //scoreboardView.setPrefSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
 
         this.scene = new Scene(menuView, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         double scaleFactor = Math.min(SCREEN_WIDTH / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
-        this.scale = new Scale(scaleFactor, scaleFactor, 0, 0);
+        Scale scale = new Scale(scaleFactor, scaleFactor, 0, 0);
 
         //menuView.getTransforms().add(scale);
-        gameView.getTransforms().add(scale);
+        //gameView.getTransforms().add(scale);
+        gameView.setScale(scale);
         //scoreboardView.getTransforms().add(scale);
 
         stage.setScene(scene);

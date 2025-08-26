@@ -7,7 +7,7 @@ public abstract class Entity {
     private boolean active;
     private boolean visible;
     private Tuple<Double, Double> velocity;
-    private Direction direction = Direction.NONE;
+    private Direction direction = Direction.RIGHT;
     private Tuple<Double, Double> acceleration;
     private boolean grounded;
     private final MovementBehavior movementBehav;

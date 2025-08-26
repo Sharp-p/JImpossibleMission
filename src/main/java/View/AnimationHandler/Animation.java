@@ -17,4 +17,8 @@ public final class Animation {
         frames.add(frame);
         return this;
     }
+
+    @Override
+    public String toString() { return "Animation: " + name
+            + "\n\tNumber of frames: " + frames.size(); }
 }

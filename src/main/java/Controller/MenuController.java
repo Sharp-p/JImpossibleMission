@@ -55,8 +55,8 @@ public class MenuController {
                     switch (choice) {
                         case 0 -> {
                             GameModel gameModel = new GameModel();
-                            GameController gameController = new GameController(gameModel, view);
                             view.getGameView().setGameModel(gameModel);
+                            GameController gameController = new GameController(gameModel, view);
                             view.showGame();
                         }
                         case 1 -> view.showScoreboard();
