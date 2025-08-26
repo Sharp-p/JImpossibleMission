@@ -48,7 +48,7 @@ public class GameController {
 
     private void gameLoop(long now) {
         deltaTime = (now - lastTime) / 1_000_000_000.0;
-
+        System.out.println(pressedKeys);
         if (pressedKeys.contains(KeyCode.RIGHT)) {
             view.getGameView().getAgentPainter().getAnimationHandler().play("run");
             gameModel.moveAgent(RIGHT, deltaTime);

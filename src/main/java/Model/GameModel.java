@@ -29,6 +29,7 @@ public class GameModel extends Observable {
      * @param dt
      */
     public void loopUpdate(double dt) {
+
         getAgent().applyGravity(dt);
 
         setChanged();

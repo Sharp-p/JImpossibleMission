@@ -25,10 +25,7 @@ public abstract class Entity {
         this.grounded = false;
     }
 
-    public void moveTo(Direction dir, Double deltaTime) {
-        // new velocity from the movement behavior
-        movementBehav.move(this, dir, deltaTime);
-    }
+    public abstract void moveTo(Direction dir, Double deltaTime);
 
     public void setAcceleration(Tuple<Double, Double> acceleration) { this.acceleration = acceleration; }
 

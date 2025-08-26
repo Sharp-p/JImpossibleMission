@@ -5,6 +5,7 @@ import Utilities.Tuple;
 import static config.GameConstants.*;
 
 public class Agent extends Entity {
+    private static final double JUMP_STRENGTH = 20.0;
 
     public Agent(Tuple<Double, Double> position,
                  MovementBehavior movementBehav) {
@@ -28,16 +29,20 @@ public class Agent extends Entity {
         }
 
         vX += getAcceleration().getFirst();
+        System.out.println("vY pre gravity: " + vY);
         vY += aY * deltaTime;
+        System.out.println("vY after gravity: " + vY);
 
         // the velocity gets higher as the time passes
         x += vX * deltaTime;
         y += vY * deltaTime;
 
+        System.out.println("Posizione X: " + getPosition().getFirst() + " Y:" + y);
 
-        if (getPosition().getSecond() >= FLOOR_Y) {
+        if (y >= FLOOR_Y) {
             y = FLOOR_Y;
             setGrounded(true);
+            System.out.println("qua");
         } else {
             setGrounded(false);
         }
@@ -46,7 +51,23 @@ public class Agent extends Entity {
         setAcceleration(new Tuple<>(getAcceleration().getFirst(), aY));
         setVelocity(new Tuple<>(getVelocity().getFirst(), vY));
         setPosition(new Tuple<>(getPosition().getFirst(), y));
-
     }
+
+    @Override
+    public void moveTo(Direction dir, Double deltaTime) {
+        // new velocity from the movement behavior
+        switch (dir) {
+            case LEFT, RIGHT -> getMovementBehavior().move(this, dir, deltaTime);
+            case UP -> {
+                if (isGrounded()) {
+                    //setPosition(new Tuple<>(getPosition().getFirst(), getVelocity().getSecond()));
+                    setVelocity(new Tuple<>(getVelocity().getFirst(), -getJumpStrength()));
+                    setGrounded(false);
+                }
+            }
+        }
+    }
+
+    public double getJumpStrength() { return JUMP_STRENGTH; }
 
 }

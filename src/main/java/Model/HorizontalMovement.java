@@ -25,7 +25,7 @@ public class HorizontalMovement implements MovementBehavior{
         entity.setVelocity(new Tuple<>(xV, entity.getVelocity().getSecond()));
 
         double diffX =  entity.getPosition().getFirst() - newX;
-        System.out.println("Difference X: " + diffX);
+        // System.out.println("Difference X: " + diffX);
 
         entity.setPosition(new Tuple<>(newX, entity.getPosition().getSecond()));
     }

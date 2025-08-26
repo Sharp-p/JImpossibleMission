@@ -48,7 +48,7 @@ public class GameView extends Pane implements Observer {
     public void update(Observable o, Object arg) {
         double deltaTime = (double) arg;
 
-        System.out.println("Scale: " + scale.getX());
+        // System.out.println("Scale: " + scale.getX());
         agentPainter.draw(gc, deltaTime, scale.getX());
     }
 
