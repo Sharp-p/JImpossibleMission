@@ -25,7 +25,8 @@ public class GameController {
         // gestione input
         view.getGameView().setOnKeyPressed(e -> pressedKeys.add(e.getCode()));
         view.getGameView().setOnKeyReleased(e -> {
-            if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT)
+            if ((e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT)
+                    && gameModel.getAgent().isGrounded())
                 view.getGameView().getAgentPainter()
                         .getAnimationHandler().play("idle");
 
@@ -48,19 +49,34 @@ public class GameController {
 
     private void gameLoop(long now) {
         deltaTime = (now - lastTime) / 1_000_000_000.0;
+        if (gameModel.getAgent().hasHitGround()) {
+            System.out.println("qua entro");
+            view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
+            gameModel.getAgent().setHitGround(false);
+        }
+
+
         System.out.println(pressedKeys);
-        if (pressedKeys.contains(KeyCode.RIGHT)) {
-            view.getGameView().getAgentPainter().getAnimationHandler().play("run");
-            gameModel.moveAgent(RIGHT, deltaTime);
+        // takes keys in input only if on the ground
+        if (gameModel.getAgent().isGrounded()) {
+            if (pressedKeys.contains(KeyCode.RIGHT)) {
+                view.getGameView().getAgentPainter().getAnimationHandler().play("run");
+                gameModel.moveAgent(RIGHT, deltaTime);
+            }
+
+            if (pressedKeys.contains(KeyCode.LEFT)) {
+                view.getGameView().getAgentPainter().getAnimationHandler().play("run");
+                gameModel.moveAgent(LEFT, deltaTime);
+            }
+
+            if (pressedKeys.contains(KeyCode.SPACE)) {
+                view.getGameView().getAgentPainter().getAnimationHandler().play("jump");
+                gameModel.moveAgent(UP, deltaTime);
+            }
         }
 
-        if (pressedKeys.contains(KeyCode.LEFT)) {
-            view.getGameView().getAgentPainter().getAnimationHandler().play("run");
-            gameModel.moveAgent(LEFT, deltaTime);
-        }
-
-        if (pressedKeys.contains(KeyCode.UP))    gameModel.moveAgent(UP, deltaTime);
-        if (pressedKeys.contains(KeyCode.DOWN))  gameModel.moveAgent(DOWN, deltaTime);
+        // TODO: implementare piattaforme, scesa dalle piattaforme
+        //if (pressedKeys.contains(KeyCode.DOWN))  gameModel.moveAgent(DOWN, deltaTime);
 
         gameModel.loopUpdate(deltaTime);
 
