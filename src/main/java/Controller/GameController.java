@@ -26,7 +26,9 @@ public class GameController {
         view.getGameView().setOnKeyPressed(e -> pressedKeys.add(e.getCode()));
         view.getGameView().setOnKeyReleased(e -> {
             if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT)
-                view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
+                view.getGameView().getAgentPainter()
+                        .getAnimationHandler().play("idle");
+
             pressedKeys.remove(e.getCode());
         });
         view.getGameView().setFocusTraversable(true);

@@ -21,7 +21,6 @@ public class GameModel extends Observable {
     public void addEntity(Entity entity) { entities.add(entity); }
 
     public void moveAgent(Direction direction, Double deltaTime) {
-        // System.out.println("Direction: " + direction);
         agent.moveTo(direction, deltaTime);
     }
 
@@ -30,37 +29,7 @@ public class GameModel extends Observable {
      * @param dt
      */
     public void loopUpdate(double dt) {
-        // TODO: spostare in vari metodi dentro le varie classi che qua verranno aggiornate
-        double vY, vX, aY, x, y;
-
-        x = agent.getPosition().getFirst();
-        y = agent.getPosition().getSecond();
-        vX = agent.getVelocity().getFirst();
-        vY = agent.getVelocity().getSecond();
-
-        if (!agent.isGrounded()) aY = GRAVITY;
-        else {
-            aY = 0;
-            vY = 0;
-        }
-
-        vX += agent.getAcceleration().getFirst();
-        vY += aY * dt;
-
-        x += vX * dt;
-        y += vY * dt;
-
-
-        if (agent.getPosition().getSecond() >= FLOOR_Y) {
-            y = FLOOR_Y;
-            agent.setGrounded(true);
-        } else {
-            agent.setGrounded(false);
-        }
-
-        agent.setAcceleration(new Tuple<>(agent.getPosition().getFirst(), aY));
-        agent.setVelocity(new Tuple<>(agent.getVelocity().getFirst(), vY));
-        agent.setPosition(new Tuple<>(agent.getAcceleration().getFirst(), y));
+        getAgent().applyGravity(dt);
 
         setChanged();
         notifyObservers(dt);

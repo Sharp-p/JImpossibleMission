@@ -4,8 +4,7 @@ import Utilities.Tuple;
 
 public class HorizontalMovement implements MovementBehavior{
     @Override
-    public void move(Entity entity,
-                                     Direction dir, double deltaTime) {
+    public void move(Entity entity, Direction dir, double deltaTime) {
         double xV;
 
         switch (dir) {
