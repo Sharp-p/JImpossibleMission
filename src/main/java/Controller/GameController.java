@@ -24,7 +24,11 @@ public class GameController {
 
         // gestione input
         view.getGameView().setOnKeyPressed(e -> pressedKeys.add(e.getCode()));
-        view.getGameView().setOnKeyReleased(e -> pressedKeys.remove(e.getCode()));
+        view.getGameView().setOnKeyReleased(e -> {
+            if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT)
+                view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
+            pressedKeys.remove(e.getCode());
+        });
         view.getGameView().setFocusTraversable(true);
 
         // gets the system time needed for the deltaTime in the game loop
@@ -33,17 +37,25 @@ public class GameController {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
-                gameLoop();
+                view.getGameView().clearCanvas();
+                gameLoop(now);
             }
         }.start();
     }
 
-    private void gameLoop() {
-        long now = System.nanoTime();
+    private void gameLoop(long now) {
         deltaTime = (now - lastTime) / 1_000_000_000.0;
 
-        if (pressedKeys.contains(KeyCode.RIGHT)) gameModel.moveAgent(RIGHT, deltaTime);
-        if (pressedKeys.contains(KeyCode.LEFT))  gameModel.moveAgent(LEFT, deltaTime);
+        if (pressedKeys.contains(KeyCode.RIGHT)) {
+            view.getGameView().getAgentPainter().getAnimationHandler().play("run");
+            gameModel.moveAgent(RIGHT, deltaTime);
+        }
+
+        if (pressedKeys.contains(KeyCode.LEFT)) {
+            view.getGameView().getAgentPainter().getAnimationHandler().play("run");
+            gameModel.moveAgent(LEFT, deltaTime);
+        }
+
         if (pressedKeys.contains(KeyCode.UP))    gameModel.moveAgent(UP, deltaTime);
         if (pressedKeys.contains(KeyCode.DOWN))  gameModel.moveAgent(DOWN, deltaTime);
 

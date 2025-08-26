@@ -16,6 +16,7 @@ public class View {
     private MenuView menuView;
     private GameView gameView;
     private ScoreboardView scoreboardView;
+    private Scale scale;
 
     public View(Stage stage) {
         this.stage = stage;
@@ -33,7 +34,7 @@ public class View {
         this.scene = new Scene(menuView, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         double scaleFactor = Math.min(SCREEN_WIDTH / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
-        Scale scale = new Scale(scaleFactor, scaleFactor, 0, 0);
+        this.scale = new Scale(scaleFactor, scaleFactor, 0, 0);
 
         //menuView.getTransforms().add(scale);
         gameView.getTransforms().add(scale);

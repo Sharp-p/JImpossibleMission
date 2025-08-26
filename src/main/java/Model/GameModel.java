@@ -25,6 +25,10 @@ public class GameModel extends Observable {
         agent.moveTo(direction, deltaTime);
     }
 
+    /**
+     * For now it updates only the physics of the agent
+     * @param dt
+     */
     public void loopUpdate(double dt) {
         // TODO: spostare in vari metodi dentro le varie classi che qua verranno aggiornate
         double vY, vX, aY, x, y;
@@ -59,7 +63,7 @@ public class GameModel extends Observable {
         agent.setPosition(new Tuple<>(agent.getAcceleration().getFirst(), y));
 
         setChanged();
-        notifyObservers();
+        notifyObservers(dt);
     }
 
     public Agent getAgent() { return agent; }
