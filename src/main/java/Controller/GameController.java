@@ -1,10 +1,15 @@
 package Controller;
 
 import Model.GameModel;
+import Model.Platform;
+import Model.StillMovement;
+import Utilities.Tuple;
+import View.AnimationHandler.PlatformPainter;
 import View.View;
 import javafx.animation.AnimationTimer;
 import javafx.scene.input.KeyCode;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,7 +27,7 @@ public class GameController {
         this.gameModel = gameModel;
         this.view = view;
 
-        // gestione input
+        // asynchronous input listening
         view.getGameView().setOnKeyPressed(e -> pressedKeys.add(e.getCode()));
         view.getGameView().setOnKeyReleased(e -> {
             if ((e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT)
@@ -50,7 +55,6 @@ public class GameController {
     private void gameLoop(long now) {
         deltaTime = (now - lastTime) / 1_000_000_000.0;
         if (gameModel.getAgent().hasHitGround()) {
-            System.out.println("qua entro");
             view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
             gameModel.getAgent().setHitGround(false);
         }
@@ -81,5 +85,14 @@ public class GameController {
         gameModel.loopUpdate(deltaTime);
 
         lastTime = now;
+    }
+
+    public ArrayList<PlatformPainter> createPlatforms() {
+        ArrayList<PlatformPainter> platforms = new ArrayList<>();
+        Platform platform = new Platform(
+                new Tuple<>(100.0, 100.0), new StillMovement(), 0.0);
+        platforms.add(new PlatformPainter(platform));
+
+        return platforms;
     }
 }

@@ -1,7 +1,11 @@
 package View;
 
 import Model.GameModel;
+import Model.Platform;
+import Model.StillMovement;
+import Utilities.Tuple;
 import View.AnimationHandler.AgentPainter;
+import View.AnimationHandler.PlatformPainter;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -13,6 +17,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -25,19 +31,26 @@ public class GameView extends Pane implements Observer {
 
     private Scale scale;
     private AgentPainter agentPainter;
+    private List<PlatformPainter> platforms;
     private GameModel gameModel;
 
     public GameView(View view) {
         this.view = view;
 
+        platforms = new ArrayList<>();
+        // TODO: platforms si aggiorna tramite OO in update quando rileva una
+        //  nuova platform, nuove platform create nel gameController
+        platforms.add(new PlatformPainter(
+                new Platform(new Tuple<>(100.0, 100.0), new StillMovement(), 0.0)));
+
+
         Button backBtn = new Button("Back");
+        backBtn.setOnAction(e -> { view.showMenu(); });
+
         getChildren().addAll(canvas, backBtn);
 
         // to not mess up the pixel art
         gc.setImageSmoothing(false);
-
-
-        backBtn.setOnAction(e -> { view.showMenu(); });
     }
 
     public void clearCanvas() {
@@ -48,7 +61,7 @@ public class GameView extends Pane implements Observer {
     public void update(Observable o, Object arg) {
         double deltaTime = (double) arg;
 
-        // System.out.println("Scale: " + scale.getX());
+        platforms.get(0).draw(gc, deltaTime, scale.getX());
         agentPainter.draw(gc, deltaTime, scale.getX());
     }
 
@@ -57,6 +70,7 @@ public class GameView extends Pane implements Observer {
         gameModel.addObserver(this);
 
         agentPainter = new AgentPainter(gameModel.getAgent());
+
     }
 
     public void setScale(Scale scale) {
@@ -66,4 +80,6 @@ public class GameView extends Pane implements Observer {
     public AgentPainter getAgentPainter() { return agentPainter; }
 
     public GraphicsContext getGraphicsContext() { return gc; }
+
+    public List<PlatformPainter> getPlatforms() { return platforms; }
 }

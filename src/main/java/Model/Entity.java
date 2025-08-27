@@ -9,7 +9,6 @@ public abstract class Entity {
     private Tuple<Double, Double> velocity;
     private Direction direction = Direction.RIGHT;
     private Tuple<Double, Double> acceleration;
-    private boolean grounded;
     private final MovementBehavior movementBehav;
     private final Double speed;
 
@@ -22,14 +21,11 @@ public abstract class Entity {
         this.speed = speed;
         this.velocity = new Tuple<>(0.0, 0.0);
         this.acceleration = new Tuple<>(0.0, 0.0);
-        this.grounded = false;
     }
 
     public abstract void moveTo(Direction dir, Double deltaTime);
 
     public void setAcceleration(Tuple<Double, Double> acceleration) { this.acceleration = acceleration; }
-
-    public void setGrounded(boolean grounded) { this.grounded = grounded; }
 
     public void setDirection(Direction direction) { this.direction = direction; }
 
@@ -42,8 +38,6 @@ public abstract class Entity {
     public void setVelocity(Tuple<Double, Double> velocity) { this.velocity = velocity; }
 
     public Tuple<Double, Double> getAcceleration() { return this.acceleration; }
-
-    public boolean isGrounded() { return this.grounded; }
 
     public Direction getDirection() { return direction; }
 

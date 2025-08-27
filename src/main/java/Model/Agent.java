@@ -8,6 +8,7 @@ public class Agent extends Entity {
     private static final double JUMP_STRENGTH = 70.0;
     private static final double JUMP_DISTANCE = 200.0;
 
+    private boolean grounded = false;
     private boolean hasHitGround = false;
 
     public Agent(Tuple<Double, Double> position,
@@ -94,8 +95,13 @@ public class Agent extends Entity {
 
     public boolean hasHitGround() { return hasHitGround; }
 
+    public boolean isGrounded() { return this.grounded; }
+
     public void setHitGround(boolean hasChanged) { this.hasHitGround = hasChanged; }
 
+    public void setGrounded(boolean grounded) { this.grounded = grounded; }
+
     public double getJumpStrength() { return JUMP_STRENGTH; }
+
 
 }

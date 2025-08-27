@@ -9,9 +9,12 @@ import static config.GameConstants.GRAVITY;
 public class GameModel extends Observable {
     private java.util.List<Entity> entities = new ArrayList<>();
     private Agent agent;
+    private List<Platform> platforms = new ArrayList<>();
 
     public GameModel() {
         agent = new Agent(new Tuple<>(100.0, 100.0), new HorizontalMovement());
+
+
         setChanged();
         notifyObservers();
     }

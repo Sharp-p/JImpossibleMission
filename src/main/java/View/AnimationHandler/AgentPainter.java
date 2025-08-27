@@ -1,6 +1,6 @@
 package View.AnimationHandler;
 
-import Model.Entity;
+import Model.Agent;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -9,8 +9,8 @@ import static config.GameConstants.RUN_FRAME_DURATION;
 import static config.GameConstants.JUMP_FRAME_DURATION;
 
 public class AgentPainter extends EntityPainter {
-    public AgentPainter(Entity entity) {
-        super(entity);
+    public AgentPainter(Agent agent) {
+        super(agent);
 
         Animation run = new Animation("run", true)
                 .add(new Frame(new Rectangle2D(9, 76, 14, 29), 0, 0, RUN_FRAME_DURATION))

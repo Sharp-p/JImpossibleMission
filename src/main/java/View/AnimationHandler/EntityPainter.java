@@ -7,6 +7,8 @@ public abstract class EntityPainter {
     private AnimationHandler animationHandler;
     private Entity entity;
 
+    protected EntityPainter () {}
+
     protected EntityPainter(Entity entity) {
         this.entity = entity;
     }

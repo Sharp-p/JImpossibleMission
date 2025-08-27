@@ -72,9 +72,9 @@ public class AnimationHandler {
         double dw = Math.round(sw * scale);
         double dh = Math.round(sh * scale);
 
-        //System.out.println("Posizione: " + x + "," + y + "\n" +
-        //        "\tPozione scalata: " + dx + "," + dy + "\n" +
-        //        "\tFrame size: " + getCurrentFrameWidth());
+        System.out.println("Posizione: " + x + "," + y + "\n" +
+                "\tPozione scalata: " + dx + "," + dy + "\n" +
+                "\tFrame size: " + getCurrentFrameWidth());
         gc.drawImage(sheet, sx, sy, sw, sh, dx, dy, dw, dh);
     }
 
