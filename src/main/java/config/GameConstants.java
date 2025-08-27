@@ -19,4 +19,6 @@ public class GameConstants {
 
     public static final double RUN_FRAME_DURATION = 0.1;
     public static final double JUMP_FRAME_DURATION = 0.08;
+
+    public static final int HIGHEST_STANDING_SIZE = 30;
 }

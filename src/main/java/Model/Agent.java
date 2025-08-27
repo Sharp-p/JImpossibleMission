@@ -5,8 +5,8 @@ import Utilities.Tuple;
 import static config.GameConstants.*;
 
 public class Agent extends Entity {
-    private static final double JUMP_STRENGTH = 70.0;
-    private static final double JUMP_DISTANCE = 200.0;
+    private static final double JUMP_STRENGTH = 100.0;
+    private static final double JUMP_DISTANCE = 175.0;
 
     private boolean grounded = false;
     private boolean hasHitGround = false;
@@ -26,7 +26,10 @@ public class Agent extends Entity {
 
         // sets the acceleration to the gravitational
         // acceleration if not on the ground
-        if (!isGrounded()) aY = GRAVITY;
+        if (!isGrounded()) {
+            aY = GRAVITY;
+            System.out.println("CONTROLLO GRAVITà");
+        }
         else {
             aY = 0;
             // vY = 0;
@@ -45,16 +48,15 @@ public class Agent extends Entity {
         // System.out.println("Posizione X: " + getPosition().getFirst() + " Y:" + y);
 
         // if hit ground
-        if (y >= FLOOR_Y) {
-            y = FLOOR_Y;
-            // if it was not grounded
-            if(!isGrounded()) setHitGround(true);
-            setGrounded(true);
-        } else {
-            setGrounded(false);
-        }
+//        if (y >= FLOOR_Y) {
+//            y = FLOOR_Y;
+//            // if it was not grounded
+//            if(!isGrounded()) setHitGround(true);
+//            setGrounded(true);
+//        } else {
+//            setGrounded(false);
+//        }
 
-        // TODO: se sto cadendo deve essere presente anche la velocità sulla X
         setAcceleration(new Tuple<>(getAcceleration().getFirst(), aY));
         setVelocity(new Tuple<>(vX, vY));
         setPosition(new Tuple<>(x, y));

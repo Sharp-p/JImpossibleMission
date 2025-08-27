@@ -1,18 +1,21 @@
 package Controller;
 
+import Model.Agent;
+import Model.Entity;
 import Model.GameModel;
 import Model.Platform;
-import Model.StillMovement;
 import Utilities.Tuple;
-import View.AnimationHandler.PlatformPainter;
 import View.View;
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
+import static Controller.CollisionHandler.checkCollision;
+import static Controller.CollisionHandler.getBounds;
 import static Model.Direction.*;
 
 public class GameController {
@@ -28,7 +31,10 @@ public class GameController {
         this.view = view;
 
         // asynchronous input listening
-        view.getGameView().setOnKeyPressed(e -> pressedKeys.add(e.getCode()));
+        view.getGameView().setOnKeyPressed(e -> {
+            pressedKeys.add(e.getCode());
+            System.out.println(e.getCode());
+        });
         view.getGameView().setOnKeyReleased(e -> {
             if ((e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT)
                     && gameModel.getAgent().isGrounded())
@@ -39,9 +45,11 @@ public class GameController {
         });
         view.getGameView().setFocusTraversable(true);
 
+        // first view update
+        gameModel.updated(deltaTime);
+
         // gets the system time needed for the deltaTime in the game loop
         lastTime = System.nanoTime();
-
         // gameloop
         new AnimationTimer() {
             @Override
@@ -54,13 +62,15 @@ public class GameController {
 
     private void gameLoop(long now) {
         deltaTime = (now - lastTime) / 1_000_000_000.0;
+
+
+        // if the agent was in air and has now hit the ground, changes the animation
+        // and updates the flag
         if (gameModel.getAgent().hasHitGround()) {
             view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
             gameModel.getAgent().setHitGround(false);
         }
 
-
-        System.out.println(pressedKeys);
         // takes keys in input only if on the ground
         if (gameModel.getAgent().isGrounded()) {
             if (pressedKeys.contains(KeyCode.RIGHT)) {
@@ -78,21 +88,97 @@ public class GameController {
                 gameModel.moveAgent(UP, deltaTime);
             }
         }
+        else if (!(Objects.equals(view.getGameView().getAgentPainter()
+                .getAnimationHandler().getCurrentAnimation().getName(), "jump"))) {
+            view.getGameView().getAgentPainter().getAnimationHandler().play("falling");
+        }
 
         // TODO: implementare piattaforme, scesa dalle piattaforme
         //if (pressedKeys.contains(KeyCode.DOWN))  gameModel.moveAgent(DOWN, deltaTime);
 
-        gameModel.loopUpdate(deltaTime);
+        gameModel.applyPhysics(deltaTime);
+
+        handleCollision();
+        System.out.println("Per terra: " + gameModel.getAgent().isGrounded());
+        gameModel.updated(deltaTime);
 
         lastTime = now;
     }
+    // TODO: tipo di classe da passare Agent o entity
+    private void platformCollision(Agent entity) {
+        boolean touchedGround = false;
+        for (Platform platform : gameModel.getPlatforms()) {
+            if (checkCollision(entity, platform)) {
+                Rectangle2D entBorder = getBounds(entity);
+                Rectangle2D pltBorder = getBounds(platform);
 
-    public ArrayList<PlatformPainter> createPlatforms() {
-        ArrayList<PlatformPainter> platforms = new ArrayList<>();
-        Platform platform = new Platform(
-                new Tuple<>(100.0, 100.0), new StillMovement(), 0.0);
-        platforms.add(new PlatformPainter(platform));
+                double x = entity.getPosition().getFirst();
+                double y = entity.getPosition().getSecond();
+                double vX = entity.getVelocity().getFirst();
+                double vY = entity.getVelocity().getSecond();
 
-        return platforms;
+                System.out.println("prima che entro");
+                // hit the platform border from over it
+                if (entBorder.getMaxY() > pltBorder.getMinY() - 3
+                        && entBorder.getMinY() < pltBorder.getMinY()) {
+                    System.out.println("da sopra");
+
+                    touchedGround = true;
+                    if (entBorder.getMaxY() > pltBorder.getMinY() + 3
+                            && entBorder.getMinY() < pltBorder.getMinY()) {
+                        double newY = pltBorder.getMinY() - entity.getSize().getSecond() + 1;
+                        System.out.println("New Y: " + newY);
+                        entity.setPosition(new Tuple<>(x, newY));
+                        entity.setVelocity(new Tuple<>(vX, 0.0));
+
+                        if(!entity.isGrounded()) entity.setHitGround(true);
+                        entity.setGrounded(true);
+                    }
+                }
+//                // from the left
+//                else if (entBorder.getMaxX() > pltBorder.getMinX()
+//                        && entBorder.getMinX() < pltBorder.getMinX()) {
+//                    System.out.println("da sinistra");
+//                    double newX = pltBorder.getMinX() - entity.getSize().getFirst();
+//                    entity.setPosition(new Tuple<>(newX, y));
+//                    entity.setVelocity(new Tuple<>(0.0, vY));
+//                }
+//                // from the right
+//                else if (entBorder.getMinX() < pltBorder.getMaxX()
+//                        && entBorder.getMaxX() > pltBorder.getMaxX()) {
+//                    System.out.println("da destra");
+//                    double newX = pltBorder.getMaxX();
+//                    entity.setPosition(new Tuple<>(newX, y));
+//                    entity.setVelocity(new Tuple<>(0.0, vY));
+//                }
+//                else if (entBorder.getMinY() < pltBorder.getMaxY()
+//                        && entBorder.getMaxY() > pltBorder.getMaxY()) {
+//                    System.out.println("da sotto");
+//                    double newY = pltBorder.getMaxY();
+//                    entity.setPosition(new Tuple<>(x, newY));
+//                    entity.setVelocity(new Tuple<>(vX, 0.0));
+//                }
+            }
+        }
+        // if it didn't collide with any platform from over it, it's falling
+        if (!touchedGround) entity.setGrounded(false);
+    }
+
+    public void handleCollision() {
+        double osY = gameModel.getAgent().getSize().getSecond();
+
+        // updates the frame so it gets the right size for the collision updates
+        view.getGameView().getAgentPainter().getAnimationHandler().update(deltaTime);
+        view.getGameView().getAgentPainter().updateEntitySize();
+        System.out.println("Size: " + gameModel.getAgent().getSize().getFirst() +
+                " "  + gameModel.getAgent().getSize().getSecond());
+        double difY = osY - gameModel.getAgent().getSize().getSecond();
+
+        gameModel.getAgent().setPosition(new Tuple<>(
+                gameModel.getAgent().getPosition().getFirst(),
+                gameModel.getAgent().getPosition().getSecond() + difY
+        ));
+
+        platformCollision(gameModel.getAgent());
     }
 }

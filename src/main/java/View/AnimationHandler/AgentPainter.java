@@ -43,10 +43,10 @@ public class AgentPainter extends EntityPainter {
                 .add(new Frame(new Rectangle2D(248, 18, 30, 14), 0, 0, JUMP_FRAME_DURATION))
                 .add(new Frame(new Rectangle2D(286, 18, 25, 21), 0, 0, JUMP_FRAME_DURATION))
                 .add(new Frame(new Rectangle2D(323, 20, 15, 31), 0, 0, JUMP_FRAME_DURATION))
-                .add(new Frame(new Rectangle2D(353, 25, 16, 30), 0, 0, JUMP_FRAME_DURATION))
-                .add(new Frame(new Rectangle2D(11, 27, 12, 28), 0, 0, 1));
+                .add(new Frame(new Rectangle2D(353, 25, 16, 30), 0, 0, 1));
 
-
+        Animation falling = new Animation("falling", false)
+                .add(new Frame(new Rectangle2D(353, 25, 16, 30), 0, 0, 1));
 
         setAnimationHandler(new AnimationHandler(
                 new Image(getClass().getResourceAsStream(
@@ -56,10 +56,11 @@ public class AgentPainter extends EntityPainter {
         getAnimationHandler().addAnimation(idle);
         getAnimationHandler().addAnimation(run);
         getAnimationHandler().addAnimation(jump);
+        getAnimationHandler().addAnimation(falling);
     }
 
     public void draw(GraphicsContext gc, double dt, double scale) {
-        getAnimationHandler().update(dt);
+        //getAnimationHandler().update(dt);
 
         switch (getEntity().getDirection()) {
             case RIGHT -> getAnimationHandler().render(
@@ -80,5 +81,9 @@ public class AgentPainter extends EntityPainter {
                 gc.restore();
             }
         }
+
+        updateEntitySize();
+//        System.out.println(getEntity().getSize().getFirst() +
+//                " " + getEntity().getSize().getSecond());
     }
 }

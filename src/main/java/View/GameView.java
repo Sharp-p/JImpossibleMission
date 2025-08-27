@@ -2,20 +2,13 @@ package View;
 
 import Model.GameModel;
 import Model.Platform;
-import Model.StillMovement;
-import Utilities.Tuple;
 import View.AnimationHandler.AgentPainter;
 import View.AnimationHandler.PlatformPainter;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Toggle;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
-import javafx.scene.transform.Transform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,18 +24,11 @@ public class GameView extends Pane implements Observer {
 
     private Scale scale;
     private AgentPainter agentPainter;
-    private List<PlatformPainter> platforms;
+    private List<PlatformPainter> platformPainters = new ArrayList<>();
     private GameModel gameModel;
 
     public GameView(View view) {
         this.view = view;
-
-        platforms = new ArrayList<>();
-        // TODO: platforms si aggiorna tramite OO in update quando rileva una
-        //  nuova platform, nuove platform create nel gameController
-        platforms.add(new PlatformPainter(
-                new Platform(new Tuple<>(100.0, 100.0), new StillMovement(), 0.0)));
-
 
         Button backBtn = new Button("Back");
         backBtn.setOnAction(e -> { view.showMenu(); });
@@ -61,16 +47,28 @@ public class GameView extends Pane implements Observer {
     public void update(Observable o, Object arg) {
         double deltaTime = (double) arg;
 
-        platforms.get(0).draw(gc, deltaTime, scale.getX());
+        for  (PlatformPainter platformPainter : platformPainters) {
+            platformPainter.draw(gc, deltaTime, scale.getX());
+        }
+
         agentPainter.draw(gc, deltaTime, scale.getX());
     }
 
+    /**
+     * What is creates in the constructor of the GameModel will be
+     * initialized in the GameView in this method
+     * @param gameModel The GameModel that the GameView will represent
+     */
     public void setGameModel(GameModel gameModel) {
         this.gameModel = gameModel;
         gameModel.addObserver(this);
 
+        // creates a painter for each platform
+        for (Platform platform : gameModel.getPlatforms()) {
+            platformPainters.add(new PlatformPainter(platform));
+        }
+        // creates a painter for the agent
         agentPainter = new AgentPainter(gameModel.getAgent());
-
     }
 
     public void setScale(Scale scale) {
@@ -81,5 +79,5 @@ public class GameView extends Pane implements Observer {
 
     public GraphicsContext getGraphicsContext() { return gc; }
 
-    public List<PlatformPainter> getPlatforms() { return platforms; }
+    public List<PlatformPainter> getPlatformPainters() { return platformPainters; }
 }

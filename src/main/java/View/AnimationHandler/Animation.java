@@ -18,6 +18,8 @@ public final class Animation {
         return this;
     }
 
+    public String getName() { return name; }
+
     @Override
     public String toString() { return "Animation: " + name
             + "\n\tNumber of frames: " + frames.size(); }

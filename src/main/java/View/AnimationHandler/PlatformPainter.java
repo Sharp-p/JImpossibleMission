@@ -29,5 +29,7 @@ public class PlatformPainter extends EntityPainter {
 
         getAnimationHandler().render(gc, platform.getPosition().getFirst(),
                 platform.getPosition().getSecond(), scale);
+
+        updateEntitySize();
     }
 }

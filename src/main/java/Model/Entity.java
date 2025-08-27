@@ -2,15 +2,23 @@ package Model;
 
 import Utilities.Tuple;
 
+/**
+ * Every game object is an entity, from the tiles to the player and enemies
+ */
 public abstract class Entity {
-    private Tuple<Double, Double> position;
-    private boolean active;
-    private boolean visible;
-    private Tuple<Double, Double> velocity;
-    private Direction direction = Direction.RIGHT;
-    private Tuple<Double, Double> acceleration;
     private final MovementBehavior movementBehav;
     private final Double speed;
+
+    private Tuple<Double, Double> position;
+    private Tuple<Double, Double> velocity;
+    private Tuple<Double, Double> acceleration;
+    /**
+     * The already scaled size (for collision handling) of the entity.
+     */
+    private Tuple<Double, Double> size;
+    private Direction direction = Direction.RIGHT;
+    private boolean active;
+    private boolean visible;
 
     public Entity(Tuple<Double, Double> position,
                   MovementBehavior movementBehav, Double speed) {
@@ -36,6 +44,10 @@ public abstract class Entity {
     public void setPosition(Tuple<Double, Double> position) { this.position = position; }
 
     public void setVelocity(Tuple<Double, Double> velocity) { this.velocity = velocity; }
+
+    public void setSize(Tuple<Double, Double> size) { this.size = size; }
+
+    public Tuple<Double, Double> getSize() { return size; }
 
     public Tuple<Double, Double> getAcceleration() { return this.acceleration; }
 

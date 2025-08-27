@@ -72,15 +72,20 @@ public class AnimationHandler {
         double dw = Math.round(sw * scale);
         double dh = Math.round(sh * scale);
 
-        System.out.println("Posizione: " + x + "," + y + "\n" +
-                "\tPozione scalata: " + dx + "," + dy + "\n" +
-                "\tFrame size: " + getCurrentFrameWidth());
+//        System.out.println("Posizione: " + x + "," + y + "\n" +
+//                "\tPozione scalata: " + dx + "," + dy + "\n" +
+//                "\tFrame size: " + getCurrentFrameWidth());
         gc.drawImage(sheet, sx, sy, sw, sh, dx, dy, dw, dh);
     }
 
     public double getCurrentFrameWidth() {
         if (current == null || current.frames.isEmpty()) return 0;
         return current.frames.get(frameIndex).src.getWidth();
+    }
+
+    public double getCurrentFrameHeight() {
+        if (current == null || current.frames.isEmpty()) return 0;
+        return current.frames.get(frameIndex).src.getHeight();
     }
 
     public Animation getCurrentAnimation() { return current; }
