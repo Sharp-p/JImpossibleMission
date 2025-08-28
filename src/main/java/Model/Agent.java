@@ -5,7 +5,7 @@ import Utilities.Tuple;
 import static config.GameConstants.*;
 
 public class Agent extends Entity {
-    private static final double JUMP_STRENGTH = 87.5;
+    private static final double JUMP_STRENGTH = 85.0;
     private static final double JUMP_DISTANCE = 115.0;
 
     private boolean grounded = false;

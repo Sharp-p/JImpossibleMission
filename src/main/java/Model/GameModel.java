@@ -47,4 +47,8 @@ public class GameModel extends Observable {
     public List<Entity> getEntities() { return entities; }
 
     public List<Platform> getPlatforms() { return stronghold.getPlatforms(); }
+
+    public List<Platform> getStillPlatforms() { return stronghold.getStillPlatforms(); }
+
+    public List<Platform> getMovingPlatforms() { return stronghold.getMovingPlatforms(); }
 }

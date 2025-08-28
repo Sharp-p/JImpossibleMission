@@ -16,6 +16,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import static config.GameConstants.*;
+import static javafx.scene.paint.Color.*;
 
 public class GameView extends Pane implements Observer {
     private final View view;
@@ -37,10 +38,11 @@ public class GameView extends Pane implements Observer {
 
         // to not mess up the pixel art
         gc.setImageSmoothing(false);
+        gc.setFill(MEDIUMTURQUOISE);
     }
 
     public void clearCanvas() {
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
     @Override

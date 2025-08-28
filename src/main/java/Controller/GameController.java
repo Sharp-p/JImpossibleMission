@@ -1,9 +1,6 @@
 package Controller;
 
-import Model.Agent;
-import Model.Entity;
-import Model.GameModel;
-import Model.Platform;
+import Model.*;
 import Utilities.Tuple;
 import View.View;
 import javafx.animation.AnimationTimer;
@@ -11,9 +8,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.shape.Shape;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static Controller.CollisionHandler.checkCollision;
 import static Controller.CollisionHandler.getBounds;
@@ -38,10 +33,10 @@ public class GameController {
         });
         view.getGameView().setOnKeyReleased(e -> {
             if ((e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT)
-                    && gameModel.getAgent().isGrounded())
+                    && gameModel.getAgent().isGrounded()) {
                 view.getGameView().getAgentPainter()
                         .getAnimationHandler().play("idle");
-
+            }
             pressedKeys.remove(e.getCode());
         });
         view.getGameView().setFocusTraversable(true);
@@ -88,14 +83,16 @@ public class GameController {
                 view.getGameView().getAgentPainter().getAnimationHandler().play("jump");
                 gameModel.moveAgent(UP, deltaTime);
             }
+            // TODO: gestore dei input UP e DOWN sulle piattaforme movibili
+            if (pressedKeys.contains(KeyCode.UP)) platformMovement(UP);
+            if (pressedKeys.contains(KeyCode.DOWN)) platformMovement(DOWN);
+
         }
         else if (!(Objects.equals(view.getGameView().getAgentPainter()
                 .getAnimationHandler().getCurrentAnimation().getName(), "jump"))) {
             view.getGameView().getAgentPainter().getAnimationHandler().play("falling");
         }
 
-        // TODO: implementare piattaforme, scesa dalle piattaforme
-        //if (pressedKeys.contains(KeyCode.DOWN))  gameModel.moveAgent(DOWN, deltaTime);
 
         gameModel.applyPhysics(deltaTime);
 
@@ -105,9 +102,23 @@ public class GameController {
 
         lastTime = now;
     }
+
+    // TODO: prende le piattaforme movibili, controlla se l'agent ci è sopra, se si, applica il movimento
+    private void platformMovement(Direction dir) {
+        List<Platform> platforms = gameModel.getMovingPlatforms();
+
+        Rectangle2D agentBorder = getBounds(gameModel.getAgent());
+        for (Platform platform : platforms) {
+            if(checkCollision(platform, gameModel.getAgent())) {
+                Rectangle2D platformBorder = getBounds(platform);
+                platform.moveTo(dir, deltaTime);
+            }
+        }
+    }
     // TODO: tipo di classe da passare Agent o entity
     private void platformCollision(Agent entity) {
         boolean touchedGround = false;
+        System.out.println("pre-ciclo");
         for (Platform platform : gameModel.getPlatforms()) {
             if (checkCollision(entity, platform)) {
                 Rectangle2D entBorder = getBounds(entity);
@@ -130,7 +141,11 @@ public class GameController {
                 double vX = entity.getVelocity().getFirst();
                 double vY = entity.getVelocity().getSecond();
 
-                System.out.println("prima che entro");
+
+                if (platform.getMovementBehavior() instanceof VerticalMovement) {
+                    System.out.println("PROCODIOOOO");
+                }
+
                 // is inside the platform "walkable area"
 //                if (entBorder.getMaxY() > pltBorder.getMinY() - 3
 //                        && entBorder.getMinY() < pltBorder.getMinY()) {
@@ -149,6 +164,7 @@ public class GameController {
 //                        entity.setGrounded(true);
 //                    }
 //                }
+                // TODO: refactor: separare meglio i casi, tirare fuori i lati
                 // distringuo i casi destri
                 if (entBorder.getMinX() < pltBorder.getMaxX() && entBorder.getMinX() > pltBorder.getMinX()) {
                     // distinguo sopra o lato
@@ -244,26 +260,18 @@ public class GameController {
                         entity.setVelocity(new Tuple<>(0.0, vY));
                     }
                 }
+                else {
+                    System.out.println("da sopra");
 
+                    touchedGround = true;
+                    double newY = pltBorder.getMinY() - entity.getSize().getSecond() + 1;
 
-//                // from the left of the platform
-//                else if (entBorder.getMaxX() > pltBorder.getMinX()
-//                        && entBorder.getMinX() < pltBorder.getMinX()) {
-//                    System.out.println("da sinistra");
-//                    double newX = pltBorder.getMinX() - entity.getSize().getFirst();
-//                    entity.setPosition(new Tuple<>(newX, y));
-//                    entity.setVelocity(new Tuple<>(0.0, vY));
-//                }
-//                // from the right
-//                else if (entBorder.getMinX() < pltBorder.getMaxX()
-//                        && entBorder.getMaxX() > pltBorder.getMaxX()) {
-//
-//                }
-//                // from under it
-//                else if (entBorder.getMinY() < pltBorder.getMaxY()
-//                        && entBorder.getMaxY() > pltBorder.getMaxY()) {
-//
-//                }
+                    entity.setPosition(new Tuple<>(x, newY));
+                    entity.setVelocity(new Tuple<>(vX, 0.0));
+
+                    if(!entity.isGrounded()) entity.setHitGround(true);
+                    entity.setGrounded(true);
+                }
             }
         }
         // if it didn't collide with any platform from over it, it's falling
