@@ -13,9 +13,6 @@ public class GameModel extends Observable {
 
     public GameModel() {
         agent = new Agent(new Tuple<>(100.0, 100.0), new HorizontalMovement());
-        // TODO: every entity has a size x and y
-        //  overwritten by the frame on the animation size
-
 
         // TODO: function that creates the world model HERE
         stronghold = new Stronghold();

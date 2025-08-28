@@ -5,15 +5,15 @@ import Utilities.Tuple;
 import static config.GameConstants.*;
 
 public class Agent extends Entity {
-    private static final double JUMP_STRENGTH = 100.0;
-    private static final double JUMP_DISTANCE = 175.0;
+    private static final double JUMP_STRENGTH = 87.5;
+    private static final double JUMP_DISTANCE = 115.0;
 
     private boolean grounded = false;
     private boolean hasHitGround = false;
 
     public Agent(Tuple<Double, Double> position,
                  MovementBehavior movementBehav) {
-        super(position, movementBehav, 200.0);
+        super(position, movementBehav, 74.28);
     }
 
     public void applyGravity(double deltaTime) {
@@ -28,7 +28,7 @@ public class Agent extends Entity {
         // acceleration if not on the ground
         if (!isGrounded()) {
             aY = GRAVITY;
-            System.out.println("CONTROLLO GRAVITà");
+            // System.out.println("CONTROLLO GRAVITà");
         }
         else {
             aY = 0;

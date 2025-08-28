@@ -50,7 +50,7 @@ public class AgentPainter extends EntityPainter {
 
         setAnimationHandler(new AnimationHandler(
                 new Image(getClass().getResourceAsStream(
-                        "/spriteSheets/agent/Commodore64ImpossibleMissionAgent4125.gif"))));
+                        "/spriteSheets/agent/Commodore64ImpossibleMissionAgent4125_gimp.png"))));
 
 
         getAnimationHandler().addAnimation(idle);

@@ -63,6 +63,9 @@ public class GameView extends Pane implements Observer {
         this.gameModel = gameModel;
         gameModel.addObserver(this);
 
+        // TODO: da resettare penso pure la view ogni volta che rientro
+        //  nel menu altrimenti danni
+
         // creates a painter for each platform
         for (Platform platform : gameModel.getPlatforms()) {
             platformPainters.add(new PlatformPainter(platform));
