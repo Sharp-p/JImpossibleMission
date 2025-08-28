@@ -6,6 +6,9 @@ import Utilities.*;
 import static config.GameConstants.FLOOR_Y;
 import static config.GameConstants.GRAVITY;
 
+/**
+ * An interface for all the models in the game environment
+ */
 public class GameModel extends Observable {
     private List<Entity> entities = new ArrayList<>();
     private Agent agent;
@@ -42,6 +45,8 @@ public class GameModel extends Observable {
 
     public void addEntity(Entity entity) { entities.add(entity); }
 
+    public void setUsingLift(boolean usingLift) { agent.setUsingLift(usingLift); }
+
     public Agent getAgent() { return agent; }
 
     public List<Entity> getEntities() { return entities; }
@@ -51,4 +56,6 @@ public class GameModel extends Observable {
     public List<Platform> getStillPlatforms() { return stronghold.getStillPlatforms(); }
 
     public List<Platform> getMovingPlatforms() { return stronghold.getMovingPlatforms(); }
+
+    public boolean isUsingLift() { return agent.isUsingLift(); }
 }

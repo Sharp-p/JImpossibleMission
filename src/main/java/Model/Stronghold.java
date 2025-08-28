@@ -29,7 +29,7 @@ public class Stronghold {
 
         addPlatforms(10, ROW_HEIGHT * 4, 15, still);
 
-        addPlatforms(10 + PLATFORM_WIDTH * 15, ROW_HEIGHT * 4, 3, still);
+        addPlatforms(10 + PLATFORM_WIDTH * 15, ROW_HEIGHT * 4, 1, vertical);
         // TODO: add moving platforms
     }
 

@@ -10,6 +10,7 @@ public class Agent extends Entity {
 
     private boolean grounded = false;
     private boolean hasHitGround = false;
+    private boolean usingLift = false;
 
     public Agent(Tuple<Double, Double> position,
                  MovementBehavior movementBehav) {
@@ -99,11 +100,14 @@ public class Agent extends Entity {
 
     public boolean isGrounded() { return this.grounded; }
 
+    public void setUsingLift(boolean usingLift) { this.usingLift = usingLift; }
+
     public void setHitGround(boolean hasChanged) { this.hasHitGround = hasChanged; }
 
     public void setGrounded(boolean grounded) { this.grounded = grounded; }
 
     public double getJumpStrength() { return JUMP_STRENGTH; }
 
+    public boolean isUsingLift() { return usingLift; }
 
 }

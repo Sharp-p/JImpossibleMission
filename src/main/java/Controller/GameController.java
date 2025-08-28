@@ -69,24 +69,27 @@ public class GameController {
 
         // takes keys in input only if on the ground
         if (gameModel.getAgent().isGrounded()) {
-            if (pressedKeys.contains(KeyCode.RIGHT)) {
-                view.getGameView().getAgentPainter().getAnimationHandler().play("run");
-                gameModel.moveAgent(RIGHT, deltaTime);
-            }
 
-            if (pressedKeys.contains(KeyCode.LEFT)) {
-                view.getGameView().getAgentPainter().getAnimationHandler().play("run");
-                gameModel.moveAgent(LEFT, deltaTime);
-            }
-
-            if (pressedKeys.contains(KeyCode.SPACE)) {
-                view.getGameView().getAgentPainter().getAnimationHandler().play("jump");
-                gameModel.moveAgent(UP, deltaTime);
-            }
-            // TODO: gestore dei input UP e DOWN sulle piattaforme movibili
             if (pressedKeys.contains(KeyCode.UP)) platformMovement(UP);
             if (pressedKeys.contains(KeyCode.DOWN)) platformMovement(DOWN);
 
+            if (!gameModel.isUsingLift()) {
+                if (pressedKeys.contains(KeyCode.RIGHT)) {
+                    view.getGameView().getAgentPainter().getAnimationHandler().play("run");
+                    gameModel.moveAgent(RIGHT, deltaTime);
+                }
+
+                if (pressedKeys.contains(KeyCode.LEFT)) {
+                    view.getGameView().getAgentPainter().getAnimationHandler().play("run");
+                    gameModel.moveAgent(LEFT, deltaTime);
+                }
+
+                if (pressedKeys.contains(KeyCode.SPACE)) {
+                    view.getGameView().getAgentPainter().getAnimationHandler().play("jump");
+                    gameModel.moveAgent(UP, deltaTime);
+                }
+            }
+            gameModel.setUsingLift(false);
         }
         else if (!(Objects.equals(view.getGameView().getAgentPainter()
                 .getAnimationHandler().getCurrentAnimation().getName(), "jump"))) {
@@ -103,15 +106,17 @@ public class GameController {
         lastTime = now;
     }
 
-    // TODO: prende le piattaforme movibili, controlla se l'agent ci è sopra, se si, applica il movimento
+    // TODO: applica il movimento secondo i slot
     private void platformMovement(Direction dir) {
         List<Platform> platforms = gameModel.getMovingPlatforms();
 
         Rectangle2D agentBorder = getBounds(gameModel.getAgent());
         for (Platform platform : platforms) {
             if(checkCollision(platform, gameModel.getAgent())) {
+                System.out.println("QUA");
                 Rectangle2D platformBorder = getBounds(platform);
                 platform.moveTo(dir, deltaTime);
+                gameModel.setUsingLift(true);
             }
         }
     }
