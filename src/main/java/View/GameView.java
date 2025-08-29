@@ -38,7 +38,7 @@ public class GameView extends Pane implements Observer {
 
         // to not mess up the pixel art
         gc.setImageSmoothing(false);
-        gc.setFill(MEDIUMTURQUOISE);
+        gc.setFill(SALMON);
     }
 
     public void clearCanvas() {

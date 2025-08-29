@@ -3,8 +3,7 @@ package Model;
 import java.util.*;
 import Utilities.*;
 
-import static config.GameConstants.FLOOR_Y;
-import static config.GameConstants.GRAVITY;
+import static config.GameConstants.*;
 
 /**
  * An interface for all the models in the game environment
@@ -15,7 +14,7 @@ public class GameModel extends Observable {
     private Stronghold stronghold;
 
     public GameModel() {
-        agent = new Agent(new Tuple<>(100.0, 100.0), new HorizontalMovement());
+        agent = new Agent(new Tuple<>(13.0, (double) ROW_HEIGHT), new HorizontalMovement());
 
         // TODO: function that creates the world model HERE
         stronghold = new Stronghold();

@@ -1,6 +1,6 @@
 package View.AnimationHandler;
 
-import Model.Platform;
+import Model.*;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -13,20 +13,31 @@ public class PlatformPainter extends EntityPainter {
         super(platforms);
 
         Animation still = new Animation("still", false)
-                .add(new Frame(new Rectangle2D(0, 0, 13, 7), 0, 0, 1));
+                .add(new Frame(new Rectangle2D(5, 5, 15, 9), 0, 0, 1));
 
-        // TODO: add moving platform Animation (just one frame but exlusive to the "moving" platforms
+        Animation wall = new Animation("wall", false)
+                .add(new Frame(new Rectangle2D(23, 5, 15, 9), 0, 0, 1));
+
+        Animation moving = new Animation("moving", false)
+                .add(new Frame(new Rectangle2D(41, 5, 28, 9), 0, 0, 1));
+
 
         setAnimationHandler(new AnimationHandler(new Image(getClass()
-                .getResourceAsStream("/spriteSheets/tiles/horizontal_yellow.png"))));
+                .getResourceAsStream("/spriteSheets/tiles/yellow_sheet.png"))));
 
         getAnimationHandler().addAnimation(still);
+        getAnimationHandler().addAnimation(moving);
+        getAnimationHandler().addAnimation(wall);
     }
 
     @Override
     public void draw(GraphicsContext gc, double dt, double scale) {
-        Platform platform = (Platform) getEntity();
-        // TODO: checks on the MovementBehavior to play the correct animation
+        Entity platform = getEntity();
+        // TODO: checks on the Platform class to play the correct animation
+        if (platform.getClass() ==  StillPlatform.class) getAnimationHandler().play("still");
+        else if(platform.getClass() == MovingPlatform.class) getAnimationHandler().play("moving");
+        else getAnimationHandler().play("wall");
+
         getAnimationHandler().update(dt);
 
         getAnimationHandler().render(gc, platform.getPosition().getFirst(),

@@ -12,4 +12,7 @@ public class Tuple<T, S>{
     public T getFirst() { return first; }
 
     public S getSecond() { return second; }
+
+    @Override
+    public String toString() { return "First: " + first.toString() + ", Second: " + second.toString(); }
 }

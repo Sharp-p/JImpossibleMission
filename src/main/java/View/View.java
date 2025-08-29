@@ -32,7 +32,7 @@ public class View {
 
         this.scene = new Scene(menuView, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        double scaleFactor = Math.min(SCREEN_WIDTH / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
+        double scaleFactor = Math.min((SCREEN_WIDTH + 15) / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
         Scale scale = new Scale(scaleFactor, scaleFactor, 0, 0);
 
         //menuView.getTransforms().add(scale);

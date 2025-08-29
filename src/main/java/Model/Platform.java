@@ -5,13 +5,17 @@ import Utilities.Tuple;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Platform extends Entity{
+// TODO: dividere in 3 sottoclassi, still platforms, vertical platforms, lift
+public abstract class Platform extends Entity{
+    // TODO: utiilizzare il campo size di entity
     private List<Double> verticalSlots = new ArrayList<>();
     private int slotIndex = 0;
 
     public Platform(Tuple<Double, Double> position,
-                    MovementBehavior movementBehav) {
-        super(position, movementBehav, 40.0);
+                    MovementBehavior movementBehav, Double speed, int width, int height) {
+        super(position, movementBehav, speed);
+
+        setSize(new Tuple<>((double) width, (double) height));
     }
 
     public void moveTo(Direction dir, Double deltaTime) {
@@ -30,6 +34,11 @@ public class Platform extends Entity{
 
     public void prevSlot() { if (slotIndex > 0) slotIndex = (slotIndex - 1); }
 
-
+    @Override
+    public String toString() {
+        return "Piattaforma:\n" +
+            "\tTipo: " + this.getClass() + "\n" +
+            "\tMovimento: " + getMovementBehavior().getClass();
+    }
 
 }

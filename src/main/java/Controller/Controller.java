@@ -2,7 +2,6 @@ package Controller;
 
 import Model.GameModel;
 
-
 import Model.MenuModel;
 import View.MenuView;
 import View.View;
@@ -24,7 +23,7 @@ public class Controller extends Application {
         MenuModel menuModel = new MenuModel();
         MenuView menuView = new MenuView(menuModel, view);
 
-        // set-ups the Scoreboard section?
+        // set-ups the Scoreboard section
         // TODO: ScoreboardModel
         // TODO: ScoreboardController
         ScoreboardView scoreboardView = new ScoreboardView(view);

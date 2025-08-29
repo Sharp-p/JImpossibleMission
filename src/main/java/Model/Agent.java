@@ -5,8 +5,8 @@ import Utilities.Tuple;
 import static config.GameConstants.*;
 
 public class Agent extends Entity {
-    private static final double JUMP_STRENGTH = 85.0;
-    private static final double JUMP_DISTANCE = 115.0;
+    private static final double JUMP_STRENGTH = 82.5;
+    private static final double JUMP_DISTANCE = 117.0;
 
     private boolean grounded = false;
     private boolean hasHitGround = false;
@@ -80,7 +80,7 @@ public class Agent extends Entity {
 
     /**
      * Updates the agent velocities so that the physics
-     * system will update the position accordingly
+     * system will handle the position accordingly
      */
     public void jump() {
         double vY = -getJumpStrength();

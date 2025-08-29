@@ -14,8 +14,8 @@ public class GameConstants {
     public static final int LOGICAL_WIDTH = 290;
     public static final int LOGICAL_HEIGHT = 190;
 
-    public static final int SCREEN_WIDTH = 870;
-    public static final int SCREEN_HEIGHT = 585;
+    public static final int SCREEN_WIDTH = 855;
+    public static final int SCREEN_HEIGHT = 612;
 
     public static final double RUN_FRAME_DURATION = 0.07;
     public static final double JUMP_FRAME_DURATION = 0.1;
