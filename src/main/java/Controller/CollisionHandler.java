@@ -27,7 +27,6 @@ public class CollisionHandler {
                     entity.getSize().getFirst() - 8,
                     entity.getSize().getSecond() - 3
             );
-            System.out.println("Posizione Y nemico: " + entity.getPosition().getSecond());
             return bounds;
         }
 

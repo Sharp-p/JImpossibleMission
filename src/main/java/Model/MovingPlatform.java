@@ -14,16 +14,9 @@ public class MovingPlatform extends Platform {
     public static final int MOVING_PLATFORM_HEIGHT = 7;
     public static final double SPEED = 100;
 
-    // TODO: fare in modo con indici che le piattaforme si muovano solo sugli slot designati
-    // TODO: utiilizzare il campo size di entity
     private List<Rectangle2D> verticalSlots = new ArrayList<>();
     private int slotIndex = 0;
     private List<MovingPlatform> group = new ArrayList<>();
-    // TODO: lista GRUPPO di piattaforme movibili sulla stessa asse y
-    // TODO: funzione setUpGroup che crea rettangolo, si interseziona
-    //  e vede movibili sulla stessa asse y e le aggiunge al gruppo
-
-
 
     public MovingPlatform(Tuple<Double, Double> position) {
         super(position, new VerticalMovement(), SPEED, 26, 7);
@@ -59,7 +52,6 @@ public class MovingPlatform extends Platform {
 
         for (Platform platform : candiates) { addToGroup((MovingPlatform) platform); }
 
-        // TODO: aggiornare il platformMovement in maniera che aggiorni simmetricamente tutte le platform del gruppo
     }
 
     public void addToGroup(MovingPlatform movingPlatform) { group.add(movingPlatform); }

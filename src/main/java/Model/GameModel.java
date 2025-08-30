@@ -16,8 +16,8 @@ public class GameModel extends Observable {
 
     public GameModel() {
         createAgent(13.0,  ROW_HEIGHT - 30);
-        entities.add(robotFactory.createRobot(StillRobot.class, 70, ROW_HEIGHT - 18));
-        // TODO: function that creates the world model HERE
+        entities.add(new StillRobot(new Tuple<>(70.0, ROW_HEIGHT - 18.0), 4));
+
         stronghold = new Stronghold();
 
         setChanged();
@@ -42,7 +42,7 @@ public class GameModel extends Observable {
      * @return Returns the new agent that the model uses
      */
     public void createAgent(double x, double y) {
-        // TODO: [RESPAWN] aggiustare parametri respawn
+        // TODO: [RESPAWN] luogo respawn rispetto a porta di entrata
         agent = new Agent(new Tuple<>(x, y));
     }
 

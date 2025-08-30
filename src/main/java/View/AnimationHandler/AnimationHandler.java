@@ -89,4 +89,6 @@ public class AnimationHandler {
     }
 
     public Animation getCurrentAnimation() { return current; }
+
+    public boolean isPlaying() { return playing; }
 }

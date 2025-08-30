@@ -3,10 +3,16 @@ package Controller;
 import Model.GameModel;
 import Model.MenuModel;
 import View.View;
+import View.GameView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.transform.Scale;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+
+import static config.GameConstants.*;
+import static config.GameConstants.LOGICAL_HEIGHT;
+import static config.GameVariables.scale;
 
 /**
  * This class manages the inputs from the keyboard and reacts accordingly
@@ -54,10 +60,18 @@ public class MenuController {
 
                     switch (choice) {
                         case 0 -> {
-                            // TODO: view funziona ogni peggio a ogni newGame
+                            // TODO: [FIX] view funziona peggio a ogni newGame
                             GameModel gameModel = new GameModel();
-                            view.getGameView().setGameModel(gameModel);
+                            GameView gameView = new GameView(view);
+                            gameView.setGameModel(gameModel);
+
+                            double scaleFactor = Math.min((SCREEN_WIDTH + 15) / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
+                            Scale scale = new Scale(scaleFactor, scaleFactor, 0, 0);
+                            gameView.setScale(scale);
+
+                            view.setGameView(gameView);
                             GameController gameController = new GameController(gameModel, view);
+                            gameController.startGameLoop();
                             view.showGame();
                         }
                         case 1 -> view.showScoreboard();

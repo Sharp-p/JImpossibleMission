@@ -5,7 +5,7 @@ import Model.Platform;
 import Model.Robot;
 import View.AnimationHandler.AgentPainter;
 import View.AnimationHandler.PlatformPainter;
-import View.AnimationHandler.RobotPainter;
+import View.AnimationHandler.StillRobotPainter;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -28,16 +28,14 @@ public class GameView extends Pane implements Observer {
     private Scale scale;
     private AgentPainter agentPainter;
     private List<PlatformPainter> platformPainters = new ArrayList<>();
-    private List<RobotPainter> robotPainters = new ArrayList<>();
+    private List<StillRobotPainter> robotPainters = new ArrayList<>();
     private GameModel gameModel;
 
     public GameView(View view) {
         this.view = view;
 
-        Button backBtn = new Button("Back");
-        backBtn.setOnAction(e -> { view.showMenu(); });
-
-        getChildren().addAll(canvas, backBtn);
+        // TODO: scrivere che si esce con esc
+        getChildren().addAll(canvas);
 
         // to not mess up the pixel art
         gc.setImageSmoothing(false);
@@ -56,10 +54,9 @@ public class GameView extends Pane implements Observer {
             platformPainter.draw(gc, deltaTime, scale.getX());
         }
 
-        for (RobotPainter robotPainter : robotPainters) {
+        for (StillRobotPainter robotPainter : robotPainters) {
             robotPainter.draw(gc, deltaTime, scale.getX());
         }
-
         agentPainter.draw(gc, deltaTime, scale.getX());
     }
 
@@ -82,7 +79,7 @@ public class GameView extends Pane implements Observer {
         }
 
         for (Robot robot : gameModel.getRobots()) {
-            robotPainters.add(new RobotPainter(robot));
+            robotPainters.add(new StillRobotPainter(robot));
         }
         // creates a painter for the agent
         agentPainter = new AgentPainter(gameModel.getAgent());

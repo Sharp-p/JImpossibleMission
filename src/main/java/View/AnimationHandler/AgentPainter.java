@@ -1,6 +1,7 @@
 package View.AnimationHandler;
 
 import Model.Agent;
+import Model.Direction;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -59,23 +60,22 @@ public class AgentPainter extends EntityPainter {
         getAnimationHandler().addAnimation(falling);
     }
 
+    @Override
     public void draw(GraphicsContext gc, double dt, double scale) {
         //getAnimationHandler().update(dt);
 
         switch (getEntity().getDirection()) {
             case LEFT -> {
-                gc.save();
-                // the image starts drawing from the upper left corner so it
-                // needs an offset when mirroring the canvas (and coordinates)
-                double frameW = getAnimationHandler().getCurrentFrameWidth();
-
-                double x = getEntity().getPosition().getFirst();
-                double y = getEntity().getPosition().getSecond();
-
-                gc.scale(-1, 1);
-
-                getAnimationHandler().render(gc, -(x + frameW), y, scale);
-                gc.restore();
+                drawInverted(gc, scale);
+            }
+            case UP, DOWN -> {
+                if (((Agent)getEntity()).isGrounded()) {
+                    System.out.println("Vecchia direzione: " + ((Agent)getEntity()).getOldDirection());
+                    if (((Agent) getEntity()).getOldDirection() == Direction.LEFT) drawInverted(gc, scale);
+                    else getAnimationHandler().render(
+                            gc, getEntity().getPosition().getFirst(),
+                            getEntity().getPosition().getSecond(), scale);
+                }
             }
             default -> getAnimationHandler().render(
                     gc, getEntity().getPosition().getFirst(),

@@ -21,6 +21,8 @@ public class GameController {
     private final View view;
     private final Set<KeyCode> pressedKeys = new HashSet<>();
 
+    private AnimationTimer gameLoopTimer;
+
     private Double deltaTime = 0.0;
     private long lastTime;
 
@@ -30,6 +32,10 @@ public class GameController {
 
         // asynchronous input listening
         view.getGameView().setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                view.showMenu();
+                gameLoopTimer.stop();
+            }
             pressedKeys.add(e.getCode());
             System.out.println(e.getCode());
         });
@@ -42,20 +48,6 @@ public class GameController {
             pressedKeys.remove(e.getCode());
         });
         view.getGameView().setFocusTraversable(true);
-
-        // first view update
-        gameModel.updated(deltaTime);
-
-        // gets the system time needed for the deltaTime in the game loop
-        lastTime = System.nanoTime();
-        // gameloop
-        new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                view.getGameView().clearCanvas();
-                gameLoop(now);
-            }
-        }.start();
     }
 
     private void gameLoop(long now) {
@@ -73,7 +65,7 @@ public class GameController {
         // takes keys in input only if on the ground
         if (gameModel.getAgent().isGrounded()) {
 
-            //System.out.println("Direzione: " + gameModel.getAgent().getDirection());
+            System.out.println("Direzione: " + gameModel.getAgent().getDirection());
             if (pressedKeys.contains(KeyCode.UP) || (gameModel.isUsingLift() && gameModel.getAgent().getDirection() == UP)) {
                 view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
                 platformMovement(UP);
@@ -109,7 +101,7 @@ public class GameController {
         // OPERATIONS ON THE ENEMIES
 
         // TODO: per ogni robot applica suo movimento
-
+        for (Robot robot : gameModel.getRobots()) { robot.update(deltaTime); }
 
         handleCollision();
         //System.out.println("Per terra: " + gameModel.getAgent().isGrounded());
@@ -118,7 +110,6 @@ public class GameController {
         lastTime = now;
     }
 
-    // TODO: applica il movimento secondo i slot
     private void platformMovement(Direction dir) {
         List<MovingPlatform> platforms = gameModel.getMovingPlatforms();
         Rectangle2D agentBorder = getBounds(gameModel.getAgent());
@@ -142,7 +133,10 @@ public class GameController {
 
                 // if I'm not using a lift I'm surely on a slot
                 if (!gameModel.isUsingLift()) {
+                    // save the state of the direction at the start of using the lift
+                    gameModel.getAgent().setOldDirection(gameModel.getAgent().getDirection());
                     Tuple<Double, Double> newPosition;
+
                     if (dir == UP) {
                         if (!platform.prevSlot()) return;
 
@@ -207,8 +201,10 @@ public class GameController {
                                 sister.getPosition().getSecond() + difY
                         ));
                     }
-                    gameModel.getAgent().setDirection(NONE);
+                    // reapply the old status of the facing direction
+                    gameModel.getAgent().setDirection(gameModel.getAgent().getOldDirection());
                     System.out.println("USANDO LIFT");
+
                     // stops from moving any further
                     return;
                 }
@@ -225,11 +221,12 @@ public class GameController {
                     ));
                     System.out.println("SARO PRINTATO ESCLUSIVAMENTE UNA VOLTA");
                 }
-                gameModel.getAgent().moveTo(dir, deltaTime);
+                gameModel.moveAgent(dir, deltaTime);
             }
         }
     }
-    // TODO: tipo di classe da passare Agent o entity
+
+    // TODO: [REFACTOR] cambiare nome variabile
     private void platformCollision(Agent entity) {
         boolean touchedGround = false;
         // System.out.println("pre-ciclo");
@@ -385,6 +382,27 @@ public class GameController {
         }
         // if it didn't collide with any platform from over it, it's falling
         if (!touchedGround) entity.setGrounded(false);
+    }
+
+    public void startGameLoop() {
+        // first view update
+        gameModel.updated(deltaTime);
+
+        // gets the system time needed for the deltaTime in the game loop
+        lastTime = System.nanoTime();
+        // gameloop
+        gameLoopTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                view.getGameView().clearCanvas();
+                gameLoop(now);
+            }
+        };
+        gameLoopTimer.start();
+    }
+
+    public void stopGameLoop() {
+        gameLoopTimer.stop();
     }
 
     public void handleCollision() {

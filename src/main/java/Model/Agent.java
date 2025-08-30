@@ -2,6 +2,7 @@ package Model;
 
 import Utilities.Tuple;
 
+import static Model.Direction.RIGHT;
 import static config.GameConstants.*;
 
 public class Agent extends Entity {
@@ -9,6 +10,10 @@ public class Agent extends Entity {
     private static final double JUMP_DISTANCE = 153.0;
     public static final double SPEED = 74.28;
 
+    /**
+     * Used only on the lift to keep track of the facing direction
+     */
+    private Direction oldDirection = RIGHT;
     private boolean grounded = false;
     private boolean hasHitGround = false;
     private boolean usingLift = false;
@@ -74,7 +79,6 @@ public class Agent extends Entity {
                 if  (isGrounded()) getMovementBehavior().move(
                         this, dir, deltaTime);
             }
-            // TODO: and not using platform - else
             case UP -> {
                 if (isGrounded()) {
                     if (!usingLift) {
@@ -93,7 +97,7 @@ public class Agent extends Entity {
      */
     public void jump() {
         double vY = -getJumpStrength();
-        double direction = getDirection() == Direction.RIGHT ? 1 : - 1;
+        double direction = getDirection() == RIGHT ? 1 : - 1;
 
         // half and total jump time
         double t = Math.sqrt(2 * getJumpStrength() / GRAVITY);
@@ -114,6 +118,10 @@ public class Agent extends Entity {
     public void setHitGround(boolean hasChanged) { this.hasHitGround = hasChanged; }
 
     public void setGrounded(boolean grounded) { this.grounded = grounded; }
+
+    public void setOldDirection(Direction oldDirection) { this.oldDirection = oldDirection; }
+
+    public Direction getOldDirection() { return this.oldDirection; }
 
     public double getJumpStrength() { return JUMP_STRENGTH; }
 

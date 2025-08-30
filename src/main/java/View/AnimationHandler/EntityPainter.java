@@ -16,6 +16,21 @@ public abstract class EntityPainter {
 
     protected abstract void draw(GraphicsContext gc, double dt, double scale);
 
+    protected void drawInverted(GraphicsContext gc, double scale) {
+        gc.save();
+        // the image starts drawing from the upper left corner so it
+        // needs an offset when mirroring the canvas (and coordinates)
+        double frameW = getAnimationHandler().getCurrentFrameWidth();
+
+        double x = getEntity().getPosition().getFirst();
+        double y = getEntity().getPosition().getSecond();
+
+        gc.scale(-1, 1);
+
+        getAnimationHandler().render(gc, -(x + frameW) + 2, y, scale);
+        gc.restore();
+    }
+
     public void updateEntitySize() {
         // size X and Y
         double sX = animationHandler.getCurrentFrameWidth();
