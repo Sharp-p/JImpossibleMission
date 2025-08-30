@@ -6,7 +6,7 @@ public class GameConstants {
     /**
      * Gravity constant in px/s^2
      */
-    public static final double GRAVITY = 150.0;
+    public static final double GRAVITY = 180.0;
 
     public static final double FLOOR_Y = 150.0;
 

@@ -10,12 +10,13 @@ import static config.GameConstants.*;
  */
 public class GameModel extends Observable {
     private List<Entity> entities = new ArrayList<>();
+    private RobotFactory robotFactory = new  RobotFactory();
     private Agent agent;
     private Stronghold stronghold;
 
     public GameModel() {
-        agent = new Agent(new Tuple<>(13.0, (double) ROW_HEIGHT), new FreeMovement());
-
+        createAgent(13.0,  ROW_HEIGHT - 30);
+        entities.add(robotFactory.createRobot(StillRobot.class, 70, ROW_HEIGHT - 18));
         // TODO: function that creates the world model HERE
         stronghold = new Stronghold();
 
@@ -36,6 +37,15 @@ public class GameModel extends Observable {
         notifyObservers(dt);
     }
 
+    /**
+     * Function that creates a new agent. Used for every respawn instance.
+     * @return Returns the new agent that the model uses
+     */
+    public void createAgent(double x, double y) {
+        // TODO: [RESPAWN] aggiustare parametri respawn
+        agent = new Agent(new Tuple<>(x, y));
+    }
+
     public void moveAgent(Direction direction, Double deltaTime) {
         agent.moveTo(direction, deltaTime);
     }
@@ -45,6 +55,13 @@ public class GameModel extends Observable {
     public void addEntity(Entity entity) { entities.add(entity); }
 
     public void setUsingLift(boolean usingLift) { agent.setUsingLift(usingLift); }
+
+    public List<Robot> getRobots() {
+        return entities.stream()
+                .filter(e -> e instanceof Robot)
+                .map(e -> (Robot) e)
+                .toList();
+    }
 
     public Agent getAgent() { return agent; }
 

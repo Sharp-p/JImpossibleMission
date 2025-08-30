@@ -33,7 +33,7 @@ public class MenuController {
     }
 
     /**
-     * Sets the give MenuModel to be controlled from this MenuController
+     * Sets the given MenuModel to be controlled from this MenuController
      * @param menuModel The MenuModel to control
      */
     public void setMenuModel(MenuModel menuModel) {
@@ -54,6 +54,7 @@ public class MenuController {
 
                     switch (choice) {
                         case 0 -> {
+                            // TODO: view funziona ogni peggio a ogni newGame
                             GameModel gameModel = new GameModel();
                             view.getGameView().setGameModel(gameModel);
                             GameController gameController = new GameController(gameModel, view);

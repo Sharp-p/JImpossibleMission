@@ -5,17 +5,16 @@ import Utilities.Tuple;
 import static config.GameConstants.*;
 
 public class Agent extends Entity {
-    private static final double JUMP_STRENGTH = 82.5;
-    private static final double JUMP_DISTANCE = 117.0;
+    private static final double JUMP_STRENGTH = 101.5;
+    private static final double JUMP_DISTANCE = 153.0;
     public static final double SPEED = 74.28;
 
     private boolean grounded = false;
     private boolean hasHitGround = false;
     private boolean usingLift = false;
 
-    public Agent(Tuple<Double, Double> position,
-                 MovementBehavior movementBehav) {
-        super(position, movementBehav, SPEED);
+    public Agent(Tuple<Double, Double> position) {
+        super(position, new FreeMovement(), SPEED);
     }
 
     public void applyGravity(double deltaTime) {

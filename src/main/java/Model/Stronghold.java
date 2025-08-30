@@ -100,7 +100,8 @@ public class Stronghold {
         for (int i = 0; i < qnt; i++) {
             platforms.add(pltFactory.createPlatform(
                     platformClass,
-                    new Tuple<>(sX + realWidth * i, sY)));
+                    sX + realWidth * i,
+                    sY));
         }
     }
 
@@ -112,8 +113,8 @@ public class Stronghold {
                     (double) sUpper + STILL_PLATFORM_HEIGHT * i);
             System.out.println(pos);
             platforms.add(pltFactory.createPlatform(
-                    Wall.class, pos
-                    ));
+                    Wall.class, pos.getFirst(), pos.getSecond()
+            ));
         }
     }
 

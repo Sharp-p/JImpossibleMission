@@ -2,8 +2,10 @@ package View;
 
 import Model.GameModel;
 import Model.Platform;
+import Model.Robot;
 import View.AnimationHandler.AgentPainter;
 import View.AnimationHandler.PlatformPainter;
+import View.AnimationHandler.RobotPainter;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -26,6 +28,7 @@ public class GameView extends Pane implements Observer {
     private Scale scale;
     private AgentPainter agentPainter;
     private List<PlatformPainter> platformPainters = new ArrayList<>();
+    private List<RobotPainter> robotPainters = new ArrayList<>();
     private GameModel gameModel;
 
     public GameView(View view) {
@@ -53,12 +56,17 @@ public class GameView extends Pane implements Observer {
             platformPainter.draw(gc, deltaTime, scale.getX());
         }
 
+        for (RobotPainter robotPainter : robotPainters) {
+            robotPainter.draw(gc, deltaTime, scale.getX());
+        }
+
         agentPainter.draw(gc, deltaTime, scale.getX());
     }
 
     /**
      * What is creates in the constructor of the GameModel will be
-     * initialized in the GameView in this method
+     * initialized in the GameView in this method.
+     * It can act as a refresh when some objects are destroyed in the game model.
      * @param gameModel The GameModel that the GameView will represent
      */
     public void setGameModel(GameModel gameModel) {
@@ -71,6 +79,10 @@ public class GameView extends Pane implements Observer {
         // creates a painter for each platform
         for (Platform platform : gameModel.getPlatforms()) {
             platformPainters.add(new PlatformPainter(platform));
+        }
+
+        for (Robot robot : gameModel.getRobots()) {
+            robotPainters.add(new RobotPainter(robot));
         }
         // creates a painter for the agent
         agentPainter = new AgentPainter(gameModel.getAgent());

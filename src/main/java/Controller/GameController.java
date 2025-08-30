@@ -6,6 +6,7 @@ import View.View;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 
 import java.util.*;
@@ -13,6 +14,7 @@ import java.util.*;
 import static Controller.CollisionHandler.checkCollision;
 import static Controller.CollisionHandler.getBounds;
 import static Model.Direction.*;
+import static config.GameConstants.ROW_HEIGHT;
 
 public class GameController {
     private final GameModel gameModel;
@@ -59,6 +61,7 @@ public class GameController {
     private void gameLoop(long now) {
         deltaTime = (now - lastTime) / 1_000_000_000.0;
 
+        // OPERATIONS ON THE PLAYER POSITION:
 
         // if the agent was in air and has now hit the ground, changes the animation
         // and updates the flag
@@ -70,16 +73,12 @@ public class GameController {
         // takes keys in input only if on the ground
         if (gameModel.getAgent().isGrounded()) {
 
-            System.out.println("Direzione: " + gameModel.getAgent().getDirection());
-            // TODO: fixare controllo dopo sul lift
+            //System.out.println("Direzione: " + gameModel.getAgent().getDirection());
             if (pressedKeys.contains(KeyCode.UP) || (gameModel.isUsingLift() && gameModel.getAgent().getDirection() == UP)) {
-                System.out.println("QUI ENTRO-UP e KeyCode: " + pressedKeys.contains(KeyCode.UP));
                 view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
-                // TODO: capire dove arriva l'esecuzione perché sembra che platformMovement venga eseguito ma non tutto
                 platformMovement(UP);
             }
             if (pressedKeys.contains(KeyCode.DOWN) || (gameModel.isUsingLift() && gameModel.getAgent().getDirection() == DOWN)) {
-                System.out.println("QUI ENTRO-DOWN");
                 view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
                 platformMovement(DOWN);
             }
@@ -100,18 +99,20 @@ public class GameController {
                     gameModel.moveAgent(UP, deltaTime);
                 }
             }
-            // gameModel.setUsingLift(false);
         }
         else if (!(Objects.equals(view.getGameView().getAgentPainter()
                 .getAnimationHandler().getCurrentAnimation().getName(), "jump"))) {
             view.getGameView().getAgentPainter().getAnimationHandler().play("falling");
         }
-
-
         gameModel.applyPhysics(deltaTime);
 
+        // OPERATIONS ON THE ENEMIES
+
+        // TODO: per ogni robot applica suo movimento
+
+
         handleCollision();
-        System.out.println("Per terra: " + gameModel.getAgent().isGrounded());
+        //System.out.println("Per terra: " + gameModel.getAgent().isGrounded());
         gameModel.updated(deltaTime);
 
         lastTime = now;
@@ -308,7 +309,7 @@ public class GameController {
                             entity.setVelocity(new Tuple<>(0.0, vY));
                         }
                         else {
-                            //System.out.println("da sotto");
+                            System.out.println("da sotto");
                             double newY = pltBorder.getMaxY();
                             entity.setPosition(new Tuple<>(x, newY));
                             entity.setVelocity(new Tuple<>(vX, 0.0));
@@ -355,7 +356,7 @@ public class GameController {
                             entity.setVelocity(new Tuple<>(0.0, vY));
                         }
                         else {
-                            //System.out.println("da sotto");
+                            System.out.println("da sotto");
                             double newY = pltBorder.getMaxY();
                             entity.setPosition(new Tuple<>(x, newY));
                             entity.setVelocity(new Tuple<>(vX, 0.0));
@@ -396,11 +397,29 @@ public class GameController {
 //                " "  + gameModel.getAgent().getSize().getSecond());
         double difY = osY - gameModel.getAgent().getSize().getSecond();
 
+        // adjust the position with the updated size
         gameModel.getAgent().setPosition(new Tuple<>(
                 gameModel.getAgent().getPosition().getFirst(),
                 gameModel.getAgent().getPosition().getSecond() + difY
         ));
 
         platformCollision(gameModel.getAgent());
+
+        enemyCollision(gameModel.getAgent());
+    }
+
+    public void enemyCollision(Agent agent) {
+        Rectangle2D agentBorder = getBounds(agent);
+        for (Enemy enemy : gameModel.getRobots()) {
+            Rectangle2D enemyBorder = getBounds(enemy);
+            if (enemyBorder.intersects(agentBorder)) {
+                agentHit();
+            }
+        }
+    }
+
+    public void agentHit() {
+        gameModel.createAgent(13, ROW_HEIGHT - 30);
+        view.getGameView().setGameModel(gameModel);
     }
 }
