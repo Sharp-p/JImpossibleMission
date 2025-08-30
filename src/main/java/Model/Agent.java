@@ -7,6 +7,7 @@ import static config.GameConstants.*;
 public class Agent extends Entity {
     private static final double JUMP_STRENGTH = 82.5;
     private static final double JUMP_DISTANCE = 117.0;
+    public static final double SPEED = 74.28;
 
     private boolean grounded = false;
     private boolean hasHitGround = false;
@@ -14,7 +15,7 @@ public class Agent extends Entity {
 
     public Agent(Tuple<Double, Double> position,
                  MovementBehavior movementBehav) {
-        super(position, movementBehav, 74.28);
+        super(position, movementBehav, SPEED);
     }
 
     public void applyGravity(double deltaTime) {
@@ -74,7 +75,16 @@ public class Agent extends Entity {
                 if  (isGrounded()) getMovementBehavior().move(
                         this, dir, deltaTime);
             }
-            case UP -> { if (isGrounded()) jump(); }
+            // TODO: and not using platform - else
+            case UP -> {
+                if (isGrounded()) {
+                    if (!usingLift) {
+                        jump();
+                    }
+                    else getMovementBehavior().move(this, dir, deltaTime);
+                }
+            }
+            case DOWN -> getMovementBehavior().move(this, dir, deltaTime);
         }
     }
 

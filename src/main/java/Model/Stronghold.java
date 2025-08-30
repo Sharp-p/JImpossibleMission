@@ -1,6 +1,7 @@
 package Model;
 
 import Utilities.Tuple;
+import javafx.geometry.Rectangle2D;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,42 +17,69 @@ public class Stronghold {
     public Stronghold() {
         StillMovement still = new StillMovement();
         VerticalMovement vertical = new VerticalMovement();
-        int rowHeightTiles = (int) Math.ceil((double) ROW_HEIGHT / PLATFORM_HEIGHT);
 
         // TODO: se c'hai proprio sbattimento, slidare tutto il
         //  sistema delle coordinate (delle platform) di -0.5
         // room 1
-        addHorizontalPlatforms(1, rowHeightTiles, 10, StillPlatform.class);
-        addHorizontalPlatforms(13, rowHeightTiles, 3, StillPlatform.class);
-        addHorizontalPlatforms(18, rowHeightTiles, 3, StillPlatform.class);
+        addHorizontalPlatforms(1, ROW_HEIGHT_TILES, 10, StillPlatform.class);
+        addHorizontalPlatforms(13, ROW_HEIGHT_TILES, 3, StillPlatform.class);
+        addHorizontalPlatforms(18, ROW_HEIGHT_TILES, 3, StillPlatform.class);
 
-        addHorizontalPlatforms(3, rowHeightTiles * 2, 3, StillPlatform.class);
-        addHorizontalPlatforms(8, rowHeightTiles * 2, 3, StillPlatform.class);
-        addHorizontalPlatforms(11, rowHeightTiles * 2, 1, MovingPlatform.class);
-        addHorizontalPlatforms(13, rowHeightTiles * 2, 3, StillPlatform.class);
-        addHorizontalPlatforms(16, rowHeightTiles * 2, 1, MovingPlatform.class);
-        addHorizontalPlatforms(18, rowHeightTiles * 2, 3, StillPlatform.class);
+        addHorizontalPlatforms(3, ROW_HEIGHT_TILES * 2, 3, StillPlatform.class);
+        addHorizontalPlatforms(8, ROW_HEIGHT_TILES * 2, 3, StillPlatform.class);
+        addHorizontalPlatforms(11, ROW_HEIGHT_TILES * 2, 1, MovingPlatform.class);
+        addSlot(platforms.getLast(),
+                -ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT);
+        ((MovingPlatform)platforms.getLast()).setSlotIndex(1);
 
-        addHorizontalPlatforms(1, rowHeightTiles * 3, 1, MovingPlatform.class);
-        addHorizontalPlatforms(3, rowHeightTiles * 3, 3, StillPlatform.class);
-        addHorizontalPlatforms(6, rowHeightTiles * 3, 1, MovingPlatform.class);
-        addHorizontalPlatforms(8, rowHeightTiles * 3, 3, StillPlatform.class);
-        addHorizontalPlatforms(11, rowHeightTiles * 3, 1, MovingPlatform.class);
-        addHorizontalPlatforms(13, rowHeightTiles * 3, 3, StillPlatform.class);
-        addHorizontalPlatforms(16, rowHeightTiles * 3, 1, MovingPlatform.class);
-        addHorizontalPlatforms(18, rowHeightTiles * 3, 3, StillPlatform.class);
+        addHorizontalPlatforms(13, ROW_HEIGHT_TILES * 2, 3, StillPlatform.class);
+        addHorizontalPlatforms(16, ROW_HEIGHT_TILES * 2, 1, MovingPlatform.class);
+        addSlot(platforms.getLast(),
+                -ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT);
+        ((MovingPlatform)platforms.getLast()).setSlotIndex(1);
 
-        addHorizontalPlatforms(1, rowHeightTiles * 4, 1, MovingPlatform.class);
-        addHorizontalPlatforms(3, rowHeightTiles * 4, 3, StillPlatform.class);
-        addHorizontalPlatforms(6, rowHeightTiles * 4, 1, MovingPlatform.class);
-        addHorizontalPlatforms(8, rowHeightTiles * 4, 13, StillPlatform.class);
+        addHorizontalPlatforms(18, ROW_HEIGHT_TILES * 2, 3, StillPlatform.class);
 
-        addVerticalPlatforms(0, rowHeightTiles * 3, "left");
-        addVerticalPlatforms(rowHeightTiles * 4, rowHeightTiles * 4, "left");
+        addHorizontalPlatforms(1, ROW_HEIGHT_TILES * 3, 1, MovingPlatform.class);
+        addSlot(platforms.getLast(),
+                -ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT);
+        ((MovingPlatform)platforms.getLast()).setSlotIndex(1);
+        addHorizontalPlatforms(3, ROW_HEIGHT_TILES * 3, 3, StillPlatform.class);
+        addHorizontalPlatforms(6, ROW_HEIGHT_TILES * 3, 1, MovingPlatform.class);
+        addSlot(platforms.getLast(),
+                -ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT);
+        ((MovingPlatform)platforms.getLast()).setSlotIndex(1);
+        addHorizontalPlatforms(8, ROW_HEIGHT_TILES * 3, 3, StillPlatform.class);
+        addHorizontalPlatforms(11, ROW_HEIGHT_TILES * 3, 1, MovingPlatform.class);
+        addSlot(platforms.getLast(),
+                -ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT);
+        ((MovingPlatform)platforms.getLast()).setSlotIndex(1);
+        addHorizontalPlatforms(13, ROW_HEIGHT_TILES * 3, 3, StillPlatform.class);
+        addHorizontalPlatforms(16, ROW_HEIGHT_TILES * 3, 1, MovingPlatform.class);
+        addSlot(platforms.getLast(),
+                -ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT);
+        ((MovingPlatform)platforms.getLast()).setSlotIndex(1);
+        addHorizontalPlatforms(18, ROW_HEIGHT_TILES * 3, 3, StillPlatform.class);
+
+        addHorizontalPlatforms(1, ROW_HEIGHT_TILES * 4, 1, MovingPlatform.class);
+        addSlot(platforms.getLast(),
+                -ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT);
+        ((MovingPlatform)platforms.getLast()).setSlotIndex(1);
+        addHorizontalPlatforms(3, ROW_HEIGHT_TILES * 4, 3, StillPlatform.class);
+        addHorizontalPlatforms(6, ROW_HEIGHT_TILES * 4, 1, MovingPlatform.class);
+        addSlot(platforms.getLast(),
+                -ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT);
+        ((MovingPlatform)platforms.getLast()).setSlotIndex(1);
+        addHorizontalPlatforms(8, ROW_HEIGHT_TILES * 4, 13, StillPlatform.class);
+
+        addVerticalPlatforms(0, ROW_HEIGHT_TILES * 3, "left");
+        addVerticalPlatforms(ROW_HEIGHT_TILES * 4, ROW_HEIGHT_TILES * 4, "left");
         addVerticalPlatforms(0, 0, "right");
-        System.out.println("qua");
-        addVerticalPlatforms(rowHeightTiles,  rowHeightTiles * 4, "right");
-        System.out.println("qua");
+        addVerticalPlatforms(ROW_HEIGHT_TILES,  ROW_HEIGHT_TILES * 4, "right");
+
+        for (Platform platform : platforms) {
+            if (platform instanceof MovingPlatform) { ((MovingPlatform) platform).setUpGroup(platforms);}
+        }
     }
 
     /**
@@ -87,7 +115,12 @@ public class Stronghold {
                     Wall.class, pos
                     ));
         }
+    }
 
+    private void addSlot(Platform platform, double offsetY) {
+        ((MovingPlatform)platforms.getLast()).addVerticalSlot(
+                platform.getPosition().getFirst(),
+                platform.getPosition().getSecond() + offsetY);
     }
 
     public List<Platform> getPlatforms() { return platforms; }
@@ -98,9 +131,10 @@ public class Stronghold {
                 .toList();
     }
 
-    public List<Platform> getMovingPlatforms() {
+    public List<MovingPlatform> getMovingPlatforms() {
         return platforms.stream()
                 .filter(p -> p.getMovementBehavior() instanceof VerticalMovement)
+                .map(p -> (MovingPlatform) p)
                 .toList();
     }
 }

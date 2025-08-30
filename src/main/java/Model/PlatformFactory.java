@@ -6,7 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class PlatformFactory {
-    // TODO: da modificare quando si modifica i costruttori delle piattaforme
+    // to be modified  when a constructor of a platform si modified
     public <T extends Platform> T createPlatform(
             Class<T> clazz,
             Tuple<Double, Double> position) {

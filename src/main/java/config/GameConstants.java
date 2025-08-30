@@ -23,6 +23,7 @@ public class GameConstants {
     public static final int PLATFORM_WIDTH = 13;
     public static final int PLATFORM_HEIGHT = 7;
     public static final int ROW_HEIGHT = LOGICAL_HEIGHT / 4;
+    public static final int ROW_HEIGHT_TILES = (int) Math.ceil((double) ROW_HEIGHT / PLATFORM_HEIGHT);
     public static final int COLUMN_HEIGHT = 7;
     public static final int HIGHEST_STANDING_SIZE = 30;
 }

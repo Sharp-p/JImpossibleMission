@@ -63,9 +63,6 @@ public class AgentPainter extends EntityPainter {
         //getAnimationHandler().update(dt);
 
         switch (getEntity().getDirection()) {
-            case RIGHT -> getAnimationHandler().render(
-                    gc, getEntity().getPosition().getFirst(),
-                    getEntity().getPosition().getSecond(), scale);
             case LEFT -> {
                 gc.save();
                 // the image starts drawing from the upper left corner so it
@@ -80,6 +77,9 @@ public class AgentPainter extends EntityPainter {
                 getAnimationHandler().render(gc, -(x + frameW), y, scale);
                 gc.restore();
             }
+            default -> getAnimationHandler().render(
+                    gc, getEntity().getPosition().getFirst(),
+                    getEntity().getPosition().getSecond(), scale);
         }
 
         updateEntitySize();

@@ -14,7 +14,7 @@ public class GameModel extends Observable {
     private Stronghold stronghold;
 
     public GameModel() {
-        agent = new Agent(new Tuple<>(13.0, (double) ROW_HEIGHT), new HorizontalMovement());
+        agent = new Agent(new Tuple<>(13.0, (double) ROW_HEIGHT), new FreeMovement());
 
         // TODO: function that creates the world model HERE
         stronghold = new Stronghold();
@@ -54,7 +54,7 @@ public class GameModel extends Observable {
 
     public List<Platform> getStillPlatforms() { return stronghold.getStillPlatforms(); }
 
-    public List<Platform> getMovingPlatforms() { return stronghold.getMovingPlatforms(); }
+    public List<MovingPlatform> getMovingPlatforms() { return stronghold.getMovingPlatforms(); }
 
     public boolean isUsingLift() { return agent.isUsingLift(); }
 }

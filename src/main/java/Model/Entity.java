@@ -7,8 +7,8 @@ import Utilities.Tuple;
  */
 public abstract class Entity {
     private final MovementBehavior movementBehav;
-    private final Double speed;
 
+    private  Double speed;
     private Tuple<Double, Double> position;
     private Tuple<Double, Double> velocity;
     private Tuple<Double, Double> acceleration;
@@ -46,6 +46,8 @@ public abstract class Entity {
     public void setVelocity(Tuple<Double, Double> velocity) { this.velocity = velocity; }
 
     public void setSize(Tuple<Double, Double> size) { this.size = size; }
+
+    public void setSpeed(Double speed) { this.speed = speed; }
 
     public Tuple<Double, Double> getSize() { return size; }
 

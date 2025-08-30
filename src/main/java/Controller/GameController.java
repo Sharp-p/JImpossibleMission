@@ -70,8 +70,19 @@ public class GameController {
         // takes keys in input only if on the ground
         if (gameModel.getAgent().isGrounded()) {
 
-            if (pressedKeys.contains(KeyCode.UP)) platformMovement(UP);
-            if (pressedKeys.contains(KeyCode.DOWN)) platformMovement(DOWN);
+            System.out.println("Direzione: " + gameModel.getAgent().getDirection());
+            // TODO: fixare controllo dopo sul lift
+            if (pressedKeys.contains(KeyCode.UP) || (gameModel.isUsingLift() && gameModel.getAgent().getDirection() == UP)) {
+                System.out.println("QUI ENTRO-UP e KeyCode: " + pressedKeys.contains(KeyCode.UP));
+                view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
+                // TODO: capire dove arriva l'esecuzione perché sembra che platformMovement venga eseguito ma non tutto
+                platformMovement(UP);
+            }
+            if (pressedKeys.contains(KeyCode.DOWN) || (gameModel.isUsingLift() && gameModel.getAgent().getDirection() == DOWN)) {
+                System.out.println("QUI ENTRO-DOWN");
+                view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
+                platformMovement(DOWN);
+            }
 
             if (!gameModel.isUsingLift()) {
                 if (pressedKeys.contains(KeyCode.RIGHT)) {
@@ -89,7 +100,7 @@ public class GameController {
                     gameModel.moveAgent(UP, deltaTime);
                 }
             }
-            gameModel.setUsingLift(false);
+            // gameModel.setUsingLift(false);
         }
         else if (!(Objects.equals(view.getGameView().getAgentPainter()
                 .getAnimationHandler().getCurrentAnimation().getName(), "jump"))) {
@@ -100,7 +111,7 @@ public class GameController {
         gameModel.applyPhysics(deltaTime);
 
         handleCollision();
-        // System.out.println("Per terra: " + gameModel.getAgent().isGrounded());
+        System.out.println("Per terra: " + gameModel.getAgent().isGrounded());
         gameModel.updated(deltaTime);
 
         lastTime = now;
@@ -108,14 +119,112 @@ public class GameController {
 
     // TODO: applica il movimento secondo i slot
     private void platformMovement(Direction dir) {
-        List<Platform> platforms = gameModel.getMovingPlatforms();
-
+        List<MovingPlatform> platforms = gameModel.getMovingPlatforms();
         Rectangle2D agentBorder = getBounds(gameModel.getAgent());
-        for (Platform platform : platforms) {
-            if(checkCollision(platform, gameModel.getAgent())) {
-                Rectangle2D platformBorder = getBounds(platform);
-                platform.moveTo(dir, deltaTime);
+
+        for (MovingPlatform platform : platforms) {
+            Rectangle2D platformBorder = getBounds(platform);
+            // checks if the agent is fully on the platform
+            if (checkCollision(platform, gameModel.getAgent())
+                    && agentBorder.getMinX() > platformBorder.getMinX()
+                    && agentBorder.getMaxX() < platformBorder.getMaxX()) {
+
+                double oldY = platform.getPosition().getSecond();
+                double difY = 0.0;
+                Rectangle2D slot = null;
+                Optional<Rectangle2D> opt = platform.getVerticalSlots().stream()
+                        .filter(platformBorder::intersects).findFirst();
+
+                if (opt.isPresent()) {
+                    slot = opt.get();
+                }
+
+                // if I'm not using a lift I'm surely on a slot
+                if (!gameModel.isUsingLift()) {
+                    Tuple<Double, Double> newPosition;
+                    if (dir == UP) {
+                        if (!platform.prevSlot()) return;
+
+                        assert slot != null;
+                        newPosition = new Tuple<>(
+                                platform.getPosition().getFirst(),
+                                slot.getMinY() - MovingPlatform.MOVING_PLATFORM_HEIGHT - 1);
+                        System.out.println("[PRIMO IF] se ho premuto UP qua");
+                    } else {
+                        if (!platform.nextSlot()) return;
+
+                        assert slot != null;
+                        newPosition = new Tuple<>(
+                                platform.getPosition().getFirst(),
+                                slot.getMaxY() + 1);
+                        // using difY to keep the agent stuck
+                        // to the platform when going down
+                        difY = newPosition.getSecond() - platform.getPosition().getSecond();
+                        gameModel.getAgent().setPosition(new Tuple<>(
+                                gameModel.getAgent().getPosition().getFirst(),
+                                gameModel.getAgent().getPosition().getSecond() + difY
+                        ));
+                        System.out.println("[PRIMO IF]QUESTO é LO SLOT: " + slot);
+                    }
+
+                    platform.setPosition(newPosition);
+                    System.out.println("NON USANDO LIFT");
+                }
+                // if the lift is already moving it could now
+                // be on a slot, and it should stop if it is
+                else if (platformBorder.intersects(slot)) {
+                    Tuple<Double, Double> newPosition;
+                    if (dir == UP) {
+                        assert slot != null;
+                        newPosition = new Tuple<>(
+                                platform.getPosition().getFirst(), slot.getMinY() - 3);
+                        System.out.println("[SECONDO IF] sto andando già up");
+                    }
+                    else {
+                        assert slot != null;
+                        System.out.println("[SECONDO IF]QUESTO é LO SLOT: " + slot);
+                        newPosition = new Tuple<>(platform.getPosition().getFirst(), slot.getMinY() - 3);
+                        // using difY to keep the agent stuck
+                        // to the platform when going down
+                        difY = newPosition.getSecond() - platform.getPosition().getSecond();
+                        gameModel.getAgent().setPosition(new Tuple<>(
+                                gameModel.getAgent().getPosition().getFirst(),
+                                gameModel.getAgent().getPosition().getSecond() + difY
+                        ));
+                    }
+                    // difY is need for the platforms in the group too
+                    difY = newPosition.getSecond() - platform.getPosition().getSecond();
+
+                    platform.setPosition(newPosition);
+
+                    gameModel.setUsingLift(false);
+
+                    // always move the other platforms in the group
+                    for (MovingPlatform sister : platform.getGroup()) {
+                        sister.setPosition(new Tuple<>(
+                                sister.getPosition().getFirst(),
+                                sister.getPosition().getSecond() + difY
+                        ));
+                    }
+                    gameModel.getAgent().setDirection(NONE);
+                    System.out.println("USANDO LIFT");
+                    // stops from moving any further
+                    return;
+                }
                 gameModel.setUsingLift(true);
+                //gameModel.getAgent().setSpeed(MovingPlatform.SPEED);
+                platform.moveTo(dir, deltaTime);
+                // using difY to update the other platforms in the group accordingly
+                difY = platform.getPosition().getSecond() - oldY;
+                // updates all the platforms in the group
+                for (MovingPlatform sister : platform.getGroup()) {
+                    sister.setPosition(new Tuple<>(
+                            sister.getPosition().getFirst(),
+                            sister.getPosition().getSecond() + difY
+                    ));
+                    System.out.println("SARO PRINTATO ESCLUSIVAMENTE UNA VOLTA");
+                }
+                gameModel.getAgent().moveTo(dir, deltaTime);
             }
         }
     }
@@ -144,11 +253,6 @@ public class GameController {
                 double y = entity.getPosition().getSecond();
                 double vX = entity.getVelocity().getFirst();
                 double vY = entity.getVelocity().getSecond();
-
-
-                if (platform.getMovementBehavior() instanceof VerticalMovement) {
-                    System.out.println("PROCODIOOOO");
-                }
 
                 // is inside the platform "walkable area"
 //                if (entBorder.getMaxY() > pltBorder.getMinY() - 3
