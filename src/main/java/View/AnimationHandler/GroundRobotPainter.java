@@ -1,15 +1,14 @@
 package View.AnimationHandler;
 
 import Model.Robot;
-import Model.StillRobot;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import static config.GameConstants.TURNING_FRAME_DURATION;
 
-public class StillRobotPainter extends EntityPainter {
-    public StillRobotPainter(Robot robot) {
+public class GroundRobotPainter extends EntityPainter {
+    public GroundRobotPainter(Robot robot) {
         super(robot);
 
         // the animation is identical for everything
@@ -37,12 +36,16 @@ public class StillRobotPainter extends EntityPainter {
 
     @Override
     public void draw(GraphicsContext gc, double dt, double scale) {
-        // TODO: gestire il caso IsTurning
-        StillRobot robot = (StillRobot) getEntity();
+
+        Robot robot = (Robot) getEntity();
+        // if it just turned in the opposite direction
+        // (has to start the animation yet)
         if(robot.hasTurned()){
             getAnimationHandler().play("turning");
             robot.setHasTurned(false);
         }
+        // if it didn't just start to turn, and is
+        // not in the middle of turning
         else if (!robot.isTurning()) {
             getAnimationHandler().play("notTurning");
         }

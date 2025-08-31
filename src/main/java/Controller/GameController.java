@@ -3,18 +3,20 @@ package Controller;
 import Model.*;
 import Utilities.Tuple;
 import View.View;
+import View.GameView;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
+import javafx.scene.transform.Scale;
 
 import java.util.*;
 
 import static Controller.CollisionHandler.checkCollision;
 import static Controller.CollisionHandler.getBounds;
 import static Model.Direction.*;
-import static config.GameConstants.ROW_HEIGHT;
+import static config.GameConstants.*;
 
 public class GameController {
     private final GameModel gameModel;
@@ -34,7 +36,7 @@ public class GameController {
         view.getGameView().setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
                 view.showMenu();
-                gameLoopTimer.stop();
+                stopGameLoop();
             }
             pressedKeys.add(e.getCode());
             System.out.println(e.getCode());
@@ -99,8 +101,7 @@ public class GameController {
         gameModel.applyPhysics(deltaTime);
 
         // OPERATIONS ON THE ENEMIES
-
-        // TODO: per ogni robot applica suo movimento
+        // for each robot applies it's behavior
         for (Robot robot : gameModel.getRobots()) { robot.update(deltaTime); }
 
         handleCollision();
@@ -437,7 +438,16 @@ public class GameController {
     }
 
     public void agentHit() {
+        stopGameLoop();
         gameModel.createAgent(13, ROW_HEIGHT - 30);
-        view.getGameView().setGameModel(gameModel);
+        GameView gameView = new GameView(view);
+        gameView.setGameModel(gameModel);
+        double scaleFactor = Math.min((SCREEN_WIDTH + 15) / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
+        Scale scale = new Scale(scaleFactor, scaleFactor, 0, 0);
+        gameView.setScale(scale);
+        view.setGameView(gameView);
+        GameController gameController = new GameController(gameModel, view);
+        gameController.startGameLoop();
+        view.showGame();
     }
 }

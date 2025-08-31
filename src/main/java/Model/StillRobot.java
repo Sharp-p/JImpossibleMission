@@ -11,10 +11,7 @@ public class StillRobot extends Robot{
         this.turnTime = turnTime;
     }
 
-    private Direction switchDirection() {
-        if (getDirection() == Direction.RIGHT) return Direction.LEFT;
-        else return Direction.RIGHT;
-    }
+
 
     @Override
     public void update(double deltaTime) {

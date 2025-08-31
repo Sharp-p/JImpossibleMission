@@ -60,7 +60,6 @@ public class MenuController {
 
                     switch (choice) {
                         case 0 -> {
-                            // TODO: [FIX] view funziona peggio a ogni newGame
                             GameModel gameModel = new GameModel();
                             GameView gameView = new GameView(view);
                             gameView.setGameModel(gameModel);

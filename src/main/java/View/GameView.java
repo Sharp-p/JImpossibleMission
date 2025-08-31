@@ -5,10 +5,9 @@ import Model.Platform;
 import Model.Robot;
 import View.AnimationHandler.AgentPainter;
 import View.AnimationHandler.PlatformPainter;
-import View.AnimationHandler.StillRobotPainter;
+import View.AnimationHandler.GroundRobotPainter;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.transform.Scale;
 
@@ -28,7 +27,7 @@ public class GameView extends Pane implements Observer {
     private Scale scale;
     private AgentPainter agentPainter;
     private List<PlatformPainter> platformPainters = new ArrayList<>();
-    private List<StillRobotPainter> robotPainters = new ArrayList<>();
+    private List<GroundRobotPainter> groundRobotPainters = new ArrayList<>();
     private GameModel gameModel;
 
     public GameView(View view) {
@@ -54,8 +53,8 @@ public class GameView extends Pane implements Observer {
             platformPainter.draw(gc, deltaTime, scale.getX());
         }
 
-        for (StillRobotPainter robotPainter : robotPainters) {
-            robotPainter.draw(gc, deltaTime, scale.getX());
+        for (GroundRobotPainter groundRobotPainter : groundRobotPainters) {
+            groundRobotPainter.draw(gc, deltaTime, scale.getX());
         }
         agentPainter.draw(gc, deltaTime, scale.getX());
     }
@@ -79,7 +78,7 @@ public class GameView extends Pane implements Observer {
         }
 
         for (Robot robot : gameModel.getRobots()) {
-            robotPainters.add(new StillRobotPainter(robot));
+            groundRobotPainters.add(new GroundRobotPainter(robot));
         }
         // creates a painter for the agent
         agentPainter = new AgentPainter(gameModel.getAgent());

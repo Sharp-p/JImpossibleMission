@@ -41,7 +41,7 @@ public class MenuView extends VBox implements Observer {
         Font titleFont = Font.loadFont(getClass().getResourceAsStream(
                 "/fonts/TopSecret/TopSecret.ttf"), 60);
         Font optionsFont = Font.loadFont(getClass().getResourceAsStream(
-                "/fonts/OldSchoolUnitedStencil/old_school_united_stencil_italic.ttf"), 35);
+                "/fonts/script-screen/Script Screen.ttf"), 25);
 
         title.setFont(titleFont);
         title.setFill(Color.ORANGE);

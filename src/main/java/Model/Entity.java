@@ -49,6 +49,11 @@ public abstract class Entity {
 
     public void setSpeed(Double speed) { this.speed = speed; }
 
+    /**
+     * Gets the dynamic size of the entity.
+     * For this reason is not usable in the constructor of the entities.
+     * @return The size
+     */
     public Tuple<Double, Double> getSize() { return size; }
 
     public Tuple<Double, Double> getAcceleration() { return this.acceleration; }
