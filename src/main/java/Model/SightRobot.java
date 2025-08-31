@@ -7,15 +7,17 @@ import static Controller.CollisionHandler.getBounds;
 import static Model.StillPlatform.STILL_PLATFORM_WIDTH;
 
 public class SightRobot extends MovingRobot {
-    public static final double UPGRADED_SPEED_FACTOR = 1.5;
+    public static final double UPGRADED_SPEED_FACTOR = 1.8;
 
     private Rectangle2D fieldOfView;
-    private boolean activated = false;
+    private boolean inSight = false;
 
     public SightRobot(Tuple<Double, Double> position) {
         super(position);
         updateFieldOfView();
     }
+
+    // TODO: implementare overload costruttore
 
     private void updateFieldOfView() {
         // if is turning it behaves as if it isn't watching in any direction
@@ -46,12 +48,12 @@ public class SightRobot extends MovingRobot {
     public void update(double deltaTime, Agent agent) {
         Rectangle2D agentBorders = getBounds(agent);
         Rectangle2D robotBorders = getBounds(this);
-        // if it intersects with the agent i'm surely
+        // if it intersects with the agent I'm surely
         // not turning since it is "blind" when turning
         if (fieldOfView.intersects(agentBorders)) {
-            if (!activated) {
+            if (!inSight) {
                 setSpeed(SPEED * UPGRADED_SPEED_FACTOR);
-                activated = true;
+                inSight = true;
             }
             // in my direction there is an agent
             // if I'm not on a bound I move in my direction
@@ -62,8 +64,8 @@ public class SightRobot extends MovingRobot {
         }
         // if there isn't an agent in my field of view I behave like a normal moving robot
         else {
-            if (activated) {
-                activated = false;
+            if (inSight) {
+                inSight = false;
                 setSpeed(SPEED / UPGRADED_SPEED_FACTOR);
             }
             update(deltaTime);

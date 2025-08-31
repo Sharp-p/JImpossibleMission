@@ -24,6 +24,15 @@ public class GameModel extends Observable {
         ((MovingRobot)entities.getLast()).setBounds(13 *  STILL_PLATFORM_WIDTH, 15 *  STILL_PLATFORM_WIDTH);
         entities.add(new SightRobot(new Tuple<>(14.0 * STILL_PLATFORM_WIDTH, ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4.0 - GROUND_ROBOT_HEIGHT + 1)));
         ((SightRobot)entities.getLast()).setBounds(8 * STILL_PLATFORM_WIDTH, 20 * STILL_PLATFORM_WIDTH);
+        entities.add(new ShootingRobot(
+                new Tuple<>(3.0 * STILL_PLATFORM_WIDTH, ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4.0 - GROUND_ROBOT_HEIGHT + 1),
+                3 * STILL_PLATFORM_WIDTH, 5 * STILL_PLATFORM_WIDTH)
+        );
+
+        entities.add((((ShootingRobot)entities.getLast()).getPlasmaBolt()));
+
+
+
         stronghold = new Stronghold();
 
         setChanged();
@@ -62,10 +71,19 @@ public class GameModel extends Observable {
 
     public void setUsingLift(boolean usingLift) { agent.setUsingLift(usingLift); }
 
+    public List<FurniturePiece> getFurniture() { return stronghold.getFurniture(); }
+
     public List<Robot> getRobots() {
         return entities.stream()
                 .filter(e -> e instanceof Robot)
                 .map(e -> (Robot) e)
+                .toList();
+    }
+
+    public List<Enemy> getEnemies() {
+        return entities.stream()
+                .filter(e -> e instanceof Enemy)
+                .map(e -> (Enemy) e)
                 .toList();
     }
 

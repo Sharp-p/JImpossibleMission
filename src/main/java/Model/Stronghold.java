@@ -1,7 +1,6 @@
 package Model;
 
 import Utilities.Tuple;
-import javafx.geometry.Rectangle2D;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +12,8 @@ import static config.GameConstants.*;
 public class Stronghold {
     private List<Platform> platforms = new ArrayList<>();
     private PlatformFactory pltFactory = new  PlatformFactory();
+    private List<FurniturePiece> furniture = new ArrayList<>();
+
     // TODO: lista di stanze (Rectangle2D)
 
     // TODO: se nell'area di una stanza spostare view su quella stanza
@@ -30,6 +31,12 @@ public class Stronghold {
         // TODO: se c'hai proprio sbattimento, slidare tutto il
         //  sistema delle coordinate (delle platform) di -0.5
         // room 1
+        createRoom1();
+
+
+    }
+
+    private void createRoom1 () {
         addHorizontalPlatforms(1, ROW_HEIGHT_TILES, 10, StillPlatform.class);
         addHorizontalPlatforms(13, ROW_HEIGHT_TILES, 3, StillPlatform.class);
         addHorizontalPlatforms(18, ROW_HEIGHT_TILES, 3, StillPlatform.class);
@@ -89,7 +96,29 @@ public class Stronghold {
         for (Platform platform : platforms) {
             if (platform instanceof MovingPlatform) { ((MovingPlatform) platform).setUpGroup(platforms);}
         }
+
+        furniture.add(new FurniturePiece(new Tuple<>(
+                (double)STILL_PLATFORM_WIDTH,
+                (double)ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT
+        )));
+
+        furniture.add(new FurniturePiece(new Tuple<>(
+                STILL_PLATFORM_WIDTH * 6.0,
+                (double)ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT
+        )));
+
+        furniture.add(new FurniturePiece(new Tuple<>(
+                STILL_PLATFORM_WIDTH * 8.0,
+                ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4.0
+        )));
+
+        furniture.add(new FurniturePiece(new Tuple<>(
+                STILL_PLATFORM_WIDTH * 16.0,
+                ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4.0
+        )));
     }
+
+    public List<FurniturePiece> getFurniture() { return furniture; }
 
     /**
      * Add platforms horizontally starting at (x, y) using a slot system based on the dimen

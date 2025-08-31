@@ -67,10 +67,11 @@ public class GameController {
         // takes keys in input only if on the ground
         if (gameModel.getAgent().isGrounded()) {
 
-            System.out.println("Direzione: " + gameModel.getAgent().getDirection());
+            //System.out.println("Direzione: " + gameModel.getAgent().getDirection());
             if (pressedKeys.contains(KeyCode.UP) || (gameModel.isUsingLift() && gameModel.getAgent().getDirection() == UP)) {
                 view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
                 platformMovement(UP);
+                searchFurniture(deltaTime);
             }
             if (pressedKeys.contains(KeyCode.DOWN) || (gameModel.isUsingLift() && gameModel.getAgent().getDirection() == DOWN)) {
                 view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
@@ -111,14 +112,36 @@ public class GameController {
 
         // for each moving robot (exact class) and still robot
         gameModel.getRobots().stream()
-                .filter(r -> r.getClass() == MovingRobot.class || r.getClass() == StillRobot.class)
+                .filter(r -> r.getClass() != SightRobot.class)
                         .forEach(r -> r.update(deltaTime));
 
         handleCollision();
         //System.out.println("Per terra: " + gameModel.getAgent().isGrounded());
         gameModel.updated(deltaTime);
-
         lastTime = now;
+    }
+
+    private void searchFurniture(double deltaTime) {
+        List<FurniturePiece> furniture = gameModel.getFurniture();
+        Rectangle2D agentBorder = getBounds(gameModel.getAgent());
+
+        for (FurniturePiece furniturePiece : furniture) {
+            Rectangle2D furnitureBorder = getBounds(furniturePiece);
+
+            // if half of the player is in front of
+            // the furniture piece allows the search and the furniture is active
+            //
+            if (furnitureBorder.contains(agentBorder.getMinX() + agentBorder.getWidth() / 2,
+                    agentBorder.getMaxY() - 3)
+                    && furniturePiece.isActive()) {
+                view.getGameView().getAgentPainter().getAnimationHandler().play("searching");
+
+                // TODO: casella di ricerca
+
+                // TODO: use
+                furniturePiece.use(deltaTime);
+            }
+        }
     }
 
     private void platformMovement(Direction dir) {
@@ -439,9 +462,9 @@ public class GameController {
 
     public void enemyCollision(Agent agent) {
         Rectangle2D agentBorder = getBounds(agent);
-        for (Enemy enemy : gameModel.getRobots()) {
+        for (Enemy enemy : gameModel.getEnemies()) {
             Rectangle2D enemyBorder = getBounds(enemy);
-            if (enemyBorder.intersects(agentBorder)) {
+            if (enemyBorder.intersects(agentBorder) && enemy.isActive()) {
                 agentHit();
             }
         }

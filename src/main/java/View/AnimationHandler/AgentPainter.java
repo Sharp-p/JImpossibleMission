@@ -49,6 +49,9 @@ public class AgentPainter extends EntityPainter {
         Animation falling = new Animation("falling", false)
                 .add(new Frame(new Rectangle2D(353, 25, 16, 30), 0, 0, 1));
 
+        Animation searching = new Animation("searching", true)
+                .add(new Frame(new Rectangle2D(12, 125, 19, 30), 0, 0, 1));
+
         setAnimationHandler(new AnimationHandler(
                 new Image(getClass().getResourceAsStream(
                         "/spriteSheets/agent/Commodore64ImpossibleMissionAgent4125_gimp.png"))));
@@ -58,6 +61,7 @@ public class AgentPainter extends EntityPainter {
         getAnimationHandler().addAnimation(run);
         getAnimationHandler().addAnimation(jump);
         getAnimationHandler().addAnimation(falling);
+        getAnimationHandler().addAnimation(searching);
     }
 
     @Override
@@ -65,9 +69,7 @@ public class AgentPainter extends EntityPainter {
         //getAnimationHandler().update(dt);
 
         switch (getEntity().getDirection()) {
-            case LEFT -> {
-                drawInverted(gc, scale);
-            }
+            case LEFT -> drawInverted(gc, scale);
             case UP, DOWN -> {
                 if (((Agent)getEntity()).isGrounded()) {
                     System.out.println("Vecchia direzione: " + ((Agent)getEntity()).getOldDirection());

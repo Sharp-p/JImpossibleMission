@@ -20,6 +20,7 @@ public class GameConstants {
     public static final double RUN_FRAME_DURATION = 0.07;
     public static final double JUMP_FRAME_DURATION = 0.1;
     public static final double TURNING_FRAME_DURATION = 0.1;
+    public static final double SHOOTING_FRAME_DURATION = 0.05;
 
     public static final int PLATFORM_WIDTH = 13;
     public static final int PLATFORM_HEIGHT = 7;

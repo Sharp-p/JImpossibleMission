@@ -1,11 +1,7 @@
 package View;
 
-import Model.GameModel;
-import Model.Platform;
-import Model.Robot;
-import View.AnimationHandler.AgentPainter;
-import View.AnimationHandler.PlatformPainter;
-import View.AnimationHandler.GroundRobotPainter;
+import Model.*;
+import View.AnimationHandler.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
@@ -23,11 +19,14 @@ public class GameView extends Pane implements Observer {
     private final View view;
     private final Canvas canvas = new Canvas(SCREEN_WIDTH, SCREEN_HEIGHT);
     private final GraphicsContext gc = canvas.getGraphicsContext2D();
+    private final double PROGRESSBAR_DIM = 70.0;
 
     private Scale scale;
     private AgentPainter agentPainter;
     private List<PlatformPainter> platformPainters = new ArrayList<>();
     private List<GroundRobotPainter> groundRobotPainters = new ArrayList<>();
+    private List<ProjectilePainter> projectilePainters = new ArrayList<>();
+    private List<FurniturePainter> furniturePainters = new ArrayList<>();
     private GameModel gameModel;
 
     public GameView(View view) {
@@ -53,10 +52,52 @@ public class GameView extends Pane implements Observer {
             platformPainter.draw(gc, deltaTime, scale.getX());
         }
 
+        for (FurniturePainter furniturePainter: furniturePainters) {
+            furniturePainter.draw(gc, deltaTime, scale.getX());
+        }
+
         for (GroundRobotPainter groundRobotPainter : groundRobotPainters) {
             groundRobotPainter.draw(gc, deltaTime, scale.getX());
         }
+
+        for (ProjectilePainter projectilePainter : projectilePainters) {
+            projectilePainter.draw(gc, deltaTime, scale.getX());
+        }
+
+
+        if (agentPainter.getAnimationHandler().getCurrentAnimation().getName()
+                .equals("searching")) {
+            drawSearchBar();
+        }
         agentPainter.draw(gc, deltaTime, scale.getX());
+    }
+
+    private void drawSearchBar() {
+        List<FurniturePiece> furniture = gameModel.getFurniture();
+
+        for (FurniturePiece furniturePiece : furniture) {
+            if (furniturePiece.isBeingSearched()) {
+                gc.setStroke(YELLOW);
+                gc.setLineWidth(2);
+
+                double fraction = furniturePiece.getSearchTime() /
+                        FurniturePiece.MAX_SEARCH_TIME;
+                double actualWidth = PROGRESSBAR_DIM * fraction;
+                // TODO: può essere che getSize rompi tutto
+                double midFurniture = furniturePiece.getSize().getFirst() / 2;
+
+                gc.fillRect(
+                        midFurniture - PROGRESSBAR_DIM / 2,
+                        furniturePiece.getPosition().getSecond() - 4,
+                        actualWidth,
+                        4
+                );
+                gc.strokeRect(midFurniture - PROGRESSBAR_DIM / 2,
+                        furniturePiece.getPosition().getSecond() - 4,
+                        actualWidth,
+                        4);
+            }
+        }
     }
 
     /**
@@ -77,9 +118,19 @@ public class GameView extends Pane implements Observer {
             platformPainters.add(new PlatformPainter(platform));
         }
 
-        for (Robot robot : gameModel.getRobots()) {
-            groundRobotPainters.add(new GroundRobotPainter(robot));
+        // create a painter for each enemy
+        for (Enemy enemy: gameModel.getEnemies()) {
+            if (enemy instanceof Robot)
+                groundRobotPainters.add(new GroundRobotPainter((Robot)enemy));
+            else projectilePainters.add(new ProjectilePainter((Projectile)enemy));
+
         }
+
+        // creates a painter for each furniture piece
+        for (FurniturePiece furniturePiece : gameModel.getFurniture()) {
+            furniturePainters.add(new FurniturePainter(furniturePiece));
+        }
+
         // creates a painter for the agent
         agentPainter = new AgentPainter(gameModel.getAgent());
     }

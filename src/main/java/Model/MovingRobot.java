@@ -17,6 +17,8 @@ public class MovingRobot extends Robot {
         super(position, new HorizontalMovement(), SPEED);
     }
 
+    // TODO: overload costruttore
+
     /**
      * Requires the X coordinate of the left most and
      * right most platform on which to stop on
