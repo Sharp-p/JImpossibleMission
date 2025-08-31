@@ -3,8 +3,8 @@ package Model;
 import Utilities.Tuple;
 
 public abstract class Robot extends Enemy {
-    public static final int GROUND_ROBOT_WIDTH = 23;
-    public static final int GROUND_ROBOT_HEIGHT = 16;
+    public static final int GROUND_ROBOT_WIDTH = 14;
+    public static final int GROUND_ROBOT_HEIGHT = 21;
 
     private boolean isTurning = false;
     private boolean hasTurned = false;

@@ -7,7 +7,7 @@ import static Controller.CollisionHandler.getBounds;
 import static Model.StillPlatform.STILL_PLATFORM_WIDTH;
 
 public class MovingRobot extends Robot {
-    public static final double SPEED = 64.28;
+    public static final double SPEED = 54.28;
 
 
     private Rectangle2D leftBound;
@@ -54,4 +54,9 @@ public class MovingRobot extends Robot {
     public void moveTo(Direction dir, Double deltaTime) {
         getMovementBehavior().move(this, dir, deltaTime);
     }
+
+    public Rectangle2D getLeftBound() { return leftBound; }
+
+    public Rectangle2D getRightBound() { return rightBound; }
+
 }

@@ -3,6 +3,8 @@ package Model;
 import java.util.*;
 import Utilities.*;
 
+import static Model.Robot.GROUND_ROBOT_HEIGHT;
+import static Model.StillPlatform.STILL_PLATFORM_HEIGHT;
 import static Model.StillPlatform.STILL_PLATFORM_WIDTH;
 import static config.GameConstants.*;
 
@@ -18,9 +20,10 @@ public class GameModel extends Observable {
     public GameModel() {
         createAgent(13.0,  ROW_HEIGHT - 30);
         entities.add(new StillRobot(new Tuple<>(70.0, ROW_HEIGHT - 18.0), 4));
-        entities.add(new MovingRobot(new Tuple<>(14.0 * STILL_PLATFORM_WIDTH, ROW_HEIGHT - 18.0)));
+        entities.add(new MovingRobot(new Tuple<>(14.0 * STILL_PLATFORM_WIDTH, (double)ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT - GROUND_ROBOT_HEIGHT + 1)));
         ((MovingRobot)entities.getLast()).setBounds(13 *  STILL_PLATFORM_WIDTH, 15 *  STILL_PLATFORM_WIDTH);
-
+        entities.add(new SightRobot(new Tuple<>(14.0 * STILL_PLATFORM_WIDTH, ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4.0 - GROUND_ROBOT_HEIGHT + 1)));
+        ((SightRobot)entities.getLast()).setBounds(8 * STILL_PLATFORM_WIDTH, 20 * STILL_PLATFORM_WIDTH);
         stronghold = new Stronghold();
 
         setChanged();

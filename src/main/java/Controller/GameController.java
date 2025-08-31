@@ -102,7 +102,17 @@ public class GameController {
 
         // OPERATIONS ON THE ENEMIES
         // for each robot applies it's behavior
-        for (Robot robot : gameModel.getRobots()) { robot.update(deltaTime); }
+        // for each robot with sight
+        gameModel.getRobots().stream()
+                .filter(r -> r.getClass() == SightRobot.class)
+                .map(r -> (SightRobot) r)
+                .forEach(r -> r.update(deltaTime, gameModel.getAgent()
+                ));
+
+        // for each moving robot (exact class) and still robot
+        gameModel.getRobots().stream()
+                .filter(r -> r.getClass() == MovingRobot.class || r.getClass() == StillRobot.class)
+                        .forEach(r -> r.update(deltaTime));
 
         handleCollision();
         //System.out.println("Per terra: " + gameModel.getAgent().isGrounded());

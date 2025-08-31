@@ -13,6 +13,15 @@ import static config.GameConstants.*;
 public class Stronghold {
     private List<Platform> platforms = new ArrayList<>();
     private PlatformFactory pltFactory = new  PlatformFactory();
+    // TODO: lista di stanze (Rectangle2D)
+
+    // TODO: se nell'area di una stanza spostare view su quella stanza
+
+    // TODO nella classe stanza costruzione delle piattaforme,
+    //  con coordinate rispetto al (MinX,MinY) della stanza
+
+    // TODO: (MinX, MinY) della stanza secondo il sistema delle coordinate delle platforms,
+    //  cosi le platforms interne possono usarlo tranquillamente
 
     public Stronghold() {
         StillMovement still = new StillMovement();
