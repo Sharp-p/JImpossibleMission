@@ -206,6 +206,7 @@ public class GameController {
                 .filter(r -> r.getClass() != SightRobot.class)
                 .forEach(r -> r.update(deltaTime));
 
+        System.out.println("Pre collisioni: " + gameModel.getAgent().getPosition());
         handleCollision();
     }
 
@@ -294,28 +295,37 @@ public class GameController {
                 // if the lift is already moving it could now
                 // be on a slot, and it should stop if it is
                 else if (platformBorder.intersects(slot)) {
-                    Tuple<Double, Double> newPosition;
-                    if (dir == UP) {
-                        assert slot != null;
-                        newPosition = new Tuple<>(
-                                platform.getPosition().getFirst(), slot.getMinY() - 3);
-                        System.out.println("[SECONDO IF] sto andando già up");
-                    }
-                    else {
-                        assert slot != null;
-                        System.out.println("[SECONDO IF]QUESTO é LO SLOT: " + slot);
-                        newPosition = new Tuple<>(platform.getPosition().getFirst(), slot.getMinY() - 3);
-                        // using difY to keep the agent stuck
-                        // to the platform when going down
-                        difY = newPosition.getSecond() - platform.getPosition().getSecond();
-                        gameModel.getAgent().setPosition(new Tuple<>(
-                                gameModel.getAgent().getPosition().getFirst(),
-                                gameModel.getAgent().getPosition().getSecond() + difY
-                        ));
-                    }
+//                    Tuple<Double, Double> newPosition;
+//                    if (dir == UP) {
+//                        assert slot != null;
+//                        newPosition = new Tuple<>(
+//                                platform.getPosition().getFirst(), slot.getMinY() - 3);
+//
+//                        System.out.println(slot);
+//                        System.out.println("[SECONDO IF] sto andando già up");
+//                    }
+//                    else {
+//                        assert slot != null;
+//                        System.out.println("[SECONDO IF]QUESTO é LO SLOT: " + slot);
+//                        newPosition = new Tuple<>(platform.getPosition().getFirst(), slot.getMinY() - 3);
+//                        // using difY to keep the agent stuck
+//                        // to the platform when going down
+//                        difY = newPosition.getSecond() - platform.getPosition().getSecond();
+//                        gameModel.getAgent().setPosition(new Tuple<>(
+//                                gameModel.getAgent().getPosition().getFirst(),
+//                                gameModel.getAgent().getPosition().getSecond() + difY
+//                        ));
+//                    }
+                    assert slot != null;
+                    Tuple<Double, Double> newPosition =  new Tuple<>(
+                            platform.getPosition().getFirst(), slot.getMinY() - 3);
+
                     // difY is need for the platforms in the group too
                     difY = newPosition.getSecond() - platform.getPosition().getSecond();
-
+                    gameModel.getAgent().setPosition(new Tuple<>(
+                            gameModel.getAgent().getPosition().getFirst(),
+                            gameModel.getAgent().getPosition().getSecond() + difY
+                    ));
                     platform.setPosition(newPosition);
 
                     gameModel.setUsingLift(false);
@@ -361,41 +371,24 @@ public class GameController {
                 Rectangle2D entBorder = getBounds(entity);
                 Rectangle2D pltBorder = getBounds(platform);
 
-//                System.out.println("Agente: \n\t("
-//                        + entBorder.getMinX() + ", " + entBorder.getMinY() + "\n\t"
-//                        + entBorder.getMaxX() + ", " + entBorder.getMinY() + "\n\t"
-//                        + entBorder.getMinX() + ", " + entBorder.getMaxY() + "\n\t"
-//                        + entBorder.getMaxX() + ", " + entBorder.getMaxY() + "\n\t");
-//
-//                System.out.println("Piattaforma: \n\t("
-//                        + pltBorder.getMinX() + ", " + pltBorder.getMinY() + ")\n\t"
-//                        + pltBorder.getMaxX() + ", " + pltBorder.getMinY() + ")\n\t"
-//                        + pltBorder.getMinX() + ", " + pltBorder.getMaxY() + ")\n\t"
-//                        + pltBorder.getMaxX() + ", " + pltBorder.getMaxY() + ")");
+                System.out.println("Agente: \n\t("
+                        + entBorder.getMinX() + ", " + entBorder.getMinY() + "\n\t"
+                        + entBorder.getMaxX() + ", " + entBorder.getMinY() + "\n\t"
+                        + entBorder.getMinX() + ", " + entBorder.getMaxY() + "\n\t"
+                        + entBorder.getMaxX() + ", " + entBorder.getMaxY() + "\n\t");
+
+                System.out.println("Piattaforma: \n\t("
+                        + pltBorder.getMinX() + ", " + pltBorder.getMinY() + ")\n\t"
+                        + pltBorder.getMaxX() + ", " + pltBorder.getMinY() + ")\n\t"
+                        + pltBorder.getMinX() + ", " + pltBorder.getMaxY() + ")\n\t"
+                        + pltBorder.getMaxX() + ", " + pltBorder.getMaxY() + ")");
 
                 double x = entity.getPosition().getFirst();
                 double y = entity.getPosition().getSecond();
                 double vX = entity.getVelocity().getFirst();
                 double vY = entity.getVelocity().getSecond();
 
-                // is inside the platform "walkable area"
-//                if (entBorder.getMaxY() > pltBorder.getMinY() - 3
-//                        && entBorder.getMinY() < pltBorder.getMinY()) {
-//                    System.out.println("da sopra");
-//
-//                    touchedGround = true;
-//                    // has collided with the platform from over it
-//                    if (entBorder.getMaxY() > pltBorder.getMinY() + 3
-//                            && entBorder.getMinY() < pltBorder.getMinY()) {
-//                        double newY = pltBorder.getMinY() - entity.getSize().getSecond() + 1;
-//
-//                        entity.setPosition(new Tuple<>(x, newY));
-//                        entity.setVelocity(new Tuple<>(vX, 0.0));
-//
-//                        if(!entity.isGrounded()) entity.setHitGround(true);
-//                        entity.setGrounded(true);
-//                    }
-//                }
+
                 // TODO: refactor: separare meglio i casi, tirare fuori i lati
                 // distringuo i casi destri
                 if (entBorder.getMinX() < pltBorder.getMaxX() && entBorder.getMinX() > pltBorder.getMinX()) {
@@ -404,13 +397,13 @@ public class GameController {
                     {
                         // se dal lato
                         if (entBorder.getMaxY() - pltBorder.getMinY() > pltBorder.getMaxX() - entBorder.getMinX()) {
-                            //System.out.println("da destra");
+                            System.out.println("da destra 1");
                             double newX = pltBorder.getMaxX();
                             entity.setPosition(new Tuple<>(newX, y));
                             entity.setVelocity(new Tuple<>(0.0, vY));
                         }
                         else {
-                            //System.out.println("da sopra");
+                            System.out.println("da sopra");
 
                             touchedGround = true;
                             double newY = pltBorder.getMinY() - entity.getSize().getSecond() + 1;
@@ -426,7 +419,7 @@ public class GameController {
                     else if (pltBorder.contains(entBorder.getMinX(), entBorder.getMinY())) {
                         // se dal lato
                         if (pltBorder.getMaxY() - entBorder.getMinY() > pltBorder.getMaxX() - entBorder.getMinX()) {
-                            //System.out.println("da destra");
+                            System.out.println("da destra 2");
                             double newX = pltBorder.getMaxX();
                             entity.setPosition(new Tuple<>(newX, y));
                             entity.setVelocity(new Tuple<>(0.0, vY));
@@ -439,7 +432,7 @@ public class GameController {
                         }
                     }
                     else {
-                        //System.out.println("da destra");
+                        System.out.println("da destra 3");
                         double newX = pltBorder.getMaxX();
                         entity.setPosition(new Tuple<>(newX, y));
                         entity.setVelocity(new Tuple<>(0.0, vY));
@@ -451,13 +444,13 @@ public class GameController {
                     if (pltBorder.contains(entBorder.getMaxX(), entBorder.getMaxY())) {
                         // se dal lato
                         if (entBorder.getMaxY() - pltBorder.getMinY() > entBorder.getMaxX() - pltBorder.getMinX()) {
-                            //System.out.println("da sinistra");
+                            System.out.println("da sinistra");
                             double newX = pltBorder.getMinX() - entity.getSize().getFirst();
                             entity.setPosition(new Tuple<>(newX, y));
                             entity.setVelocity(new Tuple<>(0.0, vY));
                         }
                         else {
-                            //System.out.println("da sopra");
+                            System.out.println("da sopra");
 
                             touchedGround = true;
                             double newY = pltBorder.getMinY() - entity.getSize().getSecond() + 1;
@@ -473,7 +466,7 @@ public class GameController {
                     else if (pltBorder.contains(entBorder.getMaxX(), entBorder.getMinY())){
                         // se dal lato
                         if (pltBorder.getMaxY() - entBorder.getMinY() > entBorder.getMaxX() - pltBorder.getMinX()) {
-                            //System.out.println("da sinistra");
+                            System.out.println("da sinistra");
                             double newX = pltBorder.getMinX() - entity.getSize().getFirst();
                             entity.setPosition(new Tuple<>(newX, y));
                             entity.setVelocity(new Tuple<>(0.0, vY));
@@ -486,14 +479,14 @@ public class GameController {
                         }
                     }
                     else {
-                        //System.out.println("da sinistra");
+                        System.out.println("da sinistra");
                         double newX = pltBorder.getMinX() - entity.getSize().getFirst();
                         entity.setPosition(new Tuple<>(newX, y));
                         entity.setVelocity(new Tuple<>(0.0, vY));
                     }
                 }
                 else {
-                    //System.out.println("da sopra");
+                    System.out.println("da sopra");
 
                     touchedGround = true;
                     double newY = pltBorder.getMinY() - entity.getSize().getSecond() + 1;
@@ -538,6 +531,7 @@ public class GameController {
         view.getGameView().getAgentPainter().updateEntitySize();
 //        System.out.println("Size: " + gameModel.getAgent().getSize().getFirst() +
 //                " "  + gameModel.getAgent().getSize().getSecond());
+
         double difY = osY - gameModel.getAgent().getSize().getSecond();
 
         // adjust the position with the updated size
@@ -562,6 +556,8 @@ public class GameController {
     }
 
     public void agentHit() {
+        // TODO: aggiunta 10 min timer ogni morte
+
 
         // TODO: Rewrite respawn system una volta che ho le Room
         // TODO: fare Room con coordinate di respawn

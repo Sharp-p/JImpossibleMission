@@ -14,7 +14,6 @@ import static config.GameConstants.*;
  */
 public class GameModel extends Observable {
     private List<Entity> entities = new ArrayList<>();
-    private RobotFactory robotFactory = new  RobotFactory();
     private GameStatistics statistics = new GameStatistics();
     private Agent agent;
     private Stronghold stronghold;

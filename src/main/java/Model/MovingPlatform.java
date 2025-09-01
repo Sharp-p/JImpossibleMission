@@ -66,6 +66,10 @@ public class MovingPlatform extends Platform {
 
     public List<Rectangle2D> getVerticalSlots() { return verticalSlots; }
 
+    /**
+     * Sets the slot on which the platform is positioned. The highest one must be 0
+     * @param slotIndex
+     */
     public void setSlotIndex(int slotIndex) { this.slotIndex = slotIndex; }
 
     public boolean nextSlot() {
