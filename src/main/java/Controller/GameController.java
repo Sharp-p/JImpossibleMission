@@ -63,10 +63,31 @@ public class GameController {
             pressedKeys.remove(e.getCode());
         });
         view.getGameView().setFocusTraversable(true);
+
+        // first view update
+        gameModel.updated(deltaTime);
+
+
+        // TODO: end_room se premo UP controlla se ho tutti i psw_piece della partita
+        // TODO: se un furniture piece non è visible vuol dire
+        //  che l'ho cercato e qualsisi code al suo interno l'ho trovato
+
+        // before starting the game loop, checks if any piece of furniture contains a psw_piece
+        // if not takes a furniture piece and set the code to a psw_piece
+        if (gameModel.getFurniture().stream()
+                .noneMatch(p -> p.getCode().getType() == CodeType.PSW_PIECE)) {
+            Optional<FurniturePiece> furniturePiece = gameModel.getFurniture().stream()
+                    .findAny();
+
+            furniturePiece.ifPresent(piece -> piece.setCode(new Code(CodeType.PSW_PIECE)));
+
+        }
     }
 
     private void gameLoop(long now) {
         deltaTime = (now - lastTime) / 1_000_000_000.0;
+
+        // TODO: if terminal isActive: terminal else OperazioniNormali
 
         // OPERATIONS ON THE PLAYER POSITION:
 
@@ -429,8 +450,7 @@ public class GameController {
     }
 
     public void startGameLoop() {
-        // first view update
-        gameModel.updated(deltaTime);
+
 
         // gets the system time needed for the deltaTime in the game loop
         lastTime = System.nanoTime();
