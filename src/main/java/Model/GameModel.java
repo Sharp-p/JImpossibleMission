@@ -16,8 +16,11 @@ public class GameModel extends Observable {
     private RobotFactory robotFactory = new  RobotFactory();
     private Agent agent;
     private Stronghold stronghold;
+    private int pswPiecesFound = 0;
+    private int totalPswPieces = 0;
 
     public GameModel() {
+        // TODO: creare funzioni più comode per l'aggiunta di entità
         createAgent(13.0,  ROW_HEIGHT - 30);
         entities.add(new StillRobot(new Tuple<>(70.0, ROW_HEIGHT - 18.0), 4));
         entities.add(new MovingRobot(new Tuple<>(14.0 * STILL_PLATFORM_WIDTH, (double)ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT - GROUND_ROBOT_HEIGHT + 1)));
@@ -30,8 +33,6 @@ public class GameModel extends Observable {
         );
 
         entities.add((((ShootingRobot)entities.getLast()).getPlasmaBolt()));
-
-
 
         stronghold = new Stronghold();
 
@@ -52,6 +53,10 @@ public class GameModel extends Observable {
         notifyObservers(dt);
     }
 
+    public void foundPswPiece() { pswPiecesFound++; }
+
+    public void addTotalPswPieces() { totalPswPieces++; }
+
     /**
      * Function that creates a new agent. Used for every respawn instance.
      * @return Returns the new agent that the model uses
@@ -70,6 +75,10 @@ public class GameModel extends Observable {
     public void addEntity(Entity entity) { entities.add(entity); }
 
     public void setUsingLift(boolean usingLift) { agent.setUsingLift(usingLift); }
+
+    public int getTotalPswPieces() { return totalPswPieces; }
+
+    public int getPswPiecesFound() { return pswPiecesFound; }
 
     public List<FurniturePiece> getFurniture() { return stronghold.getFurniture(); }
 

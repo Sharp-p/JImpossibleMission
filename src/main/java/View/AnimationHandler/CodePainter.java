@@ -11,8 +11,7 @@ import static javafx.scene.paint.Color.*;
 public class CodePainter {
     private final double paintTime = 3;
     private final FurniturePiece furniturePiece;
-    private final int textMaxWidth = 150
-            ;
+    private final int textMaxWidth = 150;
 
     private double currentTime = 0.0;
 
@@ -20,10 +19,12 @@ public class CodePainter {
         this.furniturePiece = furniturePiece;
     }
 
-    public void draw(GraphicsContext gc, double deltaTime, double scale) {
+    public void draw(GraphicsContext gc, double deltaTime, double scale, int pswPiecesFound, int totalPswPieces) {
         // if the furniturePiece has been searched (not Visible) in
         // the last paintTime (currentTime <= paintTime)
         if (!(furniturePiece.isVisible()) && currentTime <= paintTime) {
+            System.out.println(furniturePiece);
+
             currentTime += deltaTime;
             String toPrint = null;
             double midFurniture = furniturePiece.getPosition().getFirst()
@@ -32,17 +33,25 @@ public class CodePainter {
                     + furniturePiece.getSize().getSecond() - 40;
             double x = (midFurniture - textMaxWidth / 2.0);
             if (x < 0) x = 0;
+            // TODO: se x + textMaxWidth maggiore dimensione room posizionare più a sinistra
+
 
             switch (furniturePiece.getCode().getType()) {
                 case ROBOT -> toPrint = "Codice per disattivare i robot trovato!!";
                 case PLATFORMS -> toPrint = "Codice per riavviare le piattaforme trovato!!";
                 // TODO: totale psw, stampare psw rimanenti
-                case PSW_PIECE -> toPrint = "Hai trovato un pezzo di password!!";
+                case PSW_PIECE -> {
+                    if (pswPiecesFound == totalPswPieces)
+                        toPrint = "Complimenti! Hai trovato tutti i pezzi di password!! " + pswPiecesFound + "/" + totalPswPieces;
+                    else
+                        toPrint = "Hai trovato un pezzo di password!! " + pswPiecesFound + "/" + totalPswPieces;
+                }
             }
+            System.out.println(furniturePiece.getCode().getType().toString());
 
             gc.setFill(GREEN);
             if (toPrint != null) gc.fillText(
-                    "Codice per disattivare i robot trovato!!",
+                    toPrint,
                     x * scale,
                     y * scale);
             gc.setFill(SALMON);

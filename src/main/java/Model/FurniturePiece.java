@@ -12,7 +12,6 @@ public class FurniturePiece extends Entity {
 
     public FurniturePiece(Tuple<Double, Double> position) {
         super(position, new StillMovement(), 0.0);
-        // TODO: assegnazione randomica di un code
 
         searchTime = Math.random() * 3.5 + 0.5;
 
@@ -37,6 +36,10 @@ public class FurniturePiece extends Entity {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Tipo: " + type + "\n\tCode: " + code.getType();
+    }
 
     public void moveTo(Direction dir, Double deltaTime) {}
 

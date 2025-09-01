@@ -13,8 +13,8 @@ public class Code {
     public Code() {
         CodeType[] values = CodeType.values();
 
-        // only half of the furniture will have a type
-        if (Math.random() > 0.8) {
+        // only half of the furniture will have a code
+        if (Math.random() > 0.2) {
             do {
                 type = values[(int) (Math.random() * (values.length - 1))];
             } while (type == NONE);

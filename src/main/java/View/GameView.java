@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import static Model.CodeType.PSW_PIECE;
 import static config.GameConstants.*;
 import static javafx.scene.paint.Color.*;
 
@@ -77,8 +78,10 @@ public class GameView extends Pane implements Observer {
             drawSearchBar();
         }
 
+
+
         for (CodePainter codePainter: codePainters) {
-            codePainter.draw(gc, deltaTime, scale.getX());
+            codePainter.draw(gc, deltaTime, scale.getX(), gameModel.getPswPiecesFound(), gameModel.getTotalPswPieces());
         }
 
 
@@ -154,8 +157,17 @@ public class GameView extends Pane implements Observer {
             if (furniturePiece.getType() != FurnitureType.TERMINAL
                     && furniturePiece.getType() != FurnitureType.END_ROOM) {
                 codePainters.add(new CodePainter(furniturePiece));
+
+                // checks if the furniturePiece hides a psw_piece,
+                // if so, it adds to the counter
+                System.out.println(furniturePiece);
+                if (furniturePiece.getCode().getType() == PSW_PIECE) {
+                    gameModel.addTotalPswPieces();
+                }
             }
         }
+
+        System.out.println(gameModel.getTotalPswPieces());
 
         // creates a painter for the agent
         agentPainter = new AgentPainter(gameModel.getAgent());

@@ -171,6 +171,7 @@ public class GameController {
                 view.getGameView().getAgentPainter().getAnimationHandler().play("searching");
 
                 furniturePiece.use(deltaTime);
+                if (!furniturePiece.isActive()) gameModel.foundPswPiece();
             }
         }
     }
