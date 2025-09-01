@@ -6,6 +6,7 @@ import javafx.geometry.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import static Model.Robot.GROUND_ROBOT_HEIGHT;
 import static Model.StillPlatform.*;
 import static Model.MovingPlatform.*;
 import static config.GameConstants.*;
@@ -15,6 +16,10 @@ public class Stronghold {
     private PlatformFactory pltFactory = new  PlatformFactory();
     private List<FurniturePiece> furniture = new ArrayList<>();
     private List<Rectangle2D> areas = new ArrayList<>();
+    private List<Entity> entities = new ArrayList<>();
+
+    private Agent agent;
+    private int currentArea = 0;
 
     // TODO: se nell'area di una stanza spostare view su quella stanza
 
@@ -27,6 +32,20 @@ public class Stronghold {
     public Stronghold() {
         // TODO: se c'hai proprio sbattimento, slidare tutto il
         //  sistema delle coordinate (delle platform) di -0.5
+        createAgent(13.0,  ROW_HEIGHT - 30, 0);
+
+        entities.add(new StillRobot(new Tuple<>(70.0, ROW_HEIGHT - 18.0), 4));
+        entities.add(new MovingRobot(new Tuple<>(14.0 * STILL_PLATFORM_WIDTH, (double)ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT - GROUND_ROBOT_HEIGHT + 1)));
+        ((MovingRobot)entities.getLast()).setBounds(13 *  STILL_PLATFORM_WIDTH, 15 *  STILL_PLATFORM_WIDTH);
+        entities.add(new SightRobot(new Tuple<>(14.0 * STILL_PLATFORM_WIDTH, ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4.0 - GROUND_ROBOT_HEIGHT + 1)));
+        ((SightRobot)entities.getLast()).setBounds(8 * STILL_PLATFORM_WIDTH, 20 * STILL_PLATFORM_WIDTH);
+        entities.add(new ShootingRobot(
+                new Tuple<>(3.0 * STILL_PLATFORM_WIDTH, ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4.0 - GROUND_ROBOT_HEIGHT + 1),
+                3 * STILL_PLATFORM_WIDTH, 5 * STILL_PLATFORM_WIDTH)
+        );
+
+        entities.add((((ShootingRobot)entities.getLast()).getPlasmaBolt()));
+
         // creates all the world areas on which the viewport can focus
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 5; j++) {
@@ -146,6 +165,15 @@ public class Stronghold {
         createFurniture(16, 4, areaIndex);
     }
 
+    /**
+     * Function that creates a new agent. Used for every respawn instance.
+     * @return Returns the new agent that the model uses
+     */
+    public void createAgent(double x, double y, int areaIndex) {
+        // TODO: [RESPAWN] luogo respawn rispetto a porta di entrata
+        agent = new Agent(new Tuple<>(x, y));
+    }
+
     public void setSlotIndex(Platform platform, int slotIndex) {
         ((MovingPlatform)platform).setSlotIndex(slotIndex);
     }
@@ -156,7 +184,6 @@ public class Stronghold {
         furniture.add(new FurniturePiece(new Tuple<>((double) x, (double) y)));
     }
 
-    public List<FurniturePiece> getFurniture() { return furniture; }
 
     /**
      * Add platforms horizontally starting at (areaX, areaY),
@@ -221,6 +248,38 @@ public class Stronghold {
                 platform.getPosition().getFirst(),
                 platform.getPosition().getSecond() + offsetY);
     }
+
+    public void moveAgent(Direction direction, Double deltaTime) {
+        agent.moveTo(direction, deltaTime);
+    }
+
+    public void addEntity(Entity entity) { entities.add(entity); }
+
+    public void setUsingLift(boolean usingLift) { agent.setUsingLift(usingLift); }
+
+    public boolean isUsingLift() { return agent.isUsingLift(); }
+
+    public int getCurrentArea() { return currentArea; }
+
+    public List<Enemy> getEnemies() {
+        return entities.stream()
+                .filter(e -> e instanceof Enemy)
+                .map(e -> (Enemy) e)
+                .toList();
+    }
+
+    public List<Robot> getRobots() {
+        return entities.stream()
+                .filter(e -> e instanceof Robot)
+                .map(e -> (Robot) e)
+                .toList();
+    }
+
+    public List<Entity> getEntities() { return entities; }
+
+    public List<FurniturePiece> getFurniture() { return furniture; }
+
+    public Agent getAgent() { return agent; }
 
     public List<Platform> getPlatforms() { return platforms; }
 

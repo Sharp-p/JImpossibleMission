@@ -6,6 +6,7 @@ module Controller {
     requires com.almasb.fxgl.all;
     requires javafx.graphics;
     requires java.desktop;
+    requires Controller;
 
     opens Controller to javafx.fxml;
     exports Controller;

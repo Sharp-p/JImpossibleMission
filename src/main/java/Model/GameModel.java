@@ -13,9 +13,7 @@ import static config.GameConstants.*;
  * To act as a tunnel to all other model it incorporates the other models methods.
  */
 public class GameModel extends Observable {
-    private List<Entity> entities = new ArrayList<>();
     private GameStatistics statistics = new GameStatistics();
-    private Agent agent;
     private Stronghold stronghold;
     private boolean isPaused = false;
 
@@ -24,19 +22,6 @@ public class GameModel extends Observable {
 
     public GameModel() {
         // TODO: creare funzioni più comode per l'aggiunta di entità
-        createAgent(13.0,  ROW_HEIGHT - 30);
-        entities.add(new StillRobot(new Tuple<>(70.0, ROW_HEIGHT - 18.0), 4));
-        entities.add(new MovingRobot(new Tuple<>(14.0 * STILL_PLATFORM_WIDTH, (double)ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT - GROUND_ROBOT_HEIGHT + 1)));
-        ((MovingRobot)entities.getLast()).setBounds(13 *  STILL_PLATFORM_WIDTH, 15 *  STILL_PLATFORM_WIDTH);
-        entities.add(new SightRobot(new Tuple<>(14.0 * STILL_PLATFORM_WIDTH, ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4.0 - GROUND_ROBOT_HEIGHT + 1)));
-        ((SightRobot)entities.getLast()).setBounds(8 * STILL_PLATFORM_WIDTH, 20 * STILL_PLATFORM_WIDTH);
-        entities.add(new ShootingRobot(
-                new Tuple<>(3.0 * STILL_PLATFORM_WIDTH, ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4.0 - GROUND_ROBOT_HEIGHT + 1),
-                3 * STILL_PLATFORM_WIDTH, 5 * STILL_PLATFORM_WIDTH)
-        );
-
-        entities.add((((ShootingRobot)entities.getLast()).getPlasmaBolt()));
-
         stronghold = new Stronghold();
 
         setChanged();
@@ -76,22 +61,17 @@ public class GameModel extends Observable {
      * Function that creates a new agent. Used for every respawn instance.
      * @return Returns the new agent that the model uses
      */
-    public void createAgent(double x, double y) {
-        // TODO: [RESPAWN] luogo respawn rispetto a porta di entrata
-        agent = new Agent(new Tuple<>(x, y));
-    }
+    public void createAgent(double x, double y, int areaIndex) { stronghold.createAgent(x, y, areaIndex); }
 
-    public void moveAgent(Direction direction, Double deltaTime) {
-        agent.moveTo(direction, deltaTime);
-    }
+    public void moveAgent(Direction direction, Double deltaTime) { stronghold.moveAgent(direction, deltaTime); }
 
     public GameModel newModel() { return new GameModel(); }
 
-    public void addEntity(Entity entity) { entities.add(entity); }
+    public void addEntity(Entity entity) { stronghold.addEntity(entity); }
 
     public void setPaused(boolean paused) { isPaused = paused; }
 
-    public void setUsingLift(boolean usingLift) { agent.setUsingLift(usingLift); }
+    public void setUsingLift(boolean usingLift) { stronghold.setUsingLift(usingLift); }
 
     public void setShowingStatistics(boolean showingStatistics) {  statistics.setShowingStatistics(showingStatistics); }
 
@@ -107,23 +87,13 @@ public class GameModel extends Observable {
 
     public List<FurniturePiece> getFurniture() { return stronghold.getFurniture(); }
 
-    public List<Robot> getRobots() {
-        return entities.stream()
-                .filter(e -> e instanceof Robot)
-                .map(e -> (Robot) e)
-                .toList();
-    }
+    public List<Robot> getRobots() { return stronghold.getRobots(); }
 
-    public List<Enemy> getEnemies() {
-        return entities.stream()
-                .filter(e -> e instanceof Enemy)
-                .map(e -> (Enemy) e)
-                .toList();
-    }
+    public List<Enemy> getEnemies() { return stronghold.getEnemies(); }
 
-    public Agent getAgent() { return agent; }
+    public Agent getAgent() { return stronghold.getAgent(); }
 
-    public List<Entity> getEntities() { return entities; }
+    public List<Entity> getEntities() { return stronghold.getEntities(); }
 
     public List<Platform> getPlatforms() { return stronghold.getPlatforms(); }
 
@@ -131,5 +101,5 @@ public class GameModel extends Observable {
 
     public List<MovingPlatform> getMovingPlatforms() { return stronghold.getMovingPlatforms(); }
 
-    public boolean isUsingLift() { return agent.isUsingLift(); }
+    public boolean isUsingLift() { return stronghold.isUsingLift(); }
 }
