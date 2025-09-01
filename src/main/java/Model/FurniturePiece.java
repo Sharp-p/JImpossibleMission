@@ -33,6 +33,7 @@ public class FurniturePiece extends Entity {
         }
     }
 
+
     public void moveTo(Direction dir, Double deltaTime) {}
 
     public boolean isBeingSearched() { return beingSearched; }
@@ -40,4 +41,6 @@ public class FurniturePiece extends Entity {
     public double getSearchTime() { return searchTime; }
 
     public FurnitureType getType() { return type;}
+
+    public void setSearching(boolean searching) { this.beingSearched = searching; }
 }

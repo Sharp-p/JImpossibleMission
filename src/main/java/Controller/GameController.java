@@ -47,6 +47,19 @@ public class GameController {
                 view.getGameView().getAgentPainter()
                         .getAnimationHandler().play("idle");
             }
+
+            if (e.getCode() == KeyCode.UP) {
+                Optional<FurniturePiece> furniturePiece =
+                        gameModel.getFurniture().stream()
+                                .filter(FurniturePiece::isBeingSearched)
+                                .findFirst();
+
+                if (furniturePiece.isPresent()) {
+                    view.getGameView().getAgentPainter()
+                            .getAnimationHandler().play("idle");
+                    furniturePiece.get().setSearching(false);
+                }
+            }
             pressedKeys.remove(e.getCode());
         });
         view.getGameView().setFocusTraversable(true);
@@ -136,9 +149,6 @@ public class GameController {
                     && furniturePiece.isActive()) {
                 view.getGameView().getAgentPainter().getAnimationHandler().play("searching");
 
-                // TODO: casella di ricerca
-
-                // TODO: use
                 furniturePiece.use(deltaTime);
             }
         }

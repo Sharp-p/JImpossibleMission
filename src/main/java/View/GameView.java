@@ -84,16 +84,24 @@ public class GameView extends Pane implements Observer {
                         FurniturePiece.MAX_SEARCH_TIME;
                 double actualWidth = PROGRESSBAR_DIM * fraction;
                 // TODO: può essere che getSize rompi tutto
-                double midFurniture = furniturePiece.getSize().getFirst() / 2;
+                double midFurniture = furniturePiece.getPosition().getFirst() + furniturePiece.getSize().getFirst() / 2;
+
+                // scaled dim and coordiantes (che pane is already scaled,
+                // but the canvas and the gc use their own coordinate
+                // system that needs tu be manually scaled)
+                actualWidth *= scale.getX();
+                midFurniture *= scale.getX();
+                double sY = gameModel.getAgent().getPosition().getSecond() * scale.getX();
+
 
                 gc.fillRect(
-                        midFurniture - PROGRESSBAR_DIM / 2,
-                        furniturePiece.getPosition().getSecond() - 4,
+                        midFurniture - actualWidth / 2,
+                         - 14,
                         actualWidth,
                         4
                 );
-                gc.strokeRect(midFurniture - PROGRESSBAR_DIM / 2,
-                        furniturePiece.getPosition().getSecond() - 4,
+                gc.strokeRect(midFurniture - actualWidth / 2,
+                        sY - 14,
                         actualWidth,
                         4);
             }
