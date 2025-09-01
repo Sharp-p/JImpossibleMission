@@ -64,8 +64,8 @@ public class MenuController {
                             GameView gameView = new GameView(view);
                             gameView.setGameModel(gameModel);
 
-                            double scaleFactor = Math.min((SCREEN_WIDTH + 15) / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
-                            Scale scale = new Scale(scaleFactor, scaleFactor, 0, 0);
+                            //double scaleFactor = Math.min((double)SCREEN_WIDTH / LOGICAL_WIDTH, (double)SCREEN_HEIGHT / LOGICAL_HEIGHT);
+                            Scale scale = new Scale(SCALE_FACTOR, SCALE_FACTOR, 0, 0);
                             gameView.setScale(scale);
 
                             view.setGameView(gameView);

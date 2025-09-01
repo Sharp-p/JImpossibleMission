@@ -7,6 +7,7 @@ import View.GameView;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.scene.transform.Scale;
@@ -34,32 +35,17 @@ public class GameController {
 
         // asynchronous input listening
         view.getGameView().setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.ESCAPE) {
-                view.showMenu();
-                stopGameLoop();
+            if (!gameModel.isPaused()) {
+                mainGameKeyPressed(e);
             }
             pressedKeys.add(e.getCode());
             System.out.println(e.getCode());
         });
         view.getGameView().setOnKeyReleased(e -> {
-            if ((e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT)
-                    && gameModel.getAgent().isGrounded()) {
-                view.getGameView().getAgentPainter()
-                        .getAnimationHandler().play("idle");
-            }
+            // not main game GameMenu or statistics
+            if (!gameModel.isPaused()) mainGameKeyReleased(e);
+            else if (gameModel.isShowingStatistics()) statisticsKeyReleased(e);
 
-            if (e.getCode() == KeyCode.UP) {
-                Optional<FurniturePiece> furniturePiece =
-                        gameModel.getFurniture().stream()
-                                .filter(FurniturePiece::isBeingSearched)
-                                .findFirst();
-
-                if (furniturePiece.isPresent()) {
-                    view.getGameView().getAgentPainter()
-                            .getAnimationHandler().play("idle");
-                    furniturePiece.get().setSearching(false);
-                }
-            }
             pressedKeys.remove(e.getCode());
         });
         view.getGameView().setFocusTraversable(true);
@@ -80,7 +66,8 @@ public class GameController {
                     .findAny();
 
             furniturePiece.ifPresent(piece -> piece.setCode(new Code(CodeType.PSW_PIECE)));
-
+            gameModel.addTotalPswPieces();
+            System.out.println(furniturePiece.get() + "\nSONO ENTRATO QUA");
         }
     }
 
@@ -89,7 +76,78 @@ public class GameController {
 
         // TODO: if terminal isActive: terminal else OperazioniNormali
 
-        // OPERATIONS ON THE PLAYER POSITION:
+        if (!gameModel.isPaused()) mainGame();
+        else if (gameModel.isShowingStatistics()) checkShowingStatistics();
+        //else pauseMenu();
+        //System.out.println("Per terra: " + gameModel.getAgent().isGrounded());
+        gameModel.updated(deltaTime);
+        lastTime = now;
+    }
+
+    public void statisticsKeyReleased(KeyEvent e) {
+        gameModel.getStatistics().getGameClock().start();
+    }
+
+    private void checkShowingStatistics() {
+        if (!pressedKeys.contains(KeyCode.CONTROL)) {
+            gameModel.setShowingStatistics(false);
+            gameModel.setPaused(false);
+        }
+    }
+
+    private void mainGameKeyPressed(KeyEvent e) {
+        if (e.getCode() == KeyCode.ESCAPE) {
+            gameModel.setPaused(true);
+            // TODO: creare classe gameMenuModel che modella le scelte nel menu
+            //gameModel.setShowingGameMenu(true);
+//            view.showMenu();
+//            stopGameLoop();
+        }
+        else if (e.getCode() == KeyCode.CONTROL) {
+            gameModel.setPaused(true);
+            gameModel.setShowingStatistics(true);
+
+            int heightBefore = gameModel.getAgent()
+                    .getSize().getSecond().intValue();
+            view.getGameView().getAgentPainter()
+                    .getAnimationHandler().play("idle");
+            int heightAfter = (int) view.getGameView().getAgentPainter()
+                    .getAnimationHandler().getCurrentFrameHeight();
+
+            int dif = heightAfter - heightBefore;
+
+            gameModel.getAgent().setPosition(new Tuple<>(
+                    gameModel.getAgent().getPosition().getFirst(),
+                    gameModel.getAgent().getPosition().getSecond() - dif
+            ));
+
+            gameModel.getStatistics().getGameClock().stop();
+        }
+    }
+
+    private void mainGameKeyReleased(KeyEvent e) {
+        if ((e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT)
+                && gameModel.getAgent().isGrounded()) {
+            view.getGameView().getAgentPainter()
+                    .getAnimationHandler().play("idle");
+        }
+
+        if (e.getCode() == KeyCode.UP) {
+            Optional<FurniturePiece> furniturePiece =
+                    gameModel.getFurniture().stream()
+                            .filter(FurniturePiece::isBeingSearched)
+                            .findFirst();
+
+            if (furniturePiece.isPresent()) {
+                view.getGameView().getAgentPainter()
+                        .getAnimationHandler().play("idle");
+                furniturePiece.get().setSearching(false);
+            }
+        }
+    }
+
+    private void mainGame() {
+        // OPERATIONS ON THE PLAYER {POSITION:
 
         // if the agent was in air and has now hit the ground, changes the animation
         // and updates the flag
@@ -128,8 +186,7 @@ public class GameController {
                     gameModel.moveAgent(UP, deltaTime);
                 }
             }
-        }
-        else if (!(Objects.equals(view.getGameView().getAgentPainter()
+        } else if (!(Objects.equals(view.getGameView().getAgentPainter()
                 .getAnimationHandler().getCurrentAnimation().getName(), "jump"))) {
             view.getGameView().getAgentPainter().getAnimationHandler().play("falling");
         }
@@ -147,12 +204,9 @@ public class GameController {
         // for each moving robot (exact class) and still robot
         gameModel.getRobots().stream()
                 .filter(r -> r.getClass() != SightRobot.class)
-                        .forEach(r -> r.update(deltaTime));
+                .forEach(r -> r.update(deltaTime));
 
         handleCollision();
-        //System.out.println("Per terra: " + gameModel.getAgent().isGrounded());
-        gameModel.updated(deltaTime);
-        lastTime = now;
     }
 
     private void searchFurniture(double deltaTime) {
@@ -171,7 +225,13 @@ public class GameController {
                 view.getGameView().getAgentPainter().getAnimationHandler().play("searching");
 
                 furniturePiece.use(deltaTime);
-                if (!furniturePiece.isActive()) gameModel.foundPswPiece();
+                if (!furniturePiece.isActive()) {
+                    switch (furniturePiece.getCode().getType()) {
+                        case PSW_PIECE -> gameModel.foundPswPiece();
+                        case ROBOT -> gameModel.addRobotsCode();
+                        case PLATFORMS -> gameModel.addPlatformsCode();
+                    }
+                }
             }
         }
     }

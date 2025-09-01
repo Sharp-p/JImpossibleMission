@@ -9,15 +9,19 @@ import static Model.StillPlatform.STILL_PLATFORM_WIDTH;
 import static config.GameConstants.*;
 
 /**
- * An interface for all the models in the game environment
+ * An interface for all the models in the game environment.
+ * To act as a tunnel to all other model it incorporates the other models methods.
  */
 public class GameModel extends Observable {
     private List<Entity> entities = new ArrayList<>();
     private RobotFactory robotFactory = new  RobotFactory();
+    private GameStatistics statistics = new GameStatistics();
     private Agent agent;
     private Stronghold stronghold;
-    private int pswPiecesFound = 0;
-    private int totalPswPieces = 0;
+    private boolean isPaused = false;
+
+
+    // TODO: classe statistiche: mantiene tutte le statistiche, timer ecc
 
     public GameModel() {
         // TODO: creare funzioni più comode per l'aggiunta di entità
@@ -53,9 +57,21 @@ public class GameModel extends Observable {
         notifyObservers(dt);
     }
 
-    public void foundPswPiece() { pswPiecesFound++; }
+    public void foundPswPiece() { statistics.foundPswPiece(); }
 
-    public void addTotalPswPieces() { totalPswPieces++; }
+    public void addTotalPswPieces() { statistics.addTotalPswPieces(); }
+
+    public void consumeRobotsCode() { statistics.consumeRobotsCode(); }
+
+    public void consumePlatformsCode() { statistics.consumePlatformsCode(); }
+
+    public void addRobotsCode() { statistics.addRobotsCode(); }
+
+    public void addPlatformsCode() { statistics.addPlatformsCode(); }
+
+    public int getRobotsCodeTot() { return statistics.getRobotsCodeTot(); }
+
+    public int getPlatformsCodeTot() { return statistics.getPlatformsCodeTot(); }
 
     /**
      * Function that creates a new agent. Used for every respawn instance.
@@ -74,11 +90,21 @@ public class GameModel extends Observable {
 
     public void addEntity(Entity entity) { entities.add(entity); }
 
+    public void setPaused(boolean paused) { isPaused = paused; }
+
     public void setUsingLift(boolean usingLift) { agent.setUsingLift(usingLift); }
 
-    public int getTotalPswPieces() { return totalPswPieces; }
+    public void setShowingStatistics(boolean showingStatistics) {  statistics.setShowingStatistics(showingStatistics); }
 
-    public int getPswPiecesFound() { return pswPiecesFound; }
+    public boolean isShowingStatistics() { return statistics.isShowingStatistics(); }
+
+    public boolean isPaused() { return isPaused; }
+
+    public GameStatistics getStatistics() { return statistics; }
+
+    public int getTotalPswPieces() { return statistics.getTotalPswPieces(); }
+
+    public int getPswPiecesFound() { return statistics.getPswPiecesFound(); }
 
     public List<FurniturePiece> getFurniture() { return stronghold.getFurniture(); }
 

@@ -32,9 +32,9 @@ public class View {
 
         this.scene = new Scene(menuView, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        double scaleFactor = Math.min((SCREEN_WIDTH + 15) / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
-        Scale scale = new Scale(scaleFactor, scaleFactor, 0, 0);
-
+        //double scaleFactor = Math.min((double)SCREEN_WIDTH / LOGICAL_WIDTH, (double)SCREEN_HEIGHT / LOGICAL_HEIGHT);
+        Scale scale = new Scale(SCALE_FACTOR, SCALE_FACTOR, 0, 0);
+        System.out.println(scale.getX());
         //menuView.getTransforms().add(scale);
         //gameView.getTransforms().add(scale);
         gameView.setScale(scale);

@@ -13,8 +13,10 @@ public class FurniturePiece extends Entity {
     public FurniturePiece(Tuple<Double, Double> position) {
         super(position, new StillMovement(), 0.0);
 
+        // chooses a random search time
         searchTime = Math.random() * 3.5 + 0.5;
 
+        // chooses a random Type
         FurnitureType[] values = FurnitureType.values();
 
         int index = (int) (Math.random() * (values.length - 1));

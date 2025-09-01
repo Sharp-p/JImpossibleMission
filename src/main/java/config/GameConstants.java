@@ -14,10 +14,12 @@ public class GameConstants {
     public static final int LOGICAL_WIDTH = 290;
     public static final int LOGICAL_HEIGHT = 190;
 
-    public static final int SCREEN_WIDTH = 855;
-    public static final int SCREEN_HEIGHT = 612;
+    public static final int SCREEN_WIDTH = 870;
+    public static final int SCREEN_HEIGHT = 610;
 
-    public static final double SCALE_FACTOR = Math.min((SCREEN_WIDTH + 15) / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
+    // it's a double but need to be integer because the pixel cannot be split,
+    // and it would cause graphical alignment issues if it isn't an integer
+    public static final double SCALE_FACTOR = Math.min((double)SCREEN_WIDTH / LOGICAL_WIDTH, (double)SCREEN_HEIGHT / LOGICAL_HEIGHT);
 
     public static final double RUN_FRAME_DURATION = 0.07;
     public static final double JUMP_FRAME_DURATION = 0.1;

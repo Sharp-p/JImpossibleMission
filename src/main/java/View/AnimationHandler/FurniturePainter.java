@@ -53,7 +53,7 @@ public class FurniturePainter extends EntityPainter {
                 .add(new Frame(new Rectangle2D(215, 54, FRIDGE.getWidth(), FRIDGE.getHeight()), 0, 0, 1));
 
         Animation fireplace = new Animation("FIREPLACE", true)
-                .add(new Frame(new Rectangle2D(248, 57, FIREPLACE.getWidth(), FIREPLACE.getHeight()), 0, 0, 1));
+                .add(new Frame(new Rectangle2D(248, 56, FIREPLACE.getWidth(), FIREPLACE.getHeight()), 0, 0, 1));
 
         Animation sofa = new Animation("SOFA", true)
                 .add(new Frame(new Rectangle2D(11, 119, SOFA.getWidth(), SOFA.getHeight()), 0, 0, 1));

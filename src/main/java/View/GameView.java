@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import static Model.CodeType.NONE;
 import static Model.CodeType.PSW_PIECE;
 import static config.GameConstants.*;
 import static javafx.scene.paint.Color.*;
@@ -30,6 +31,7 @@ public class GameView extends Pane implements Observer {
     private List<ProjectilePainter> projectilePainters = new ArrayList<>();
     private List<FurniturePainter> furniturePainters = new ArrayList<>();
     private List<CodePainter> codePainters = new ArrayList<>();
+    private StatisticsPainter statisticsPainter;
     private GameModel gameModel;
 
     public GameView(View view) {
@@ -84,9 +86,17 @@ public class GameView extends Pane implements Observer {
             codePainter.draw(gc, deltaTime, scale.getX(), gameModel.getPswPiecesFound(), gameModel.getTotalPswPieces());
         }
 
-
-
         agentPainter.draw(gc, deltaTime, scale.getX());
+
+        if (gameModel.isShowingStatistics()) statisticsPainter.draw(gc, scale.getX());
+
+
+
+//        System.out.println("Altezza canvas: " + canvas.getHeight());
+//        System.out.println("Larghezza canvas: " + canvas.getWidth());
+//
+//        System.out.println("Altezza schermo: " + getHeight());
+//        System.out.println("Larghezza schermo: " + getWidth());
     }
 
     private void drawSearchBar() {
@@ -154,18 +164,24 @@ public class GameView extends Pane implements Observer {
         for (FurniturePiece furniturePiece : gameModel.getFurniture()) {
             furniturePainters.add(new FurniturePainter(furniturePiece));
 
+            // sets ups the counter and checks that no terminal or end room
+            // has a code assigned
             if (furniturePiece.getType() != FurnitureType.TERMINAL
                     && furniturePiece.getType() != FurnitureType.END_ROOM) {
                 codePainters.add(new CodePainter(furniturePiece));
 
                 // checks if the furniturePiece hides a psw_piece,
                 // if so, it adds to the counter
-                System.out.println(furniturePiece);
                 if (furniturePiece.getCode().getType() == PSW_PIECE) {
                     gameModel.addTotalPswPieces();
                 }
             }
+            else furniturePiece.setCode(new Code(NONE));
+            System.out.println(furniturePiece);
         }
+
+
+        statisticsPainter = new StatisticsPainter(gameModel.getStatistics());
 
         System.out.println(gameModel.getTotalPswPieces());
 
