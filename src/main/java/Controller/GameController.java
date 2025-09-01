@@ -501,12 +501,19 @@ public class GameController {
     }
 
     public void agentHit() {
+
+        // TODO: Rewrite respawn system una volta che ho le Room
+        // TODO: fare Room con coordinate di respawn
+        // TODO: per ogni room, controlla se interseziona personagio, se si,
+        //  usa le sue coordinate di respawn
+
+        // TODO: una volta implementato Statistics aggiungere 10 min al timer
         stopGameLoop();
         gameModel.createAgent(13, ROW_HEIGHT - 30);
         GameView gameView = new GameView(view);
         gameView.setGameModel(gameModel);
-        double scaleFactor = Math.min((SCREEN_WIDTH + 15) / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
-        Scale scale = new Scale(scaleFactor, scaleFactor, 0, 0);
+//        double scaleFactor = Math.min((SCREEN_WIDTH + 15) / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
+        Scale scale = new Scale(SCALE_FACTOR, SCALE_FACTOR, 0, 0);
         gameView.setScale(scale);
         view.setGameView(gameView);
         GameController gameController = new GameController(gameModel, view);

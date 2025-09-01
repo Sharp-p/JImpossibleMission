@@ -5,6 +5,7 @@ import View.AnimationHandler.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Scale;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class GameView extends Pane implements Observer {
     private List<GroundRobotPainter> groundRobotPainters = new ArrayList<>();
     private List<ProjectilePainter> projectilePainters = new ArrayList<>();
     private List<FurniturePainter> furniturePainters = new ArrayList<>();
+    private List<CodePainter> codePainters = new ArrayList<>();
     private GameModel gameModel;
 
     public GameView(View view) {
@@ -38,6 +40,11 @@ public class GameView extends Pane implements Observer {
         // to not mess up the pixel art
         gc.setImageSmoothing(false);
         gc.setFill(SALMON);
+        gc.setFont(Font.loadFont(getClass().getResourceAsStream(
+                "/fonts/script-screen/Script Screen.ttf"
+        ), 10));
+        gc.setStroke(GREEN);
+        gc.setLineWidth(2);
     }
 
     public void clearCanvas() {
@@ -69,6 +76,13 @@ public class GameView extends Pane implements Observer {
                 .equals("searching")) {
             drawSearchBar();
         }
+
+        for (CodePainter codePainter: codePainters) {
+            codePainter.draw(gc, deltaTime, scale.getX());
+        }
+
+
+
         agentPainter.draw(gc, deltaTime, scale.getX());
     }
 
@@ -77,13 +91,12 @@ public class GameView extends Pane implements Observer {
 
         for (FurniturePiece furniturePiece : furniture) {
             if (furniturePiece.isBeingSearched()) {
-                gc.setStroke(YELLOW);
-                gc.setLineWidth(2);
+
 
                 double fraction = furniturePiece.getSearchTime() /
                         FurniturePiece.MAX_SEARCH_TIME;
                 double actualWidth = PROGRESSBAR_DIM * fraction;
-                // TODO: può essere che getSize rompi tutto
+
                 double midFurniture = furniturePiece.getPosition().getFirst() + furniturePiece.getSize().getFirst() / 2;
 
                 // scaled dim and coordiantes (che pane is already scaled,
@@ -137,6 +150,11 @@ public class GameView extends Pane implements Observer {
         // creates a painter for each furniture piece
         for (FurniturePiece furniturePiece : gameModel.getFurniture()) {
             furniturePainters.add(new FurniturePainter(furniturePiece));
+
+            if (furniturePiece.getType() != FurnitureType.TERMINAL
+                    && furniturePiece.getType() != FurnitureType.END_ROOM) {
+                codePainters.add(new CodePainter(furniturePiece));
+            }
         }
 
         // creates a painter for the agent

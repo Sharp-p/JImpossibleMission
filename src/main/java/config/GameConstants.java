@@ -17,6 +17,8 @@ public class GameConstants {
     public static final int SCREEN_WIDTH = 855;
     public static final int SCREEN_HEIGHT = 612;
 
+    public static final double SCALE_FACTOR = Math.min((SCREEN_WIDTH + 15) / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
+
     public static final double RUN_FRAME_DURATION = 0.07;
     public static final double JUMP_FRAME_DURATION = 0.1;
     public static final double TURNING_FRAME_DURATION = 0.1;
