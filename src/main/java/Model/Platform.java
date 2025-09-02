@@ -6,7 +6,6 @@ import javafx.geometry.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: dividere in 3 sottoclassi, still platforms, vertical platforms, lift
 public abstract class Platform extends Entity{
     public Platform(Tuple<Double, Double> position,
                     MovementBehavior movementBehav, Double speed, int width, int height) {

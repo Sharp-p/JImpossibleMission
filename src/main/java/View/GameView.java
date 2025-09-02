@@ -32,6 +32,7 @@ public class GameView extends Pane implements Observer {
     private List<FurniturePainter> furniturePainters = new ArrayList<>();
     private List<CodePainter> codePainters = new ArrayList<>();
     private StatisticsPainter statisticsPainter;
+    private GameMenuPainter gameMenuPainter;
     private GameModel gameModel;
 
     public GameView(View view) {
@@ -57,6 +58,11 @@ public class GameView extends Pane implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         double deltaTime = (double) arg;
+
+        if (gameModel.hasEnded()) {
+            System.out.println("gioco finito.");
+            // TODO: gestire schermata punteggi e ritorno al menu
+        }
 
         gc.save();
 
@@ -92,6 +98,8 @@ public class GameView extends Pane implements Observer {
         agentPainter.draw(gc, deltaTime, scale.getX());
 
         if (gameModel.isShowingStatistics()) statisticsPainter.draw(gc, scale.getX(), gameModel.getCameraX(), gameModel.getCameraY());
+
+        if (gameModel.isShowingMenu()) gameMenuPainter.draw(gc, scale.getX(), gameModel.getCameraX(), gameModel.getCameraY());
 
         gc.restore();
 
@@ -183,8 +191,9 @@ public class GameView extends Pane implements Observer {
             System.out.println(furniturePiece);
         }
 
-
         statisticsPainter = new StatisticsPainter(gameModel.getStatistics());
+
+        gameMenuPainter = new GameMenuPainter(gameModel.getGameMenuModel());
 
         System.out.println(gameModel.getTotalPswPieces());
 

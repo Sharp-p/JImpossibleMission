@@ -36,6 +36,9 @@ public class GameController {
             if (!gameModel.isPaused()) {
                 mainGameKeyPressed(e);
             }
+            else if (gameModel.isShowingMenu()) {
+                gameMenuKeyPressed(e);
+            }
             pressedKeys.add(e.getCode());
             System.out.println(e.getCode());
         });
@@ -69,6 +72,25 @@ public class GameController {
         }
     }
 
+    private void gameMenuKeyPressed(KeyEvent e) {
+        if (e.getCode() == KeyCode.RIGHT) gameModel.nextMenuOption();
+        else if (e.getCode() == KeyCode.LEFT) gameModel.previousMenuOption();
+        else if (e.getCode() == KeyCode.ENTER) {
+            switch (gameModel.getMenuOption()) {
+                case 0 -> {
+                    gameModel.setShowingMenu(false);
+                    gameModel.setPaused(false);
+                }
+                case 1 -> {
+                    gameLoopTimer.stop();
+                    gameModel.getStatistics().getGameClock().stop();
+                    // TODO: classi per endGame
+                    view.showMenu();
+                }
+            }
+        }
+    }
+
     private void gameLoop(long now) {
         deltaTime = (now - lastTime) / 1_000_000_000.0;
 
@@ -80,7 +102,11 @@ public class GameController {
         else if (gameModel.isShowingStatistics()) checkShowingStatistics();
         //else pauseMenu();
         //System.out.println("Per terra: " + gameModel.getAgent().isGrounded());
+
+        // to update the camera
         checkViewPort();
+
+        checkTime();
 
         gameModel.updated(deltaTime);
         lastTime = now;
@@ -125,10 +151,7 @@ public class GameController {
     private void mainGameKeyPressed(KeyEvent e) {
         if (e.getCode() == KeyCode.ESCAPE) {
             gameModel.setPaused(true);
-            // TODO: creare classe gameMenuModel che modella le scelte nel menu
-            //gameModel.setShowingGameMenu(true);
-//            view.showMenu();
-//            stopGameLoop();
+            gameModel.setShowingMenu(true);
         }
         else if (e.getCode() == KeyCode.CONTROL) {
             gameModel.setPaused(true);
@@ -174,7 +197,7 @@ public class GameController {
     }
 
     private void mainGame() {
-        // OPERATIONS ON THE PLAYER {POSITION:
+        // OPERATIONS ON THE PLAYER POSITION:
 
         // if the agent was in air and has now hit the ground, changes the animation
         // and updates the flag
@@ -235,6 +258,7 @@ public class GameController {
 
         //System.out.println("Pre collisioni: " + gameModel.getAgent().getPosition());
         handleCollision();
+
     }
 
     private void searchFurniture(double deltaTime) {
@@ -573,6 +597,13 @@ public class GameController {
         enemyCollision(gameModel.getAgent());
     }
 
+    private void checkTime() {
+        // ends the game if the hour is past 18pm
+        if (gameModel.getTime() >= 3600 * 18) {
+            gameModel.setEnded(true);
+        }
+    }
+
     public void enemyCollision(Agent agent) {
         Rectangle2D agentBorder = getBounds(agent);
         for (Enemy enemy : gameModel.getEnemies()) {
@@ -593,20 +624,23 @@ public class GameController {
         //  usa le sue coordinate di respawn
 
         // TODO: una volta implementato Statistics aggiungere 10 min al timer
-        stopGameLoop();
-        // area index 0 because the coordinates are global
-        gameModel.createAgent(
-                gameModel.getAgent().getSpawn().getFirst(),
-                gameModel.getAgent().getSpawn().getSecond(),
-                0);
-        GameView gameView = new GameView(view);
-        gameView.setGameModel(gameModel);
-//        double scaleFactor = Math.min((SCREEN_WIDTH + 15) / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
-        Scale scale = new Scale(SCALE_FACTOR, SCALE_FACTOR, 0, 0);
-        gameView.setScale(scale);
-        view.setGameView(gameView);
-        GameController gameController = new GameController(gameModel, view);
-        gameController.startGameLoop();
-        view.showGame();
+        gameModel.resetPositions();
+        gameModel.addTime(600);
+
+//        stopGameLoop();
+//        // area index 0 because the coordinates are global
+//        gameModel.createAgent(
+//                gameModel.getAgent().getSpawn().getFirst(),
+//                gameModel.getAgent().getSpawn().getSecond(),
+//                0);
+//        GameView gameView = new GameView(view);
+//        gameView.setGameModel(gameModel);
+////        double scaleFactor = Math.min((SCREEN_WIDTH + 15) / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
+//        Scale scale = new Scale(SCALE_FACTOR, SCALE_FACTOR, 0, 0);
+//        gameView.setScale(scale);
+//        view.setGameView(gameView);
+//        GameController gameController = new GameController(gameModel, view);
+//        gameController.startGameLoop();
+//        view.showGame();
     }
 }

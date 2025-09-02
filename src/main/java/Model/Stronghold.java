@@ -65,6 +65,7 @@ public class Stronghold {
         }
 
         createAgent(13.0,  ROW_HEIGHT - 30, 1);
+        entities.add(agent);
 
     }
 
@@ -483,7 +484,6 @@ public class Stronghold {
      * @return Returns the new agent that the model uses
      */
     public void createAgent(double x, double y, int areaIndex) {
-        // TODO: [RESPAWN] luogo respawn rispetto a porta di entrata
         agent = new Agent(new Tuple<>(
                 x + areas.get(areaIndex).getMinX(),
                 y + areas.get(areaIndex).getMinY()

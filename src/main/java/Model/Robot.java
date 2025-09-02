@@ -20,6 +20,9 @@ public abstract class Robot extends Enemy {
         else return Direction.RIGHT;
     }
 
+    @Override
+    public String toString() { return "Object: " + getClass().getName() + "\n\tSpawn: " + getSpawn(); }
+
     public void setHasTurned(boolean hasTurned){ this.hasTurned = hasTurned; }
 
     public void setTurning(boolean turning) { this.isTurning = turning; }

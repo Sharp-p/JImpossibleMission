@@ -10,6 +10,8 @@ public class FurniturePiece extends Entity {
     private boolean beingSearched = false;
     private double searchTime;
 
+    // TODO: aggiungere punteggio quando consumato
+
     public FurniturePiece(Tuple<Double, Double> position) {
         super(position, new StillMovement(), 0.0);
 

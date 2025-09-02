@@ -54,6 +54,8 @@ public class View {
         gameView.requestFocus();
     }
 
+    // TODO: endGameView, model e controller
+
     public void showScoreboard() {
         scene.setRoot(scoreboardView);
     }

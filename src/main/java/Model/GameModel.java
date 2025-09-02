@@ -13,24 +13,34 @@ public class GameModel extends Observable {
     private Stronghold stronghold;
     private boolean isPaused = false;
     private Viewport viewport;
+    private GameMenuModel gameMenuModel;
 
 
-    // TODO: classe statistiche: mantiene tutte le statistiche, timer ecc
+    // TODO: timer che si aggiorna ad ogni morte
 
     public GameModel() {
-        // TODO: creare funzioni più comode per l'aggiunta di entità
         stronghold = new Stronghold();
 
         viewport = new Viewport(
                 (int)stronghold.getCurrentArea().getMinX(),
                 (int)stronghold.getCurrentArea().getMinY());
 
+        gameMenuModel = new GameMenuModel();
+
         setChanged();
         notifyObservers();
     }
 
-    public void resetPosition() {
-
+    /**
+     * This method will reset all game entities (platforms and furniture excluded) to their last spawn position.
+     */
+    public void resetPositions() {
+        for (Entity entity : getEntities()) {
+            if (!(entity instanceof Platform) && !(entity instanceof FurniturePiece)) {
+                System.out.println(entity);
+                entity.setPosition(entity.getSpawn());
+            }
+        }
     }
 
     /**
@@ -69,6 +79,8 @@ public class GameModel extends Observable {
 
     public GameModel newModel() { return new GameModel(); }
 
+    public void addTime(int seconds) { statistics.addTime(seconds); }
+
     public void setCurrentArea(int i) { stronghold.setCurrentArea(i); }
 
     public void addEntity(Entity entity) { stronghold.addEntity(entity); }
@@ -88,6 +100,32 @@ public class GameModel extends Observable {
     public void setCameraX(int cameraX) { viewport.setCameraX(cameraX); }
 
     public void setCameraY(int cameraY) { viewport.setCameraY(cameraY); }
+
+    public void setEnded(boolean ended) { statistics.setEnded(ended); }
+
+    public void setWon(boolean won) { statistics.setWon(won); }
+
+    public void nextMenuOption() { gameMenuModel.next(); }
+
+    public GameMenuModel getGameMenuModel() { return gameMenuModel; }
+
+    public int getMenuOption() { return gameMenuModel.getSelectedIndex(); }
+
+    public void previousMenuOption() { gameMenuModel.previous(); }
+
+    public void addScore(double points) { statistics.addScore(points); }
+
+    public void setShowingMenu(boolean showingMenu) { gameMenuModel.setShowingMenu(showingMenu); }
+
+    public boolean isShowingMenu() { return gameMenuModel.isShowingMenu(); }
+
+    public double getScore() { return statistics.getScore(); }
+
+    public int getTime() { return statistics.getSeconds(); }
+
+    public boolean getWon() { return statistics.getWon(); }
+
+    public boolean hasEnded() { return statistics.getEnded(); }
 
     public boolean isVPStale() { return viewport.isVPStale(); }
 

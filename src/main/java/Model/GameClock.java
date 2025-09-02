@@ -7,7 +7,7 @@ import javafx.util.Duration;
 public class GameClock {
     /**
      * In the game the time will be managed in seconds.
-     * In the game the clock start from 12:00:00.
+     * In the game the clock start from 12:00:00, and it will end after 6h.
      */
     private int seconds = 3600 * 12;
     private final Timeline timeline;
@@ -19,6 +19,10 @@ public class GameClock {
 
         timeline.setCycleCount(Timeline.INDEFINITE);
     }
+
+    public void addSeconds(int s) { seconds += s; }
+
+    public int getSeconds() { return seconds; }
 
     public void start() { timeline.play(); }
 

@@ -69,6 +69,9 @@ public class Agent extends Entity {
     }
 
     @Override
+    public String toString() { return "Object: " + getClass().getName() + "\n\tSpawn: " + getSpawn(); }
+
+    @Override
     public void moveTo(Direction dir, Double deltaTime) {
         // new velocity from the movement behavior
         // this is a second check done because the
