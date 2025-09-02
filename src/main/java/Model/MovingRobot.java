@@ -9,12 +9,16 @@ import static Model.StillPlatform.STILL_PLATFORM_WIDTH;
 public class MovingRobot extends Robot {
     public static final double SPEED = 54.28;
 
-
     private Rectangle2D leftBound;
     private Rectangle2D rightBound;
 
     public MovingRobot(Tuple<Double, Double> position) {
         super(position, new HorizontalMovement(), SPEED);
+    }
+
+    public MovingRobot(Tuple<Double, Double> position, double leftBoundX, double rightBoundX) {
+        super(position, new HorizontalMovement(), SPEED);
+        setBounds(leftBoundX, rightBoundX);
     }
 
     // TODO: overload costruttore

@@ -10,6 +10,6 @@ public class PlatformFactory extends EntityFactory {
     public <T extends Platform> T createPlatform(
             Class<T> clazz,
             double x, double y) {
-        return createEntity(clazz, x, y);
+        return create(clazz, x, y);
     }
 }

@@ -3,12 +3,12 @@ package Model;
 import Utilities.Tuple;
 
 public class StillRobot extends Robot{
+    private static final double TURN_TIME = 4.0;
     private double timeSinceTurn = 0.0;
-    private double turnTime;
 
-    public StillRobot(Tuple<Double, Double> position, double turnTime) {
+    public StillRobot(Tuple<Double, Double> position) {
         super(position, new StillMovement(), 0.0);
-        this.turnTime = turnTime;
+        //this.turnTime = turnTime;
     }
 
 
@@ -17,10 +17,10 @@ public class StillRobot extends Robot{
     public void update(double deltaTime) {
         timeSinceTurn += deltaTime;
         Direction oldDir = getDirection();
-        while (timeSinceTurn >= turnTime) {
-            if (timeSinceTurn > turnTime) {
+        while (timeSinceTurn >= TURN_TIME) {
+            if (timeSinceTurn > TURN_TIME) {
                 setDirection(switchDirection());
-                timeSinceTurn -= turnTime;
+                timeSinceTurn -= TURN_TIME;
             }
         }
         if (oldDir != getDirection()) {

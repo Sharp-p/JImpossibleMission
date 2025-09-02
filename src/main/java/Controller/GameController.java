@@ -206,7 +206,7 @@ public class GameController {
                 .filter(r -> r.getClass() != SightRobot.class)
                 .forEach(r -> r.update(deltaTime));
 
-        System.out.println("Pre collisioni: " + gameModel.getAgent().getPosition());
+        //System.out.println("Pre collisioni: " + gameModel.getAgent().getPosition());
         handleCollision();
     }
 
@@ -371,17 +371,17 @@ public class GameController {
                 Rectangle2D entBorder = getBounds(entity);
                 Rectangle2D pltBorder = getBounds(platform);
 
-                System.out.println("Agente: \n\t("
-                        + entBorder.getMinX() + ", " + entBorder.getMinY() + "\n\t"
-                        + entBorder.getMaxX() + ", " + entBorder.getMinY() + "\n\t"
-                        + entBorder.getMinX() + ", " + entBorder.getMaxY() + "\n\t"
-                        + entBorder.getMaxX() + ", " + entBorder.getMaxY() + "\n\t");
-
-                System.out.println("Piattaforma: \n\t("
-                        + pltBorder.getMinX() + ", " + pltBorder.getMinY() + ")\n\t"
-                        + pltBorder.getMaxX() + ", " + pltBorder.getMinY() + ")\n\t"
-                        + pltBorder.getMinX() + ", " + pltBorder.getMaxY() + ")\n\t"
-                        + pltBorder.getMaxX() + ", " + pltBorder.getMaxY() + ")");
+//                System.out.println("Agente: \n\t("
+//                        + entBorder.getMinX() + ", " + entBorder.getMinY() + "\n\t"
+//                        + entBorder.getMaxX() + ", " + entBorder.getMinY() + "\n\t"
+//                        + entBorder.getMinX() + ", " + entBorder.getMaxY() + "\n\t"
+//                        + entBorder.getMaxX() + ", " + entBorder.getMaxY() + "\n\t");
+//
+//                System.out.println("Piattaforma: \n\t("
+//                        + pltBorder.getMinX() + ", " + pltBorder.getMinY() + ")\n\t"
+//                        + pltBorder.getMaxX() + ", " + pltBorder.getMinY() + ")\n\t"
+//                        + pltBorder.getMinX() + ", " + pltBorder.getMaxY() + ")\n\t"
+//                        + pltBorder.getMaxX() + ", " + pltBorder.getMaxY() + ")");
 
                 double x = entity.getPosition().getFirst();
                 double y = entity.getPosition().getSecond();
@@ -397,13 +397,13 @@ public class GameController {
                     {
                         // se dal lato
                         if (entBorder.getMaxY() - pltBorder.getMinY() > pltBorder.getMaxX() - entBorder.getMinX()) {
-                            System.out.println("da destra 1");
+                            //System.out.println("da destra 1");
                             double newX = pltBorder.getMaxX();
                             entity.setPosition(new Tuple<>(newX, y));
                             entity.setVelocity(new Tuple<>(0.0, vY));
                         }
                         else {
-                            System.out.println("da sopra");
+                            //System.out.println("da sopra");
 
                             touchedGround = true;
                             double newY = pltBorder.getMinY() - entity.getSize().getSecond() + 1;
@@ -419,20 +419,20 @@ public class GameController {
                     else if (pltBorder.contains(entBorder.getMinX(), entBorder.getMinY())) {
                         // se dal lato
                         if (pltBorder.getMaxY() - entBorder.getMinY() > pltBorder.getMaxX() - entBorder.getMinX()) {
-                            System.out.println("da destra 2");
+                            //System.out.println("da destra 2");
                             double newX = pltBorder.getMaxX();
                             entity.setPosition(new Tuple<>(newX, y));
                             entity.setVelocity(new Tuple<>(0.0, vY));
                         }
                         else {
-                            System.out.println("da sotto");
+                            //System.out.println("da sotto");
                             double newY = pltBorder.getMaxY();
                             entity.setPosition(new Tuple<>(x, newY));
                             entity.setVelocity(new Tuple<>(vX, 0.0));
                         }
                     }
                     else {
-                        System.out.println("da destra 3");
+                        //System.out.println("da destra 3");
                         double newX = pltBorder.getMaxX();
                         entity.setPosition(new Tuple<>(newX, y));
                         entity.setVelocity(new Tuple<>(0.0, vY));
@@ -444,13 +444,13 @@ public class GameController {
                     if (pltBorder.contains(entBorder.getMaxX(), entBorder.getMaxY())) {
                         // se dal lato
                         if (entBorder.getMaxY() - pltBorder.getMinY() > entBorder.getMaxX() - pltBorder.getMinX()) {
-                            System.out.println("da sinistra");
+                            //System.out.println("da sinistra");
                             double newX = pltBorder.getMinX() - entity.getSize().getFirst();
                             entity.setPosition(new Tuple<>(newX, y));
                             entity.setVelocity(new Tuple<>(0.0, vY));
                         }
                         else {
-                            System.out.println("da sopra");
+                            //System.out.println("da sopra");
 
                             touchedGround = true;
                             double newY = pltBorder.getMinY() - entity.getSize().getSecond() + 1;
@@ -466,27 +466,27 @@ public class GameController {
                     else if (pltBorder.contains(entBorder.getMaxX(), entBorder.getMinY())){
                         // se dal lato
                         if (pltBorder.getMaxY() - entBorder.getMinY() > entBorder.getMaxX() - pltBorder.getMinX()) {
-                            System.out.println("da sinistra");
+                            //System.out.println("da sinistra");
                             double newX = pltBorder.getMinX() - entity.getSize().getFirst();
                             entity.setPosition(new Tuple<>(newX, y));
                             entity.setVelocity(new Tuple<>(0.0, vY));
                         }
                         else {
-                            System.out.println("da sotto");
+                            //System.out.println("da sotto");
                             double newY = pltBorder.getMaxY();
                             entity.setPosition(new Tuple<>(x, newY));
                             entity.setVelocity(new Tuple<>(vX, 0.0));
                         }
                     }
                     else {
-                        System.out.println("da sinistra");
+                        //System.out.println("da sinistra");
                         double newX = pltBorder.getMinX() - entity.getSize().getFirst();
                         entity.setPosition(new Tuple<>(newX, y));
                         entity.setVelocity(new Tuple<>(0.0, vY));
                     }
                 }
                 else {
-                    System.out.println("da sopra");
+                    //System.out.println("da sopra");
 
                     touchedGround = true;
                     double newY = pltBorder.getMinY() - entity.getSize().getSecond() + 1;

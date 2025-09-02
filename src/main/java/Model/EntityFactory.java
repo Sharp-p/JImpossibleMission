@@ -6,7 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public abstract class EntityFactory {
-    public <T extends Entity> T createEntity(
+    public <T extends Entity> T create(
             Class<T> clazz,
             double x, double y) {
         Tuple<Double, Double> position = new Tuple<>(x, y);

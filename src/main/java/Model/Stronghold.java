@@ -13,10 +13,11 @@ import static config.GameConstants.*;
 
 public class Stronghold {
     private List<Platform> platforms = new ArrayList<>();
-    private PlatformFactory pltFactory = new  PlatformFactory();
     private List<FurniturePiece> furniture = new ArrayList<>();
     private List<Rectangle2D> areas = new ArrayList<>();
     private List<Entity> entities = new ArrayList<>();
+    private PlatformFactory pltFactory = new  PlatformFactory();
+    private RobotFactory robotFactory = new  RobotFactory();
 
     private Agent agent;
     private int currentArea = 0;
@@ -34,17 +35,16 @@ public class Stronghold {
         //  sistema delle coordinate (delle platform) di -0.5
         createAgent(13.0,  ROW_HEIGHT - 30, 0);
 
-        entities.add(new StillRobot(new Tuple<>(70.0, ROW_HEIGHT - 18.0), 4));
-        entities.add(new MovingRobot(new Tuple<>(14.0 * STILL_PLATFORM_WIDTH, (double)ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT - GROUND_ROBOT_HEIGHT + 1)));
-        ((MovingRobot)entities.getLast()).setBounds(13 *  STILL_PLATFORM_WIDTH, 15 *  STILL_PLATFORM_WIDTH);
-        entities.add(new SightRobot(new Tuple<>(14.0 * STILL_PLATFORM_WIDTH, ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4.0 - GROUND_ROBOT_HEIGHT + 1)));
-        ((SightRobot)entities.getLast()).setBounds(8 * STILL_PLATFORM_WIDTH, 20 * STILL_PLATFORM_WIDTH);
-        entities.add(new ShootingRobot(
-                new Tuple<>(3.0 * STILL_PLATFORM_WIDTH, ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4.0 - GROUND_ROBOT_HEIGHT + 1),
-                3 * STILL_PLATFORM_WIDTH, 5 * STILL_PLATFORM_WIDTH)
-        );
+//        entities.add(new MovingRobot(new Tuple<>(14.0 * STILL_PLATFORM_WIDTH, (double)ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT - GROUND_ROBOT_HEIGHT + 1)));
+//        ((MovingRobot)entities.getLast()).setBounds(13 *  STILL_PLATFORM_WIDTH, 15 *  STILL_PLATFORM_WIDTH);
+//        entities.add(new SightRobot(new Tuple<>(14.0 * STILL_PLATFORM_WIDTH, ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4.0 - GROUND_ROBOT_HEIGHT + 1)));
+//        ((SightRobot)entities.getLast()).setBounds(8 * STILL_PLATFORM_WIDTH, 20 * STILL_PLATFORM_WIDTH);
+//        entities.add(new ShootingRobot(
+//                new Tuple<>(3.0 * STILL_PLATFORM_WIDTH, ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4.0 - GROUND_ROBOT_HEIGHT + 1),
+//                3 * STILL_PLATFORM_WIDTH, 5 * STILL_PLATFORM_WIDTH)
+//        );
 
-        entities.add((((ShootingRobot)entities.getLast()).getPlasmaBolt()));
+//      entities.add((((ShootingRobot)entities.getLast()).getPlasmaBolt()));
 
         // creates all the world areas on which the viewport can focus
         for (int i = 0; i < 3; i++) {
@@ -56,9 +56,9 @@ public class Stronghold {
 
         // TODO: aggiustare la posizione delle entità per area
         // room 1
-        createRoom7(0);
-        createRoom4(1);
-        
+        createRoom7(1);
+        createRoom4(0);
+
 
     }
 
@@ -156,13 +156,45 @@ public class Stronghold {
             if (platform instanceof MovingPlatform) { ((MovingPlatform) platform).setUpGroup(platforms);}
         }
 
+        createStillRobot(5, 1, areaIndex);
+        createMovingRobot(MovingRobot.class, 14, 1, 13, 15, areaIndex);
+        createMovingRobot(SightRobot.class, 14, 4, 8, 20, areaIndex);
+        createMovingRobot(ShootingRobot.class, 3, 4, 3, 5, areaIndex);
+
         createFurniture(1, 1, areaIndex);
-
         createFurniture(6, 1, areaIndex);
-
         createFurniture(8, 4, areaIndex);
-
         createFurniture(16, 4, areaIndex);
+    }
+
+    private void createStillRobot(int x, int y, int areaIndex) {
+        entities.add(new StillRobot(new Tuple<>(
+                (double) x * STILL_PLATFORM_WIDTH,
+                (double) y * ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT - GROUND_ROBOT_HEIGHT + 1
+        )));
+    }
+
+    /**
+     * It creates and adds to entities an object of type
+     * that is MovingRobot or that extends MovingRobot.
+     * @param x The X platform tile on which the robot will spawn.
+     * @param y The Y platform tile on which the robot will spawn.
+     * @param leftBound The leftmost platform on which the robot will stop
+     * @param rightBound The rightmost platform on which the robot will stop
+     */
+    public <T extends MovingRobot> void createMovingRobot(Class<T> clazz, int x, int y, int leftBound, int rightBound, int areaIndex) {
+        double sX = x * STILL_PLATFORM_WIDTH + areas.get(areaIndex).getMinX();
+        double sY = y * ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT -
+                GROUND_ROBOT_HEIGHT + 1 + areas.get(areaIndex).getMinY();
+
+        double sRB = rightBound * STILL_PLATFORM_WIDTH + areas.get(areaIndex).getMinX();
+        double sLB = leftBound * STILL_PLATFORM_WIDTH + areas.get(areaIndex).getMinX();
+
+        entities.add(robotFactory.createMovingRobot(clazz, sX, sY, sLB, sRB));
+        // the ShootingRobot as a "companion" entity, its projectile,
+        // so it needs to be added
+        if (clazz == ShootingRobot.class)
+            entities.add((((ShootingRobot)entities.getLast()).getPlasmaBolt()));;
     }
 
     /**

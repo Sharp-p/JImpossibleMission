@@ -17,6 +17,12 @@ public class SightRobot extends MovingRobot {
         updateFieldOfView();
     }
 
+    public SightRobot(Tuple<Double, Double> position, double leftBoundX, double rightBoundX) {
+        super(position);
+        setBounds(leftBoundX, rightBoundX);
+        updateFieldOfView();
+    }
+
     // TODO: implementare overload costruttore
 
     private void updateFieldOfView() {
