@@ -19,6 +19,7 @@ public abstract class Entity {
     private Direction direction = Direction.RIGHT;
     private boolean active;
     private boolean visible;
+    private Tuple<Double, Double> spawn;
 
     public Entity(Tuple<Double, Double> position,
                   MovementBehavior movementBehav, Double speed) {
@@ -29,6 +30,7 @@ public abstract class Entity {
         this.speed = speed;
         this.velocity = new Tuple<>(0.0, 0.0);
         this.acceleration = new Tuple<>(0.0, 0.0);
+        this.spawn = position;
     }
 
     public abstract void moveTo(Direction dir, Double deltaTime);
@@ -47,6 +49,8 @@ public abstract class Entity {
 
     public void setSize(Tuple<Double, Double> size) { this.size = size; }
 
+    public void setSpawn(double x, double y) { this.spawn = new Tuple<>(x, y); }
+
     public void setSpeed(Double speed) { this.speed = speed; }
 
     /**
@@ -55,6 +59,8 @@ public abstract class Entity {
      * @return The size
      */
     public Tuple<Double, Double> getSize() { return size; }
+
+    public Tuple<Double, Double> getSpawn() { return this.spawn; }
 
     public Tuple<Double, Double> getAcceleration() { return this.acceleration; }
 

@@ -29,6 +29,10 @@ public class GameModel extends Observable {
         notifyObservers();
     }
 
+    public void resetPosition() {
+
+    }
+
     /**
      * For now, it updates only the physics of the agent
      * @param dt

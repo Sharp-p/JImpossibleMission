@@ -17,11 +17,9 @@ public class Agent extends Entity {
     private boolean grounded = false;
     private boolean hasHitGround = false;
     private boolean usingLift = false;
-    private Tuple<Double, Double> spawn;
 
     public Agent(Tuple<Double, Double> position) {
         super(position, new FreeMovement(), SPEED);
-        spawn = position;
     }
 
     public void applyGravity(double deltaTime) {
@@ -114,8 +112,6 @@ public class Agent extends Entity {
     public boolean hasHitGround() { return hasHitGround; }
 
     public boolean isGrounded() { return this.grounded; }
-
-    public void setSpawn(double x, double y) { this.spawn = new Tuple<>(x, y); }
 
     public void setUsingLift(boolean usingLift) { this.usingLift = usingLift; }
 

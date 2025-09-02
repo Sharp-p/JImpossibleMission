@@ -80,7 +80,6 @@ public class GameController {
         else if (gameModel.isShowingStatistics()) checkShowingStatistics();
         //else pauseMenu();
         //System.out.println("Per terra: " + gameModel.getAgent().isGrounded());
-        System.out.println("Player pos: " + gameModel.getAgent().getPosition());
         checkViewPort();
 
         gameModel.updated(deltaTime);
@@ -101,6 +100,11 @@ public class GameController {
                     gameModel.setCurrentArea(i);
                     gameModel.setCameraX((int)gameModel.getCurrentArea().getMinX());
                     gameModel.setCameraY((int)gameModel.getCurrentArea().getMinY());
+
+                    gameModel.getAgent().setSpawn(
+                            gameModel.getAgent().getPosition().getFirst(),
+                            gameModel.getAgent().getPosition().getSecond()
+                    );
                     break;
                 }
             }
@@ -590,7 +594,11 @@ public class GameController {
 
         // TODO: una volta implementato Statistics aggiungere 10 min al timer
         stopGameLoop();
-        gameModel.createAgent(13, ROW_HEIGHT - 30, 0);
+        // area index 0 because the coordinates are global
+        gameModel.createAgent(
+                gameModel.getAgent().getSpawn().getFirst(),
+                gameModel.getAgent().getSpawn().getSecond(),
+                0);
         GameView gameView = new GameView(view);
         gameView.setGameModel(gameModel);
 //        double scaleFactor = Math.min((SCREEN_WIDTH + 15) / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);

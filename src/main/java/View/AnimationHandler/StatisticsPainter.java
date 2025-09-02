@@ -37,28 +37,30 @@ public class StatisticsPainter {
                 y,
                 scale);
         gc.setFill(MAGENTA);
+
+        System.out.println("OffsetX Y: " + offsetX + "," + offsetY);
         // GraphicsContainer is not automatically scaled
         gc.fillText(
                 "Pezzi di password trovati: " + statistics.getPswPiecesFound() + "/" + statistics.getTotalPswPieces(),
-                10 * scale,
-                (y + 14) * scale);
+                (offsetX + 10) * scale,
+                (offsetY + y + 14) * scale);
 
         gc.fillText(
                 "Codici per disattivare i robot: " + statistics.getRobotsCodeTot(),
-                10 * scale,
-                (y + 20) * scale
+                (offsetX + 10) * scale,
+                (offsetY + y + 20) * scale
         );
 
         gc.fillText(
                 "Codici per resettare le piattaforme: " + statistics.getPlatformsCodeTot(),
-                10 * scale,
-                (y + 26) * scale
+                (offsetX + 10) * scale,
+                (offsetY + y + 26) * scale
         );
 
         gc.fillText(
                 statistics.getGameClock().toString(),
-                (animationHandler.getCurrentFrameWidth() - 30) * scale,
-                (y + 14) * scale
+                (offsetX + animationHandler.getCurrentFrameWidth() - 30) * scale,
+                (offsetY + y + 14) * scale
         );
         gc.setFill(SALMON);
     }

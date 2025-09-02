@@ -61,7 +61,6 @@ public class GameView extends Pane implements Observer {
         gc.save();
 
         gc.translate(-gameModel.getCameraX() * scale.getX(), -gameModel.getCameraY() * scale.getX());
-        System.out.println("Viewport pos:" + gameModel.getCameraX() + ", " + gameModel.getCameraY());
 
         // i want the projectiles to stay behind
         for (ProjectilePainter projectilePainter : projectilePainters) {
