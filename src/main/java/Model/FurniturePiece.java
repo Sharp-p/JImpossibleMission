@@ -4,7 +4,7 @@ import Utilities.Tuple;
 
 public class FurniturePiece extends Entity {
     public static final double MAX_SEARCH_TIME = 4.0;
-    private final FurnitureType type;
+    private FurnitureType type;
     private Code code = new Code();
 
     private boolean beingSearched = false;
@@ -22,6 +22,11 @@ public class FurniturePiece extends Entity {
         int index = (int) (Math.random() * (values.length - 1));
 
         type = values[index];
+    }
+
+    public FurniturePiece(Tuple<Double, Double> position, FurnitureType type) {
+        this(position);
+        this.type = type;
     }
 
     public void use(double deltaTime) {
@@ -46,6 +51,8 @@ public class FurniturePiece extends Entity {
     public void moveTo(Direction dir, Double deltaTime) {}
 
     public boolean isBeingSearched() { return beingSearched; }
+
+    public void setType(FurnitureType type) { this.type = type; }
 
     public Code getCode() { return code; }
 

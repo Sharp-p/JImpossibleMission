@@ -18,6 +18,11 @@ public class MovingPlatform extends Platform {
     private int slotIndex = 0;
     private List<MovingPlatform> group = new ArrayList<>();
 
+    /**
+     * Gets a position, creates a moving platform in
+     * that spot and adds stopping slot in the same position.
+     * @param position Position in which to create the platform
+     */
     public MovingPlatform(Tuple<Double, Double> position) {
         super(position, new VerticalMovement(), SPEED, 26, 7);
         verticalSlots.add(
@@ -29,10 +34,11 @@ public class MovingPlatform extends Platform {
         );
     }
 
-    private boolean isCandidate(Platform platform) {
+
+    private boolean isCandidate(Platform platform, double areaY) {
         Rectangle2D groupBorder = new Rectangle2D(
                 getPosition().getFirst() + (MOVING_PLATFORM_WIDTH / 2),
-                0.0,
+                areaY,
                 2.0,
                 MOVING_PLATFORM_HEIGHT * (LOGICAL_WIDTH / MOVING_PLATFORM_HEIGHT));
 
@@ -46,11 +52,11 @@ public class MovingPlatform extends Platform {
         return platform instanceof MovingPlatform && groupBorder.intersects(platformBorder) && platform != this;
     }
 
-    public void setUpGroup(List<Platform> platforms) {
-        List<Platform> candiates = platforms.stream()
-                .filter(this::isCandidate).toList();
+    public void setUpGroup(List<Platform> platforms, double areaY) {
+        List<Platform> candidates = platforms.stream()
+                .filter(p -> isCandidate(p, areaY)).toList();
 
-        for (Platform platform : candiates) { addToGroup((MovingPlatform) platform); }
+        for (Platform platform : candidates) { addToGroup((MovingPlatform) platform); }
 
     }
 

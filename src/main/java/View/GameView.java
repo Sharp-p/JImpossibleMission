@@ -58,6 +58,16 @@ public class GameView extends Pane implements Observer {
     public void update(Observable o, Object arg) {
         double deltaTime = (double) arg;
 
+        gc.save();
+
+        gc.translate(-gameModel.getCameraX() * scale.getX(), -gameModel.getCameraY() * scale.getX());
+        System.out.println("Viewport pos:" + gameModel.getCameraX() + ", " + gameModel.getCameraY());
+
+        // i want the projectiles to stay behind
+        for (ProjectilePainter projectilePainter : projectilePainters) {
+            projectilePainter.draw(gc, deltaTime, scale.getX());
+        }
+
         for  (PlatformPainter platformPainter : platformPainters) {
             platformPainter.draw(gc, deltaTime, scale.getX());
         }
@@ -70,17 +80,11 @@ public class GameView extends Pane implements Observer {
             groundRobotPainter.draw(gc, deltaTime, scale.getX());
         }
 
-        for (ProjectilePainter projectilePainter : projectilePainters) {
-            projectilePainter.draw(gc, deltaTime, scale.getX());
-        }
-
 
         if (agentPainter.getAnimationHandler().getCurrentAnimation().getName()
                 .equals("searching")) {
             drawSearchBar();
         }
-
-
 
         for (CodePainter codePainter: codePainters) {
             codePainter.draw(gc, deltaTime, scale.getX(), gameModel.getPswPiecesFound(), gameModel.getTotalPswPieces());
@@ -88,9 +92,9 @@ public class GameView extends Pane implements Observer {
 
         agentPainter.draw(gc, deltaTime, scale.getX());
 
-        if (gameModel.isShowingStatistics()) statisticsPainter.draw(gc, scale.getX());
+        if (gameModel.isShowingStatistics()) statisticsPainter.draw(gc, scale.getX(), gameModel.getCameraX(), gameModel.getCameraY());
 
-
+        gc.restore();
 
 //        System.out.println("Altezza canvas: " + canvas.getHeight());
 //        System.out.println("Larghezza canvas: " + canvas.getWidth());

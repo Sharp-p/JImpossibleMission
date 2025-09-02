@@ -1,12 +1,8 @@
 package Model;
 
 import java.util.*;
-import Utilities.*;
 
-import static Model.Robot.GROUND_ROBOT_HEIGHT;
-import static Model.StillPlatform.STILL_PLATFORM_HEIGHT;
-import static Model.StillPlatform.STILL_PLATFORM_WIDTH;
-import static config.GameConstants.*;
+import javafx.geometry.Rectangle2D;
 
 /**
  * An interface for all the models in the game environment.
@@ -16,6 +12,7 @@ public class GameModel extends Observable {
     private GameStatistics statistics = new GameStatistics();
     private Stronghold stronghold;
     private boolean isPaused = false;
+    private Viewport viewport;
 
 
     // TODO: classe statistiche: mantiene tutte le statistiche, timer ecc
@@ -23,6 +20,10 @@ public class GameModel extends Observable {
     public GameModel() {
         // TODO: creare funzioni più comode per l'aggiunta di entità
         stronghold = new Stronghold();
+
+        viewport = new Viewport(
+                (int)stronghold.getCurrentArea().getMinX(),
+                (int)stronghold.getCurrentArea().getMinY());
 
         setChanged();
         notifyObservers();
@@ -53,9 +54,6 @@ public class GameModel extends Observable {
 
     public void addPlatformsCode() { statistics.addPlatformsCode(); }
 
-    public int getRobotsCodeTot() { return statistics.getRobotsCodeTot(); }
-
-    public int getPlatformsCodeTot() { return statistics.getPlatformsCodeTot(); }
 
     /**
      * Function that creates a new agent. Used for every respawn instance.
@@ -66,6 +64,8 @@ public class GameModel extends Observable {
     public void moveAgent(Direction direction, Double deltaTime) { stronghold.moveAgent(direction, deltaTime); }
 
     public GameModel newModel() { return new GameModel(); }
+
+    public void setCurrentArea(int i) { stronghold.setCurrentArea(i); }
 
     public void addEntity(Entity entity) { stronghold.addEntity(entity); }
 
@@ -78,6 +78,28 @@ public class GameModel extends Observable {
     public boolean isShowingStatistics() { return statistics.isShowingStatistics(); }
 
     public boolean isPaused() { return isPaused; }
+
+    public void setStaleVP(boolean staleVP) { viewport.setStaleVP(staleVP); }
+
+    public void setCameraX(int cameraX) { viewport.setCameraX(cameraX); }
+
+    public void setCameraY(int cameraY) { viewport.setCameraY(cameraY); }
+
+    public boolean isVPStale() { return viewport.isVPStale(); }
+
+    public double getCameraX() { return viewport.getCameraX(); }
+
+    public double getCameraY() { return viewport.getCameraY(); }
+
+    public Rectangle2D getCurrentArea() { return stronghold.getCurrentArea(); }
+
+    public int getRobotsCodeTot() { return statistics.getRobotsCodeTot(); }
+
+    public int getPlatformsCodeTot() { return statistics.getPlatformsCodeTot(); }
+
+    public List<Rectangle2D> getAreas() { return stronghold.getAreas(); }
+
+    public int getCurrentAreaIndex() { return stronghold.getCurrentAreaIndex(); }
 
     public GameStatistics getStatistics() { return statistics; }
 

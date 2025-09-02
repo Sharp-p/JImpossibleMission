@@ -8,8 +8,6 @@ import javafx.animation.AnimationTimer;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Shape;
 import javafx.scene.transform.Scale;
 
 import java.util.*;
@@ -74,14 +72,39 @@ public class GameController {
     private void gameLoop(long now) {
         deltaTime = (now - lastTime) / 1_000_000_000.0;
 
+        //System.out.println("DeltaTime: " + deltaTime);
+
         // TODO: if terminal isActive: terminal else OperazioniNormali
 
         if (!gameModel.isPaused()) mainGame();
         else if (gameModel.isShowingStatistics()) checkShowingStatistics();
         //else pauseMenu();
         //System.out.println("Per terra: " + gameModel.getAgent().isGrounded());
+        System.out.println("Player pos: " + gameModel.getAgent().getPosition());
+        checkViewPort();
+
         gameModel.updated(deltaTime);
         lastTime = now;
+    }
+
+    /**
+     * The method that controls if the agent ha moved in another area.
+     * If so it updates the values og the viewport and the spawning point of the agent.
+     */
+    private void checkViewPort() {
+        Rectangle2D currentArea = gameModel.getCurrentArea();
+        Rectangle2D agentBorder = getBounds(gameModel.getAgent());
+        System.out.println("Current area: " + currentArea);
+        if (!currentArea.intersects(agentBorder)) {
+            for (int i = 0; i < gameModel.getAreas().size(); i++) {
+                if (gameModel.getAreas().get(i).intersects(agentBorder)) {
+                    gameModel.setCurrentArea(i);
+                    gameModel.setCameraX((int)gameModel.getCurrentArea().getMinX());
+                    gameModel.setCameraY((int)gameModel.getCurrentArea().getMinY());
+                    break;
+                }
+            }
+        }
     }
 
     public void statisticsKeyReleased(KeyEvent e) {
@@ -363,7 +386,7 @@ public class GameController {
     }
 
     // TODO: [REFACTOR] cambiare nome variabile
-    private void platformCollision(Agent entity) {
+    private void platformCollision(Agent entity, double difWidth) {
         boolean touchedGround = false;
         // System.out.println("pre-ciclo");
         for (Platform platform : gameModel.getPlatforms()) {
@@ -425,7 +448,7 @@ public class GameController {
                             entity.setVelocity(new Tuple<>(0.0, vY));
                         }
                         else {
-                            //System.out.println("da sotto");
+                            //System.out.println("da sotto Destra");
                             double newY = pltBorder.getMaxY();
                             entity.setPosition(new Tuple<>(x, newY));
                             entity.setVelocity(new Tuple<>(vX, 0.0));
@@ -444,7 +467,7 @@ public class GameController {
                     if (pltBorder.contains(entBorder.getMaxX(), entBorder.getMaxY())) {
                         // se dal lato
                         if (entBorder.getMaxY() - pltBorder.getMinY() > entBorder.getMaxX() - pltBorder.getMinX()) {
-                            //System.out.println("da sinistra");
+                            //System.out.println("da sinistra 1");
                             double newX = pltBorder.getMinX() - entity.getSize().getFirst();
                             entity.setPosition(new Tuple<>(newX, y));
                             entity.setVelocity(new Tuple<>(0.0, vY));
@@ -465,21 +488,21 @@ public class GameController {
                     // distinugo lato e sotto
                     else if (pltBorder.contains(entBorder.getMaxX(), entBorder.getMinY())){
                         // se dal lato
-                        if (pltBorder.getMaxY() - entBorder.getMinY() > entBorder.getMaxX() - pltBorder.getMinX()) {
-                            //System.out.println("da sinistra");
+                        if (pltBorder.getMaxY() - entBorder.getMinY() > entBorder.getMaxX() - pltBorder.getMinX() + difWidth) {
+                            //System.out.println("da sinistra 1");
                             double newX = pltBorder.getMinX() - entity.getSize().getFirst();
                             entity.setPosition(new Tuple<>(newX, y));
                             entity.setVelocity(new Tuple<>(0.0, vY));
                         }
                         else {
-                            //System.out.println("da sotto");
+                            //System.out.println("da sotto Sinistra");
                             double newY = pltBorder.getMaxY();
                             entity.setPosition(new Tuple<>(x, newY));
                             entity.setVelocity(new Tuple<>(vX, 0.0));
                         }
                     }
                     else {
-                        //System.out.println("da sinistra");
+                        //System.out.println("da sinistra 3");
                         double newX = pltBorder.getMinX() - entity.getSize().getFirst();
                         entity.setPosition(new Tuple<>(newX, y));
                         entity.setVelocity(new Tuple<>(0.0, vY));
@@ -525,6 +548,7 @@ public class GameController {
 
     public void handleCollision() {
         double osY = gameModel.getAgent().getSize().getSecond();
+        double osX = gameModel.getAgent().getSize().getFirst();
 
         // updates the frame so it gets the right size for the collision updates
         view.getGameView().getAgentPainter().getAnimationHandler().update(deltaTime);
@@ -533,14 +557,14 @@ public class GameController {
 //                " "  + gameModel.getAgent().getSize().getSecond());
 
         double difY = osY - gameModel.getAgent().getSize().getSecond();
-
+        double difX = osX - gameModel.getAgent().getSize().getFirst();
         // adjust the position with the updated size
         gameModel.getAgent().setPosition(new Tuple<>(
                 gameModel.getAgent().getPosition().getFirst(),
                 gameModel.getAgent().getPosition().getSecond() + difY
         ));
 
-        platformCollision(gameModel.getAgent());
+        platformCollision(gameModel.getAgent(), difX);
 
         enemyCollision(gameModel.getAgent());
     }

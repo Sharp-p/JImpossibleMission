@@ -8,7 +8,7 @@ import javafx.geometry.Rectangle2D;
 public class CollisionHandler {
     public static Rectangle2D getBounds(Entity entity) {
         Rectangle2D bounds = null;
-        // if the entity is an agent and is grounded
+        // if the entity is an agent and is not grounded
         if (entity instanceof Agent) {
             if (!((Agent)entity).isGrounded()) {
                 bounds = new Rectangle2D(

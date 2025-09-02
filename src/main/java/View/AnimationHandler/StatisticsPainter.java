@@ -25,15 +25,15 @@ public class StatisticsPainter {
         animationHandler.addAnimation(background);
     }
 
-    public void draw(GraphicsContext gc, double scale) {
+    public void draw(GraphicsContext gc, double scale, double offsetX, double offsetY) {
         //animationHandler.update(deltaTime);
         // made the rows too much tall in platforms number so the scale is messed up.
         // hardcoded, not a good solution, but for now a solution
-        int y = LOGICAL_HEIGHT - 51;
+        int y = LOGICAL_HEIGHT - 51 + (int)offsetY;
 
         animationHandler.render(
                 gc,
-                0,
+                offsetX,
                 y,
                 scale);
         gc.setFill(MAGENTA);

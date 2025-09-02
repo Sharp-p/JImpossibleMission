@@ -23,8 +23,6 @@ public class SightRobot extends MovingRobot {
         updateFieldOfView();
     }
 
-    // TODO: implementare overload costruttore
-
     private void updateFieldOfView() {
         // if is turning it behaves as if it isn't watching in any direction
         if (isTurning()) {
@@ -63,8 +61,8 @@ public class SightRobot extends MovingRobot {
             }
             // in my direction there is an agent
             // if I'm not on a bound I move in my direction
-            if (!(robotBorders.intersects(getLeftBound()) && getDirection() == Direction.LEFT) ||
-                    (robotBorders.intersects(getRightBound()) && getDirection() == Direction.RIGHT)) {
+            if (!((robotBorders.intersects(getLeftBound()) && getDirection() == Direction.LEFT) ||
+                    (robotBorders.intersects(getRightBound()) && getDirection() == Direction.RIGHT))) {
                 moveTo(getDirection(), deltaTime);
             }
         }

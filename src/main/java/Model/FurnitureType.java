@@ -1,7 +1,7 @@
 package Model;
 
 public enum FurnitureType {
-    POP_MACHINE(12,21),
+    POP_MACHINE(15,21),
     CIG_MACHINE(39, 31),
     CANDY_MACHINE(32, 31),
     BATH_TUB(47, 31),
