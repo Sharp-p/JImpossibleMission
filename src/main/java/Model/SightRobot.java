@@ -32,7 +32,6 @@ public class SightRobot extends MovingRobot {
             fieldOfView = new Rectangle2D(
                     getPosition().getFirst() + GROUND_ROBOT_WIDTH,
                     getPosition().getSecond() + GROUND_ROBOT_HEIGHT / 2.0,
-                    // TODO: mettere dimensione stanza
                     STILL_PLATFORM_WIDTH * 20,
                     3
             );
@@ -41,7 +40,6 @@ public class SightRobot extends MovingRobot {
             fieldOfView = new Rectangle2D(
                     getPosition().getFirst() - STILL_PLATFORM_WIDTH * 20,
                     getPosition().getSecond() + GROUND_ROBOT_HEIGHT / 2.0,
-                    // TODO: mettere dimensioni stanza
                     STILL_PLATFORM_WIDTH * 20,
                     3
             );

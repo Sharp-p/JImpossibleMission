@@ -2,6 +2,9 @@ package Model;
 
 import Utilities.Tuple;
 
+import static Model.FurnitureType.END_ROOM;
+import static Model.FurnitureType.TERMINAL;
+
 public class FurniturePiece extends Entity {
     public static final double MAX_SEARCH_TIME = 4.0;
     public static final double MAX_POINTS = 500.0;
@@ -12,8 +15,6 @@ public class FurniturePiece extends Entity {
     private double searchTime;
     private double points;
 
-    // TODO: aggiungere punteggio quando consumato
-
     public FurniturePiece(Tuple<Double, Double> position) {
         super(position, new StillMovement(), 0.0);
 
@@ -23,12 +24,14 @@ public class FurniturePiece extends Entity {
 
         points = MAX_POINTS * percentage;
 
-        // chooses a random Type
-        FurnitureType[] values = FurnitureType.values();
+        // chooses a random Type, different from TERMINAL or END_ROOM
+        do {
+            FurnitureType[] values = FurnitureType.values();
 
-        int index = (int) (Math.random() * (values.length - 1));
+            int index = (int) (Math.random() * (values.length - 1));
 
-        type = values[index];
+            type = values[index];
+        } while (type == TERMINAL || type == END_ROOM);
     }
 
     public FurniturePiece(Tuple<Double, Double> position, FurnitureType type) {

@@ -9,7 +9,8 @@ import javafx.geometry.Rectangle2D;
  * To act as a tunnel to all other model it incorporates the other models methods.
  */
 public class GameModel extends Observable {
-    private static final double DISABLE_ROBOTS_TIME = 15.0;
+    public static final double DISABLE_ROBOTS_TIME = 15.0;
+    public static final double WARNING_TIME = 3.0;
 
     private GameStatistics statistics = new GameStatistics();
     private Stronghold stronghold;
@@ -19,9 +20,9 @@ public class GameModel extends Observable {
     private boolean isPaused = false;
     private boolean robotsDisabled = false;
     private double disableBotsTimer = 0.0;
+    private double warningTextTimer = 0.0;
+    private EndGame endGame;
 
-
-    // TODO: timer che si aggiorna ad ogni morte
 
     public GameModel() {
         stronghold = new Stronghold();
@@ -32,6 +33,7 @@ public class GameModel extends Observable {
 
         gameMenuModel = new GameMenuModel();
         terminal = new Terminal();
+        endGame = new EndGame();
 
         setChanged();
         notifyObservers();
@@ -80,6 +82,16 @@ public class GameModel extends Observable {
     public void updated(double dt) {
         setChanged();
         notifyObservers(dt);
+    }
+
+    public boolean addWarningTime(double deltaTime) {
+        warningTextTimer += deltaTime;
+        if (warningTextTimer > DISABLE_ROBOTS_TIME) {
+            warningTextTimer = 0;
+            endGame.setStatus(EndGameStatus.NONE);
+            return true;
+        }
+        return false;
     }
 
     public void setRobotsDisabled(boolean robotsDisabled) { this.robotsDisabled = robotsDisabled; }
@@ -131,11 +143,15 @@ public class GameModel extends Observable {
 
     public void setCameraY(int cameraY) { viewport.setCameraY(cameraY); }
 
-    public void setEnded(boolean ended) { statistics.setEnded(ended); }
-
     public void setWon(boolean won) { statistics.setWon(won); }
 
     public void nextMenuOption() { gameMenuModel.next(); }
+
+    public void setEndGameStatus(EndGameStatus endGameStatus) { endGame.setStatus(endGameStatus); }
+
+    public EndGame getEndGame() { return endGame; }
+
+    public EndGameStatus getEndGameStatus() { return endGame.getStatus(); }
 
     public GameMenuModel getGameMenuModel() { return gameMenuModel; }
 
@@ -167,7 +183,10 @@ public class GameModel extends Observable {
 
     public boolean getWon() { return statistics.getWon(); }
 
-    public boolean hasEnded() { return statistics.getEnded(); }
+    public boolean hasEnded() {
+        return endGame.getStatus().equals(EndGameStatus.END_ROOM) ||
+                endGame.getStatus().equals(EndGameStatus.SCOREBOARD);
+    }
 
     public boolean isVPStale() { return viewport.isVPStale(); }
 

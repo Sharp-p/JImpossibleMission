@@ -8,10 +8,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Scale;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 import static Model.CodeType.NONE;
 import static Model.CodeType.PSW_PIECE;
@@ -34,12 +31,12 @@ public class GameView extends Pane implements Observer {
     private StatisticsPainter statisticsPainter;
     private GameMenuPainter gameMenuPainter;
     private TerminalPainter terminalPainter;
+    private EndGameView endGameView;
     private GameModel gameModel;
 
     public GameView(View view) {
         this.view = view;
 
-        // TODO: scrivere che si esce con esc
         getChildren().addAll(canvas);
 
         // to not mess up the pixel art
@@ -60,14 +57,21 @@ public class GameView extends Pane implements Observer {
     public void update(Observable o, Object arg) {
         double deltaTime = (double) arg;
 
-        if (gameModel.hasEnded()) {
-            System.out.println("gioco finito.");
-            // TODO: gestire schermata punteggi e ritorno al menu
-        }
-
+        System.out.println("Eseguo?");
         gc.save();
 
         gc.translate(-gameModel.getCameraX() * scale.getX(), -gameModel.getCameraY() * scale.getX());
+
+        if (gameModel.getEndGameStatus() == EndGameStatus.WARNING) drawWarning();
+        else if (gameModel.getEndGameStatus() != EndGameStatus.NONE) {
+            System.out.println("Entro?");
+            Optional<FurniturePiece> endRoom = gameModel.getFurniture().stream().
+                    filter(p -> p.getType().equals(FurnitureType.END_ROOM)).
+                    findFirst();
+
+            if (endRoom.isPresent()) endGameView.draw(deltaTime, endRoom.get(), view);
+            else System.out.println("[WARNING] END_ROOM not present.");
+        }
 
         if (gameModel.isShowingTerminal())
             terminalPainter.draw(
@@ -76,8 +80,6 @@ public class GameView extends Pane implements Observer {
                     gameModel.getCameraX(),
                     gameModel.getCameraY()
             );
-        // TODO: continuare a testare e sistemare l'altezza
-        //  dei groups per i lift che non vengono rilevati
         else {
             // I want the projectiles to stay behind
                 for (ProjectilePainter projectilePainter : projectilePainters) {
@@ -123,6 +125,35 @@ public class GameView extends Pane implements Observer {
 //        System.out.println("Larghezza schermo: " + getWidth());
     }
 
+    private void drawWarning() {
+        Optional<FurniturePiece> endRoom = gameModel.getFurniture().stream().
+                filter(p -> p.getType().equals(FurnitureType.END_ROOM)).
+                findFirst();
+
+        double x = 0, y = 0, width = 0, height = 0;
+
+        if (endRoom.isPresent()) {
+            x = endRoom.get().getPosition().getFirst();
+            y = endRoom.get().getPosition().getSecond();
+            width = endRoom.get().getSize().getFirst();
+            height = endRoom.get().getSize().getSecond();
+            System.out.println("x: " + x * scale.getX() + " y: " + y * scale.getX() + " width: " + width + " height: " + height);
+            System.out.println(gameModel.getAgent().getPosition());
+        }
+
+        gc.setFill(GREEN);
+        x = x - (width / 4) * 3;
+        y = y - height / 40;
+
+        gc.fillText(
+                "Hai trovato solo " + gameModel.getPswPiecesFound() + "/" + gameModel.getTotalPswPieces() +". Cerca meglio!",
+                x * scale.getX(),
+                y * scale.getX()
+        );
+        gc.setFill(SALMON);
+
+    }
+
     private void drawSearchBar() {
         List<FurniturePiece> furniture = gameModel.getFurniture();
 
@@ -135,10 +166,10 @@ public class GameView extends Pane implements Observer {
                 double actualWidth = PROGRESSBAR_DIM * fraction;
 
                 double midFurniture = furniturePiece.getPosition().getFirst() + furniturePiece.getSize().getFirst() / 2;
-
-                // scaled dim and coordiantes (che pane is already scaled,
+                System.out.println(midFurniture);
+                // scaled dim and coordiantes (pane is already scaled,
                 // but the canvas and the gc use their own coordinate
-                // system that needs tu be manually scaled)
+                // system that needs to be manually scaled)
                 actualWidth *= scale.getX();
                 midFurniture *= scale.getX();
                 double sY = gameModel.getAgent().getPosition().getSecond() * scale.getX();
@@ -146,7 +177,7 @@ public class GameView extends Pane implements Observer {
 
                 gc.fillRect(
                         midFurniture - actualWidth / 2,
-                         - 14,
+                         sY - 14,
                         actualWidth,
                         4
                 );
@@ -170,6 +201,14 @@ public class GameView extends Pane implements Observer {
 
         // TODO: da resettare penso pure la view ogni volta che rientro
         //  nel menu altrimenti danni
+
+        // create the endGameView
+        endGameView = new EndGameView(
+                gameModel.getEndGame(),
+                gameModel.getStatistics(),
+                getWidth(), getHeight());
+
+        view.showGame();
 
         // creates a painter for each platform
         for (Platform platform : gameModel.getPlatforms()) {

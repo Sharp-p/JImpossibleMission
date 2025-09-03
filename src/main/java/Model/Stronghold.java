@@ -23,13 +23,6 @@ public class Stronghold {
     private Agent agent;
     private int currentArea = 1;
 
-    // TODO: se nell'area di una stanza spostare view su quella stanza
-
-    // TODO nella classe stanza costruzione delle piattaforme,
-    //  con coordinate rispetto al (MinX,MinY) della stanza
-
-    // TODO: (MinX, MinY) della stanza secondo il sistema delle coordinate delle platforms,
-    //  cosi le platforms interne possono usarlo tranquillamente
 
     public Stronghold() {
         // TODO: se c'hai proprio sbattimento, slidare tutto il
@@ -510,6 +503,7 @@ public class Stronghold {
     public void createEndRoom(int x, int y, int areaIndex) {
         createFurniture(x, y, areaIndex);
         furniture.getLast().setType(FurnitureType.END_ROOM);
+        System.out.println("PORCODIO " + furniture.getLast().getPosition());
     }
 
     /**
@@ -569,10 +563,6 @@ public class Stronghold {
             Tuple<Double, Double> pos = new Tuple<>(
                     (areas.get(areaIndex).getMinX() + STILL_PLATFORM_WIDTH * (side.equals("left") ? 9 : 12)),
                     (double) sUpper + STILL_PLATFORM_HEIGHT * i);
-
-            if (areas.get(areaIndex).getMinY() != 0) {
-                System.out.println("Offet area Y:" + areas.get(areaIndex).getMinY() + "\nPosizione piattaforma Y: " + (sUpper + STILL_PLATFORM_HEIGHT * i));
-            }
 
             platforms.add(pltFactory.createPlatform(
                     Wall.class, pos.getFirst(), pos.getSecond()

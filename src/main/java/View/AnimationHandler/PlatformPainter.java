@@ -33,7 +33,6 @@ public class PlatformPainter extends EntityPainter {
     @Override
     public void draw(GraphicsContext gc, double dt, double scale) {
         Entity platform = getEntity();
-        // TODO: checks on the Platform class to play the correct animation
         if (platform.getClass() ==  StillPlatform.class) getAnimationHandler().play("still");
         else if(platform.getClass() == MovingPlatform.class) getAnimationHandler().play("moving");
         else getAnimationHandler().play("wall");

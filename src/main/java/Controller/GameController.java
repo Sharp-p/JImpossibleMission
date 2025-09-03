@@ -25,6 +25,12 @@ public class GameController {
     private Double deltaTime = 0.0;
     private long lastTime;
 
+    /**
+     * Define the action to do on the asynchronous key pressed and key released.
+     * Then it make sure that there is at least one psw piece hidden in the game.
+     * @param gameModel The game model
+     * @param view The view
+     */
     public GameController(GameModel gameModel, View view) {
         this.gameModel = gameModel;
         this.view = view;
@@ -32,6 +38,7 @@ public class GameController {
         // asynchronous input listening
         // it redirects the KeyEvent to the correct method
         view.getGameView().setOnKeyPressed(e -> {
+            System.out.println(e.getCode());
             if (!gameModel.isPaused()) {
                 mainGameKeyPressed(e);
             }
@@ -40,6 +47,12 @@ public class GameController {
             }
             else if (gameModel.isShowingTerminal()) {
                 terminalKeyPressed(e);
+            }
+            else if (gameModel.getEndGameStatus().equals(EndGameStatus.END_ROOM)) {
+                endRoomKeyPressed(e);
+            }
+            else if (gameModel.getEndGameStatus().equals(EndGameStatus.SCOREBOARD)) {
+                scoreboardKeyPressed(e);
             }
             pressedKeys.add(e.getCode());
             System.out.println(e.getCode());
@@ -58,8 +71,7 @@ public class GameController {
 
 
         // TODO: end_room se premo UP controlla se ho tutti i psw_piece della partita
-        // TODO: se un furniture piece non è visible vuol dire
-        //  che l'ho cercato e qualsisi code al suo interno l'ho trovato
+
 
         // before starting the game loop, checks if any piece of furniture contains a psw_piece
         // if not takes a furniture piece and set the code to a psw_piece
@@ -67,13 +79,39 @@ public class GameController {
                 .noneMatch(p -> p.getCode().getType() == CodeType.PSW_PIECE)) {
             Optional<FurniturePiece> furniturePiece = gameModel.getFurniture().stream()
                     .findAny();
-
+            // TODO: togliere le possibilità che uno di questi sia un terminal o end_room
             furniturePiece.ifPresent(piece -> piece.setCode(new Code(CodeType.PSW_PIECE)));
             gameModel.addTotalPswPieces();
             System.out.println(furniturePiece.get() + "\nSONO ENTRATO QUA");
         }
     }
 
+    /**
+     * Method that handles the input while in the game pause menu
+     * @param e The key event that contains the pressed key code
+     */
+    private void scoreboardKeyPressed(KeyEvent e) {
+        if (e.getCode() == KeyCode.ENTER) {
+            view.showMenu();
+            gameLoopTimer.stop();
+        }
+    }
+
+    /**
+     * Method that handles the input while in the end room
+     * @param e The key event that contains the pressed key code
+     */
+    private void endRoomKeyPressed(KeyEvent e) {
+        System.out.println("END ROOM");
+        if (e.getCode() == KeyCode.ENTER) {
+            gameModel.setEndGameStatus(EndGameStatus.SCOREBOARD);
+        }
+    }
+
+    /**
+     * Method that handles the input while in the terminal
+     * @param e The key event that contains the pressed key code
+     */
     private void terminalKeyPressed(KeyEvent e) {
         switch (e.getCode()) {
             case UP -> gameModel.previousTerminalOption();
@@ -130,10 +168,11 @@ public class GameController {
                         gameModel.setPaused(false);
                     }
                     case 1 -> {
-                        gameLoopTimer.stop();
+                        gameModel.setEndGameStatus(EndGameStatus.SCOREBOARD);
+                        gameModel.setShowingMenu(false);
                         gameModel.getStatistics().getGameClock().stop();
-                        // TODO: classi per endGame
-                        view.showMenu();
+                        gameLoopTimer.stop();
+                        gameModel.updated(0.0);
                     }
                 }
             }
@@ -145,8 +184,6 @@ public class GameController {
 
         //System.out.println("DeltaTime: " + deltaTime);
 
-        // TODO: if terminal isActive: terminal else OperazioniNormali
-
         if (!gameModel.isPaused()) mainGame();
         else if (gameModel.isShowingStatistics()) checkShowingStatistics();
         //else pauseMenu();
@@ -156,6 +193,8 @@ public class GameController {
         checkViewPort();
 
         checkTime();
+
+        gameModel.addWarningTime(deltaTime);
 
         gameModel.updated(deltaTime);
         lastTime = now;
@@ -244,11 +283,19 @@ public class GameController {
                 furniturePiece.get().setSearching(false);
             }
         }
+
+        if (e.getCode() == KeyCode.V) {
+
+            int tot = gameModel.getTotalPswPieces();
+
+            for (int i = 0; i < tot; i++) {
+                gameModel.foundPswPiece();
+            }
+        }
     }
 
     private void mainGame() {
         // OPERATIONS ON THE PLAYER POSITION:
-
         // if the agent was in air and has now hit the ground, changes the animation
         // and updates the flag
         if (gameModel.getAgent().hasHitGround()) {
@@ -326,7 +373,7 @@ public class GameController {
     private void checkPlayerFallen() {
         Rectangle2D currentArea = gameModel.getCurrentArea();
         Rectangle2D agentBorder = getBounds(gameModel.getAgent());
-        System.out.println("Colonna: " + currentArea.getMinX() / LOGICAL_WIDTH);
+        // System.out.println("Colonna: " + currentArea.getMinX() / LOGICAL_WIDTH);
 
         // if in a not lift column and fallen from the room
         // OR any position fallen over the grid Y size
@@ -354,7 +401,16 @@ public class GameController {
                     gameModel.setPaused(true);
                     gameModel.setShowingTerminal(true);
                 }
-                // TODO: porta di fine gioco
+                else if (furniturePiece.getType() == FurnitureType.END_ROOM) {
+                    if (gameModel.getPswPiecesFound() == gameModel.getTotalPswPieces()) {
+                        gameModel.setPaused(true);
+                        gameModel.setEndGameStatus(EndGameStatus.END_ROOM);
+                        gameModel.setWon(true);
+                        gameModel.getStatistics().getGameClock().stop();
+                        gameLoopTimer.stop();
+                    }
+                    else gameModel.setEndGameStatus(EndGameStatus.WARNING);
+                }
                 else furniturePiece.use(deltaTime);
                 // if now it is not active I've completed the search
                 if (!furniturePiece.isActive()) {
@@ -682,7 +738,8 @@ public class GameController {
     private void checkTime() {
         // ends the game if the hour is past 18pm
         if (gameModel.getTime() >= 3600 * 18) {
-            gameModel.setEnded(true);
+            gameModel.setEndGameStatus(EndGameStatus.SCOREBOARD);
+            gameModel.setPaused(true);
         }
     }
 

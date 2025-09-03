@@ -31,7 +31,6 @@ public abstract class Robot extends Enemy {
 
     public boolean isTurning() { return isTurning; }
 
-    // TODO: per ogni tipo di robot update del comportamento
     /**
      * Defines the robot behavior
      */

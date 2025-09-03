@@ -21,7 +21,6 @@ public class MovingRobot extends Robot {
         setBounds(leftBoundX, rightBoundX);
     }
 
-    // TODO: overload costruttore
 
     /**
      * Requires the X coordinate of the left most and

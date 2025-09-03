@@ -8,10 +8,11 @@ public class GameStatistics {
     private double score = 0.0;
     private GameClock gameClock = new GameClock();
     private boolean showingStatistics = false;
-    private boolean ended = false;
     private boolean won = false;
 
-    // TODO: statistiche stanze appena ho le stanze
+    public int getFinalScore() {
+        return ((3600 * 18) - gameClock.getSeconds()) * 2 + (int)score;
+    }
 
     public GameStatistics() {
         gameClock.start();
@@ -37,13 +38,9 @@ public class GameStatistics {
 
     public double getScore() { return score; }
 
-    public void setEnded(boolean ended) { this.ended = ended; }
-
     public void setWon(boolean won) { this.won = won; }
 
     public int getSeconds() { return gameClock.getSeconds();}
-
-    public boolean getEnded() { return ended; }
 
     public boolean getWon() { return won; }
 
