@@ -152,7 +152,7 @@ public class GameController {
         //else pauseMenu();
         //System.out.println("Per terra: " + gameModel.getAgent().isGrounded());
 
-        // to update the camera
+        // to update the camera and the spawn position of the agent
         checkViewPort();
 
         checkTime();
@@ -316,6 +316,24 @@ public class GameController {
         //System.out.println("Pre collisioni: " + gameModel.getAgent().getPosition());
         handleCollision();
 
+        checkPlayerFallen();
+    }
+
+    /**
+     * Checks if the player as fallen over the MaxY of the area,
+     * if so it issues an agentHit.
+     */
+    private void checkPlayerFallen() {
+        Rectangle2D currentArea = gameModel.getCurrentArea();
+        Rectangle2D agentBorder = getBounds(gameModel.getAgent());
+        System.out.println("Colonna: " + currentArea.getMinX() / LOGICAL_WIDTH);
+
+        // if in a not lift column and fallen from the room
+        // OR any position fallen over the grid Y size
+        if ((agentBorder.getMinY() > currentArea.getMaxY() &&
+                (currentArea.getMinX() / LOGICAL_WIDTH) % 2 == 0) ||
+                agentBorder.getMinY() > currentArea.getHeight() * 3)
+            agentHit();
     }
 
     private void useFurniture(double deltaTime) {
@@ -336,6 +354,7 @@ public class GameController {
                     gameModel.setPaused(true);
                     gameModel.setShowingTerminal(true);
                 }
+                // TODO: porta di fine gioco
                 else furniturePiece.use(deltaTime);
                 // if now it is not active I've completed the search
                 if (!furniturePiece.isActive()) {
