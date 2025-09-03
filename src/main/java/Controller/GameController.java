@@ -3,19 +3,17 @@ package Controller;
 import Model.*;
 import Utilities.Tuple;
 import View.View;
-import View.GameView;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.transform.Scale;
 
 import java.util.*;
 
 import static Controller.CollisionHandler.checkCollision;
 import static Controller.CollisionHandler.getBounds;
 import static Model.Direction.*;
-import static config.GameConstants.*;
+import static config.GameConstants.LOGICAL_WIDTH;
 
 public class GameController {
     private final GameModel gameModel;
@@ -32,12 +30,16 @@ public class GameController {
         this.view = view;
 
         // asynchronous input listening
+        // it redirects the KeyEvent to the correct method
         view.getGameView().setOnKeyPressed(e -> {
             if (!gameModel.isPaused()) {
                 mainGameKeyPressed(e);
             }
             else if (gameModel.isShowingMenu()) {
                 gameMenuKeyPressed(e);
+            }
+            else if (gameModel.isShowingTerminal()) {
+                terminalKeyPressed(e);
             }
             pressedKeys.add(e.getCode());
             System.out.println(e.getCode());
@@ -72,20 +74,67 @@ public class GameController {
         }
     }
 
-    private void gameMenuKeyPressed(KeyEvent e) {
-        if (e.getCode() == KeyCode.RIGHT) gameModel.nextMenuOption();
-        else if (e.getCode() == KeyCode.LEFT) gameModel.previousMenuOption();
-        else if (e.getCode() == KeyCode.ENTER) {
-            switch (gameModel.getMenuOption()) {
-                case 0 -> {
-                    gameModel.setShowingMenu(false);
-                    gameModel.setPaused(false);
+    private void terminalKeyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case UP -> gameModel.previousTerminalOption();
+            case DOWN -> gameModel.nextTerminalOption();
+            case ENTER -> {
+                switch (gameModel.getTerminalSelection()) {
+                    case 0 -> {
+                        if (gameModel.getRobotsCodeTot() > 0) {
+                            gameModel.setRobotsDisabled(true);
+                            gameModel.consumeRobotsCode();
+                            gameModel.setPaused(false);
+                            gameModel.setShowingTerminal(false);
+                        }
+                    }
+                    case 1 -> {
+                        if (gameModel.getPlatformsCodeTot() > 0) {
+                            gameModel.getMovingPlatforms().forEach(
+                                    movingPlatform -> {
+                                        // on even columns there are regular moving platforms
+                                        // on odd columns there are lifts, so larger groupBorder Y
+                                        // if the moving platform is not a lift (even column)
+                                        if ((int)(movingPlatform.getPosition().getFirst() / LOGICAL_WIDTH) % 2 == 0) {
+                                            movingPlatform.setPosition(movingPlatform.getSpawn());
+                                            // to keep coherence between the position and the logical slots
+                                            movingPlatform.setSlotIndex(movingPlatform.getSlotIndex() + 1);
+                                        }
+                                    });
+                            gameModel.consumePlatformsCode();
+                            gameModel.setPaused(false);
+                            gameModel.setShowingTerminal(false);
+                        }
+                    }
+                    case 2 -> {
+                        gameModel.setPaused(false);
+                        gameModel.setShowingTerminal(false);
+                    }
                 }
-                case 1 -> {
-                    gameLoopTimer.stop();
-                    gameModel.getStatistics().getGameClock().stop();
-                    // TODO: classi per endGame
-                    view.showMenu();
+            }
+        }
+    }
+
+    /**
+     * Method that handles the input while in the game pause menu
+     * @param e The key event that contains the pressed key code
+     */
+    private void gameMenuKeyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case RIGHT -> gameModel.nextMenuOption();
+            case LEFT -> gameModel.previousMenuOption();
+            case ENTER -> {
+                switch (gameModel.getGameMenuSelection()) {
+                    case 0 -> {
+                        gameModel.setShowingMenu(false);
+                        gameModel.setPaused(false);
+                    }
+                    case 1 -> {
+                        gameLoopTimer.stop();
+                        gameModel.getStatistics().getGameClock().stop();
+                        // TODO: classi per endGame
+                        view.showMenu();
+                    }
                 }
             }
         }
@@ -119,7 +168,7 @@ public class GameController {
     private void checkViewPort() {
         Rectangle2D currentArea = gameModel.getCurrentArea();
         Rectangle2D agentBorder = getBounds(gameModel.getAgent());
-        System.out.println("Current area: " + currentArea);
+        //System.out.println("Current area: " + currentArea);
         if (!currentArea.intersects(agentBorder)) {
             for (int i = 0; i < gameModel.getAreas().size(); i++) {
                 if (gameModel.getAreas().get(i).intersects(agentBorder)) {
@@ -152,6 +201,7 @@ public class GameController {
         if (e.getCode() == KeyCode.ESCAPE) {
             gameModel.setPaused(true);
             gameModel.setShowingMenu(true);
+            gameModel.getStatistics().getGameClock().stop();
         }
         else if (e.getCode() == KeyCode.CONTROL) {
             gameModel.setPaused(true);
@@ -209,15 +259,18 @@ public class GameController {
         // takes keys in input only if on the ground
         if (gameModel.getAgent().isGrounded()) {
 
-            //System.out.println("Direzione: " + gameModel.getAgent().getDirection());
-            if (pressedKeys.contains(KeyCode.UP) || (gameModel.isUsingLift() && gameModel.getAgent().getDirection() == UP)) {
-                view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
-                platformMovement(UP);
-                searchFurniture(deltaTime);
-            }
-            if (pressedKeys.contains(KeyCode.DOWN) || (gameModel.isUsingLift() && gameModel.getAgent().getDirection() == DOWN)) {
-                view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
-                platformMovement(DOWN);
+            // if I'm running, I'm only running
+            if (!view.getGameView().getAgentPainter().getAnimationHandler().getCurrentAnimation().getName().equals("run")) {
+                //System.out.println("Direzione: " + gameModel.getAgent().getDirection());
+                if (pressedKeys.contains(KeyCode.UP) || (gameModel.isUsingLift() && gameModel.getAgent().getDirection() == UP)) {
+                    view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
+                    platformMovement(UP);
+                    useFurniture(deltaTime);
+                }
+                if (pressedKeys.contains(KeyCode.DOWN) || (gameModel.isUsingLift() && gameModel.getAgent().getDirection() == DOWN)) {
+                    view.getGameView().getAgentPainter().getAnimationHandler().play("idle");
+                    platformMovement(DOWN);
+                }
             }
 
             if (!gameModel.isUsingLift()) {
@@ -244,24 +297,28 @@ public class GameController {
 
         // OPERATIONS ON THE ENEMIES
         // for each robot applies it's behavior
-        // for each robot with sight
-        gameModel.getRobots().stream()
-                .filter(r -> r.getClass() == SightRobot.class)
-                .map(r -> (SightRobot) r)
-                .forEach(r -> r.update(deltaTime, gameModel.getAgent()
-                ));
 
-        // for each moving robot (exact class) and still robot
-        gameModel.getRobots().stream()
-                .filter(r -> r.getClass() != SightRobot.class)
-                .forEach(r -> r.update(deltaTime));
+        // update robots behavior only if they are not disabled
+        if (!gameModel.checkDisabled(deltaTime)) {
+            // for each robot with sight
+            gameModel.getRobots().stream()
+                    .filter(r -> r.getClass() == SightRobot.class)
+                    .map(r -> (SightRobot) r)
+                    .forEach(r -> r.update(deltaTime, gameModel.getAgent()
+                    ));
+
+            // for each moving robot (exact class) and still robot
+            gameModel.getRobots().stream()
+                    .filter(r -> r.getClass() != SightRobot.class)
+                    .forEach(r -> r.update(deltaTime));
+        }
 
         //System.out.println("Pre collisioni: " + gameModel.getAgent().getPosition());
         handleCollision();
 
     }
 
-    private void searchFurniture(double deltaTime) {
+    private void useFurniture(double deltaTime) {
         List<FurniturePiece> furniture = gameModel.getFurniture();
         Rectangle2D agentBorder = getBounds(gameModel.getAgent());
 
@@ -270,19 +327,24 @@ public class GameController {
 
             // if half of the player is in front of
             // the furniture piece allows the search and the furniture is active
-            //
             if (furnitureBorder.contains(agentBorder.getMinX() + agentBorder.getWidth() / 2,
                     agentBorder.getMaxY() - 3)
                     && furniturePiece.isActive()) {
                 view.getGameView().getAgentPainter().getAnimationHandler().play("searching");
 
-                furniturePiece.use(deltaTime);
+                if (furniturePiece.getType() == FurnitureType.TERMINAL) {
+                    gameModel.setPaused(true);
+                    gameModel.setShowingTerminal(true);
+                }
+                else furniturePiece.use(deltaTime);
+                // if now it is not active I've completed the search
                 if (!furniturePiece.isActive()) {
                     switch (furniturePiece.getCode().getType()) {
                         case PSW_PIECE -> gameModel.foundPswPiece();
                         case ROBOT -> gameModel.addRobotsCode();
                         case PLATFORMS -> gameModel.addPlatformsCode();
                     }
+                    gameModel.addScore(furniturePiece.getPoints());
                 }
             }
         }
@@ -594,7 +656,8 @@ public class GameController {
 
         platformCollision(gameModel.getAgent(), difX);
 
-        enemyCollision(gameModel.getAgent());
+        // collision with the enemies only if they are not disabled
+        if(!gameModel.areRobotsDisabled()) enemyCollision(gameModel.getAgent());
     }
 
     private void checkTime() {
@@ -615,15 +678,6 @@ public class GameController {
     }
 
     public void agentHit() {
-        // TODO: aggiunta 10 min timer ogni morte
-
-        // TODO: ad ogni cambio di area impostare un respawn point nel game
-        //  model, e usare quello
-
-        // TODO: per ogni area, controlla se interseziona personagio, se si,
-        //  usa le sue coordinate di respawn
-
-        // TODO: una volta implementato Statistics aggiungere 10 min al timer
         gameModel.resetPositions();
         gameModel.addTime(600);
 

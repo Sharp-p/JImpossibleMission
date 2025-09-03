@@ -9,11 +9,16 @@ import javafx.geometry.Rectangle2D;
  * To act as a tunnel to all other model it incorporates the other models methods.
  */
 public class GameModel extends Observable {
+    private static final double DISABLE_ROBOTS_TIME = 15.0;
+
     private GameStatistics statistics = new GameStatistics();
     private Stronghold stronghold;
-    private boolean isPaused = false;
     private Viewport viewport;
     private GameMenuModel gameMenuModel;
+    private Terminal terminal;
+    private boolean isPaused = false;
+    private boolean robotsDisabled = false;
+    private double disableBotsTimer = 0.0;
 
 
     // TODO: timer che si aggiorna ad ogni morte
@@ -26,9 +31,30 @@ public class GameModel extends Observable {
                 (int)stronghold.getCurrentArea().getMinY());
 
         gameMenuModel = new GameMenuModel();
+        terminal = new Terminal();
 
         setChanged();
         notifyObservers();
+    }
+
+    /**
+     * Method that check and update the disabled timer.
+     * To only get the value of robotsDisabled see areRobotsDisabled()
+     * @param deltaTime The duration of the last time step
+     * @return Return the new value of robotsDisabled
+     */
+    public boolean checkDisabled(double deltaTime) {
+        if (areRobotsDisabled()) {
+            if (disableBotsTimer > DISABLE_ROBOTS_TIME) {
+                disableBotsTimer = 0;
+                robotsDisabled = false;
+                return false;
+            }
+
+            disableBotsTimer += deltaTime;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -55,6 +81,10 @@ public class GameModel extends Observable {
         setChanged();
         notifyObservers(dt);
     }
+
+    public void setRobotsDisabled(boolean robotsDisabled) { this.robotsDisabled = robotsDisabled; }
+
+    public boolean areRobotsDisabled() { return robotsDisabled; }
 
     public void foundPswPiece() { statistics.foundPswPiece(); }
 
@@ -109,13 +139,25 @@ public class GameModel extends Observable {
 
     public GameMenuModel getGameMenuModel() { return gameMenuModel; }
 
-    public int getMenuOption() { return gameMenuModel.getSelectedIndex(); }
+    public int getGameMenuSelection() { return gameMenuModel.getSelectedIndex(); }
 
     public void previousMenuOption() { gameMenuModel.previous(); }
 
     public void addScore(double points) { statistics.addScore(points); }
 
     public void setShowingMenu(boolean showingMenu) { gameMenuModel.setShowingMenu(showingMenu); }
+
+    public void setShowingTerminal(boolean showingTerminal) { terminal.setShowingTerminal(showingTerminal); }
+
+    public void nextTerminalOption() { terminal.next(); }
+
+    public void previousTerminalOption() { terminal.previous(); }
+
+    public int getTerminalSelection() { return terminal.getSelectedIndex(); }
+
+    public Terminal getTerminal() { return terminal; }
+
+    public boolean isShowingTerminal() { return terminal.isShowingTerminal(); }
 
     public boolean isShowingMenu() { return gameMenuModel.isShowingMenu(); }
 

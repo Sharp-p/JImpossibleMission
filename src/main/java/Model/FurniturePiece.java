@@ -4,19 +4,24 @@ import Utilities.Tuple;
 
 public class FurniturePiece extends Entity {
     public static final double MAX_SEARCH_TIME = 4.0;
+    public static final double MAX_POINTS = 500.0;
     private FurnitureType type;
     private Code code = new Code();
 
     private boolean beingSearched = false;
     private double searchTime;
+    private double points;
 
     // TODO: aggiungere punteggio quando consumato
 
     public FurniturePiece(Tuple<Double, Double> position) {
         super(position, new StillMovement(), 0.0);
 
+        double percentage = Math.random();
         // chooses a random search time
-        searchTime = Math.random() * 3.5 + 0.5;
+        searchTime =  percentage * 3.5 + 0.5;
+
+        points = MAX_POINTS * percentage;
 
         // chooses a random Type
         FurnitureType[] values = FurnitureType.values();
@@ -32,7 +37,6 @@ public class FurniturePiece extends Entity {
     }
 
     public void use(double deltaTime) {
-        // TODO: forse va controllato prima se è attiva
         if (searchTime >= 0.0) {
             searchTime -= deltaTime;
             beingSearched = true;
@@ -55,6 +59,8 @@ public class FurniturePiece extends Entity {
     public boolean isBeingSearched() { return beingSearched; }
 
     public void setType(FurnitureType type) { this.type = type; }
+
+    public double getPoints() { return points; }
 
     public Code getCode() { return code; }
 

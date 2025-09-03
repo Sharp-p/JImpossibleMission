@@ -6,6 +6,7 @@ import View.GameView;
 import javafx.scene.canvas.GraphicsContext;
 
 import static Model.StillPlatform.STILL_PLATFORM_HEIGHT;
+import static config.GameConstants.LOGICAL_WIDTH;
 import static javafx.scene.paint.Color.*;
 
 public class CodePainter {
@@ -32,14 +33,14 @@ public class CodePainter {
             double y = furniturePiece.getPosition().getSecond()
                     + furniturePiece.getSize().getSecond() - 40;
             double x = (midFurniture - textMaxWidth / 2.0);
-            if (x < 0) x = 0;
-            // TODO: se x + textMaxWidth maggiore dimensione room posizionare più a sinistra
+            double areaX = (int)(furniturePiece.getPosition().getFirst() / LOGICAL_WIDTH) * LOGICAL_WIDTH;
+            if (x < areaX) x = areaX;
+            else if (x + textMaxWidth > (areaX + LOGICAL_WIDTH)) x = areaX + LOGICAL_WIDTH - textMaxWidth;
 
 
             switch (furniturePiece.getCode().getType()) {
                 case ROBOT -> toPrint = "Codice per disattivare i robot trovato!!";
                 case PLATFORMS -> toPrint = "Codice per riavviare le piattaforme trovato!!";
-                // TODO: totale psw, stampare psw rimanenti
                 case PSW_PIECE -> {
                     if (pswPiecesFound == totalPswPieces)
                         toPrint = "Complimenti! Hai trovato tutti i pezzi di password!! " + pswPiecesFound + "/" + totalPswPieces;

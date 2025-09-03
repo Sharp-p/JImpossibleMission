@@ -33,6 +33,7 @@ public class GameView extends Pane implements Observer {
     private List<CodePainter> codePainters = new ArrayList<>();
     private StatisticsPainter statisticsPainter;
     private GameMenuPainter gameMenuPainter;
+    private TerminalPainter terminalPainter;
     private GameModel gameModel;
 
     public GameView(View view) {
@@ -68,39 +69,51 @@ public class GameView extends Pane implements Observer {
 
         gc.translate(-gameModel.getCameraX() * scale.getX(), -gameModel.getCameraY() * scale.getX());
 
-        // i want the projectiles to stay behind
-        for (ProjectilePainter projectilePainter : projectilePainters) {
-            projectilePainter.draw(gc, deltaTime, scale.getX());
-        }
+        if (gameModel.isShowingTerminal())
+            terminalPainter.draw(
+                    gc,
+                    scale.getX(),
+                    gameModel.getCameraX(),
+                    gameModel.getCameraY()
+            );
+        // TODO: continuare a testare e sistemare l'altezza
+        //  dei groups per i lift che non vengono rilevati
+        else {
+            // I want the projectiles to stay behind
+                for (ProjectilePainter projectilePainter : projectilePainters) {
+                    projectilePainter.draw(gc, deltaTime, scale.getX());
+                }
 
-        for  (PlatformPainter platformPainter : platformPainters) {
-            platformPainter.draw(gc, deltaTime, scale.getX());
-        }
+                for (PlatformPainter platformPainter : platformPainters) {
+                    platformPainter.draw(gc, deltaTime, scale.getX());
+                }
 
-        for (FurniturePainter furniturePainter: furniturePainters) {
-            furniturePainter.draw(gc, deltaTime, scale.getX());
-        }
+                for (FurniturePainter furniturePainter : furniturePainters) {
+                    furniturePainter.draw(gc, deltaTime, scale.getX());
+                }
 
-        for (GroundRobotPainter groundRobotPainter : groundRobotPainters) {
-            groundRobotPainter.draw(gc, deltaTime, scale.getX());
-        }
+                for (GroundRobotPainter groundRobotPainter : groundRobotPainters) {
+                    groundRobotPainter.draw(gc, deltaTime, scale.getX());
+                }
 
 
-        if (agentPainter.getAnimationHandler().getCurrentAnimation().getName()
-                .equals("searching")) {
-            drawSearchBar();
-        }
+                if (agentPainter.getAnimationHandler().getCurrentAnimation().getName()
+                        .equals("searching")) {
+                    drawSearchBar();
+                }
 
-        for (CodePainter codePainter: codePainters) {
-            codePainter.draw(gc, deltaTime, scale.getX(), gameModel.getPswPiecesFound(), gameModel.getTotalPswPieces());
-        }
+                for (CodePainter codePainter : codePainters) {
+                    codePainter.draw(gc, deltaTime, scale.getX(), gameModel.getPswPiecesFound(), gameModel.getTotalPswPieces());
+                }
 
-        agentPainter.draw(gc, deltaTime, scale.getX());
+                agentPainter.draw(gc, deltaTime, scale.getX());
 
-        if (gameModel.isShowingStatistics()) statisticsPainter.draw(gc, scale.getX(), gameModel.getCameraX(), gameModel.getCameraY());
+                if (gameModel.isShowingStatistics())
+                    statisticsPainter.draw(gc, scale.getX(), gameModel.getCameraX(), gameModel.getCameraY());
 
-        if (gameModel.isShowingMenu()) gameMenuPainter.draw(gc, scale.getX(), gameModel.getCameraX(), gameModel.getCameraY());
-
+                if (gameModel.isShowingMenu())
+                    gameMenuPainter.draw(gc, scale.getX(), gameModel.getCameraX(), gameModel.getCameraY());
+            }
         gc.restore();
 
 //        System.out.println("Altezza canvas: " + canvas.getHeight());
@@ -194,6 +207,8 @@ public class GameView extends Pane implements Observer {
         statisticsPainter = new StatisticsPainter(gameModel.getStatistics());
 
         gameMenuPainter = new GameMenuPainter(gameModel.getGameMenuModel());
+
+        terminalPainter = new TerminalPainter(gameModel.getTerminal());
 
         System.out.println(gameModel.getTotalPswPieces());
 

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static config.GameConstants.LOGICAL_WIDTH;
+import static config.GameConstants.ROW_HEIGHT_TILES;
 import static java.util.stream.Collectors.toList;
 
 public class MovingPlatform extends Platform {
@@ -16,6 +17,7 @@ public class MovingPlatform extends Platform {
 
     private List<Rectangle2D> verticalSlots = new ArrayList<>();
     private int slotIndex = 0;
+    private int spawnSlotIndex = -1;
     private List<MovingPlatform> group = new ArrayList<>();
 
     /**
@@ -34,13 +36,18 @@ public class MovingPlatform extends Platform {
         );
     }
 
-
+    /**
+     * This methodss checks if a give platform is a candidate to e in the same platform group as this
+     * @param platform The candidate platform
+     * @param areaY The areaY in which this platform is positionated
+     * @return Returns true if it should be in the same group, else false
+     */
     private boolean isCandidate(Platform platform, double areaY) {
         Rectangle2D groupBorder = new Rectangle2D(
-                getPosition().getFirst() + (MOVING_PLATFORM_WIDTH / 2),
-                areaY,
-                2.0,
-                MOVING_PLATFORM_HEIGHT * (LOGICAL_WIDTH / MOVING_PLATFORM_HEIGHT));
+                    getPosition().getFirst() + (MOVING_PLATFORM_WIDTH / 2),
+                    areaY,
+                    2.0,
+                    MOVING_PLATFORM_HEIGHT * (LOGICAL_WIDTH / MOVING_PLATFORM_HEIGHT));
 
         Rectangle2D platformBorder = new Rectangle2D(
                 platform.getPosition().getFirst(),
@@ -72,11 +79,16 @@ public class MovingPlatform extends Platform {
 
     public List<Rectangle2D> getVerticalSlots() { return verticalSlots; }
 
+    public int getSpawnSlotIndex() { return spawnSlotIndex; }
+
     /**
      * Sets the slot on which the platform is positioned. The highest one must be 0
      * @param slotIndex
      */
-    public void setSlotIndex(int slotIndex) { this.slotIndex = slotIndex; }
+    public void setSlotIndex(int slotIndex) {
+        if (spawnSlotIndex == -1) spawnSlotIndex = slotIndex;
+        this.slotIndex = slotIndex;
+    }
 
     public boolean nextSlot() {
         if (slotIndex < verticalSlots.size() - 1) {
