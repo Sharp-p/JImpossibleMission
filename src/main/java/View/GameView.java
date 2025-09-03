@@ -57,14 +57,12 @@ public class GameView extends Pane implements Observer {
     public void update(Observable o, Object arg) {
         double deltaTime = (double) arg;
 
-        System.out.println("Eseguo?");
         gc.save();
 
         gc.translate(-gameModel.getCameraX() * scale.getX(), -gameModel.getCameraY() * scale.getX());
 
         if (gameModel.getEndGameStatus() == EndGameStatus.WARNING) drawWarning();
         else if (gameModel.getEndGameStatus() != EndGameStatus.NONE) {
-            System.out.println("Entro?");
             Optional<FurniturePiece> endRoom = gameModel.getFurniture().stream().
                     filter(p -> p.getType().equals(FurnitureType.END_ROOM)).
                     findFirst();

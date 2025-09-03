@@ -10,8 +10,18 @@ public class GameStatistics {
     private boolean showingStatistics = false;
     private boolean won = false;
 
+    /**
+     * Elaborates the final score as the sum of:
+     * the score from the searched furniture, number of pswPiecesFound * 1000, resetPlatformsCode * 500, stopRobotsCode * 200,
+     * and if won 2 times all the seconds remaining.
+     * @return The score as an int
+     */
     public int getFinalScore() {
-        return ((3600 * 18) - gameClock.getSeconds()) * 2 + (int)score;
+        return (int)score +
+                ((3600 * 18) - gameClock.getSeconds()) * (won ? 2 : 0) +
+                pswPiecesFound * 1000 +
+                resetPlatformsCode * 500 +
+                stopRobotsCode * 200;
     }
 
     public GameStatistics() {

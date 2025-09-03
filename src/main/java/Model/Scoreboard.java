@@ -58,6 +58,17 @@ public class Scoreboard {
     }
 
     /**
+     * Get scores sorted from the highest to the lowest.
+     */
+    public List<ScoreEntry> getHighestScores() {
+        List<ScoreEntry> scores = getScores();
+
+        return scores.stream()
+                .sorted((s1, s2) -> Integer.compare(s2.score, s1.score))
+                .toList();
+    }
+
+    /**
      * Classe interna per rappresentare un punteggio
      */
     public static class ScoreEntry {
