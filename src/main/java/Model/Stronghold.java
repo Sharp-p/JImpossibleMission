@@ -36,7 +36,7 @@ public class Stronghold {
                         i * (ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4 + STILL_PLATFORM_HEIGHT),
                         LOGICAL_WIDTH,
                         ROW_HEIGHT_TILES * STILL_PLATFORM_HEIGHT * 4 + STILL_PLATFORM_HEIGHT));
-                System.out.println(areas.getLast());
+                //System.out.println(areas.getLast());
             }
         }
 
@@ -503,7 +503,6 @@ public class Stronghold {
     public void createEndRoom(int x, int y, int areaIndex) {
         createFurniture(x, y, areaIndex);
         furniture.getLast().setType(FurnitureType.END_ROOM);
-        System.out.println("PORCODIO " + furniture.getLast().getPosition());
     }
 
     /**

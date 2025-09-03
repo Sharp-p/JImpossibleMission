@@ -16,15 +16,17 @@ public class View {
     private MenuView menuView;
     private GameView gameView;
     private ScoreboardView scoreboardView;
+    private ProfileView profileView;
 
     public View(Stage stage) {
         this.stage = stage;
     }
 
-    public void setUp(MenuView menuView, GameView gameView, ScoreboardView scoreboardView) {
+    public void setUp(MenuView menuView, GameView gameView, ScoreboardView scoreboardView, ProfileView profileView) {
         this.menuView = menuView;
         this.gameView = gameView;
         this.scoreboardView = scoreboardView;
+        this.profileView = profileView;
 
         //menuView.setPrefSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
         gameView.setPrefSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
@@ -34,7 +36,6 @@ public class View {
 
         //double scaleFactor = Math.min((double)SCREEN_WIDTH / LOGICAL_WIDTH, (double)SCREEN_HEIGHT / LOGICAL_HEIGHT);
         Scale scale = new Scale(SCALE_FACTOR, SCALE_FACTOR, 0, 0);
-        System.out.println(scale.getX());
         //menuView.getTransforms().add(scale);
         //gameView.getTransforms().add(scale);
         gameView.setScale(scale);
@@ -49,6 +50,11 @@ public class View {
         menuView.requestFocus();
     }
 
+    public void showProfiles() {
+        scene.setRoot(profileView);
+        profileView.requestFocus();
+    }
+
     public void showGame() {
         scene.setRoot(gameView);
         gameView.requestFocus();
@@ -58,10 +64,10 @@ public class View {
         scene.setRoot(endGameView);
         endGameView.requestFocus();
     }
-    // TODO: endGameView, model e controller
 
     public void showScoreboard() {
         scene.setRoot(scoreboardView);
+        scoreboardView.requestFocus();
     }
 
     public void quit() {
@@ -77,6 +83,8 @@ public class View {
     public GameView getGameView() { return gameView; }
 
     public ScoreboardView getScoreboardView() { return scoreboardView; }
+
+    public ProfileView getProfileView() { return profileView; }
 
     public void setMenuView(MenuView menuView) { this.menuView = menuView; }
 

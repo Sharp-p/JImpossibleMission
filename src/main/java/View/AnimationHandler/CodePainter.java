@@ -24,7 +24,7 @@ public class CodePainter {
         // if the furniturePiece has been searched (not Visible) in
         // the last paintTime (currentTime <= paintTime)
         if (!(furniturePiece.isVisible()) && currentTime <= paintTime) {
-            System.out.println(furniturePiece);
+            //System.out.println(furniturePiece);
 
             currentTime += deltaTime;
             String toPrint = null;
@@ -48,7 +48,7 @@ public class CodePainter {
                         toPrint = "Hai trovato un pezzo di password!! " + pswPiecesFound + "/" + totalPswPieces;
                 }
             }
-            System.out.println(furniturePiece.getCode().getType().toString());
+            //System.out.println(furniturePiece.getCode().getType().toString());
 
             gc.setFill(GREEN);
             if (toPrint != null) gc.fillText(

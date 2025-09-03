@@ -98,7 +98,7 @@ public class FurniturePainter extends EntityPainter {
                     getAnimationHandler().getCurrentFrameWidth(),
                     getAnimationHandler().getCurrentFrameHeight()
             ));
-            System.out.println(getAnimationHandler().getCurrentAnimation().getName());
+            //System.out.println(getAnimationHandler().getCurrentAnimation().getName());
             getEntity().setPosition(new Tuple<>(
                     getEntity().getPosition().getFirst(),
                     getEntity().getPosition().getSecond() -

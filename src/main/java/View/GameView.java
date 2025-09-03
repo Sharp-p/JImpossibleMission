@@ -135,8 +135,6 @@ public class GameView extends Pane implements Observer {
             y = endRoom.get().getPosition().getSecond();
             width = endRoom.get().getSize().getFirst();
             height = endRoom.get().getSize().getSecond();
-            System.out.println("x: " + x * scale.getX() + " y: " + y * scale.getX() + " width: " + width + " height: " + height);
-            System.out.println(gameModel.getAgent().getPosition());
         }
 
         gc.setFill(GREEN);
@@ -164,7 +162,6 @@ public class GameView extends Pane implements Observer {
                 double actualWidth = PROGRESSBAR_DIM * fraction;
 
                 double midFurniture = furniturePiece.getPosition().getFirst() + furniturePiece.getSize().getFirst() / 2;
-                System.out.println(midFurniture);
                 // scaled dim and coordiantes (pane is already scaled,
                 // but the canvas and the gc use their own coordinate
                 // system that needs to be manually scaled)
@@ -197,8 +194,6 @@ public class GameView extends Pane implements Observer {
         this.gameModel = gameModel;
         gameModel.addObserver(this);
 
-        // TODO: da resettare penso pure la view ogni volta che rientro
-        //  nel menu altrimenti danni
 
         // create the endGameView
         endGameView = new EndGameView(
@@ -238,7 +233,6 @@ public class GameView extends Pane implements Observer {
                 }
             }
             else furniturePiece.setCode(new Code(NONE));
-            System.out.println(furniturePiece);
         }
 
         statisticsPainter = new StatisticsPainter(gameModel.getStatistics());
@@ -247,7 +241,6 @@ public class GameView extends Pane implements Observer {
 
         terminalPainter = new TerminalPainter(gameModel.getTerminal());
 
-        System.out.println(gameModel.getTotalPswPieces());
 
         // creates a painter for the agent
         agentPainter = new AgentPainter(gameModel.getAgent());

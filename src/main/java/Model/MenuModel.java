@@ -14,7 +14,7 @@ public class MenuModel extends Observable {
     public MenuModel() {
         options.add("Nuova Partita");
         options.add("Classifica");
-        options.add("Profilo");
+        options.add("Profile");
         options.add("Esci");
     }
 

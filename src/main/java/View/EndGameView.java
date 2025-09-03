@@ -22,7 +22,6 @@ import javafx.scene.text.TextAlignment;
 import java.util.List;
 
 import static config.GameConstants.*;
-import static config.GameVariables.scale;
 import static javafx.scene.paint.Color.*;
 
 public class EndGameView extends StackPane {
@@ -173,7 +172,6 @@ public class EndGameView extends StackPane {
 
                 List<Scoreboard.ScoreEntry> entries = scoreboard.getHighestScores();
 
-                // TODO: adattare con grid annidate magari
                 for (int i = 0; i < entries.size() && i < 12; i++) {
                     Text name = new Text(entries.get(i).getPlayerName());
                     name.setFont(Font.font(font.getFamily(), 15));

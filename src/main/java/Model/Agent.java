@@ -5,6 +5,9 @@ import Utilities.Tuple;
 import static Model.Direction.RIGHT;
 import static config.GameConstants.*;
 
+/**
+ * Defines the agent that extends entity
+ */
 public class Agent extends Entity {
     private static final double JUMP_STRENGTH = 101.5;
     private static final double JUMP_DISTANCE = 153.0;
@@ -22,6 +25,10 @@ public class Agent extends Entity {
         super(position, new FreeMovement(), SPEED);
     }
 
+    /**
+     * Applies gravity to the agent, for jumps and falls
+     * @param deltaTime
+     */
     public void applyGravity(double deltaTime) {
         double vY, vX, aY, x, y;
 
@@ -71,6 +78,11 @@ public class Agent extends Entity {
     @Override
     public String toString() { return "Object: " + getClass().getName() + "\n\tSpawn: " + getSpawn(); }
 
+    /**
+     * Override of the strategy pattern method
+     * @param dir direction in which to move
+     * @param deltaTime
+     */
     @Override
     public void moveTo(Direction dir, Double deltaTime) {
         // new velocity from the movement behavior

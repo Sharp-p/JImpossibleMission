@@ -30,7 +30,7 @@ public class MenuView extends VBox implements Observer {
 
         Text start = new Text("Nuova partita");
         Text scoreboard = new Text("Classifica");
-        Text profile = new Text("Profilo");
+        Text profile = new Text("Profile");
         Text end = new Text("Esci");
 
         options.add(start);

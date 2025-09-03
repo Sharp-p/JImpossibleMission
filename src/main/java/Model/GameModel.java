@@ -65,7 +65,7 @@ public class GameModel extends Observable {
     public void resetPositions() {
         for (Entity entity : getEntities()) {
             if (!(entity instanceof Platform) && !(entity instanceof FurniturePiece)) {
-                System.out.println(entity);
+                //System.out.println(entity);
                 entity.setPosition(entity.getSpawn());
             }
         }

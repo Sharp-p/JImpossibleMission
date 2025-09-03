@@ -15,6 +15,9 @@ import static Controller.CollisionHandler.getBounds;
 import static Model.Direction.*;
 import static config.GameConstants.LOGICAL_WIDTH;
 
+/**
+ * This class implements the game loop of the game, and all the consequent check and updates
+ */
 public class GameController {
     private final GameModel gameModel;
     private final View view;
@@ -38,7 +41,7 @@ public class GameController {
         // asynchronous input listening
         // it redirects the KeyEvent to the correct method
         view.getGameView().setOnKeyPressed(e -> {
-            System.out.println(e.getCode());
+            //System.out.println(e.getCode());
             if (!gameModel.isPaused()) {
                 mainGameKeyPressed(e);
             }
@@ -55,7 +58,7 @@ public class GameController {
                 scoreboardKeyPressed(e);
             }
             pressedKeys.add(e.getCode());
-            System.out.println(e.getCode());
+            //System.out.println(e.getCode());
         });
         view.getGameView().setOnKeyReleased(e -> {
             // not main game GameMenu or statistics
@@ -70,19 +73,14 @@ public class GameController {
         gameModel.updated(deltaTime);
 
 
-        // TODO: end_room se premo UP controlla se ho tutti i psw_piece della partita
-
-
         // before starting the game loop, checks if any piece of furniture contains a psw_piece
         // if not takes a furniture piece and set the code to a psw_piece
         if (gameModel.getFurniture().stream()
                 .noneMatch(p -> p.getCode().getType() == CodeType.PSW_PIECE)) {
             Optional<FurniturePiece> furniturePiece = gameModel.getFurniture().stream()
                     .findAny();
-            // TODO: togliere le possibilità che uno di questi sia un terminal o end_room
             furniturePiece.ifPresent(piece -> piece.setCode(new Code(CodeType.PSW_PIECE)));
             gameModel.addTotalPswPieces();
-            System.out.println(furniturePiece.get() + "\nSONO ENTRATO QUA");
         }
     }
 
@@ -102,7 +100,6 @@ public class GameController {
      * @param e The key event that contains the pressed key code
      */
     private void endRoomKeyPressed(KeyEvent e) {
-        System.out.println("END ROOM");
         if (e.getCode() == KeyCode.ENTER) {
             gameModel.setEndGameStatus(EndGameStatus.SCOREBOARD);
         }
@@ -179,6 +176,11 @@ public class GameController {
         }
     }
 
+    /**
+     * The game loop methods that runs inside a timer.
+     * All the action inside are based on time steps.
+     * @param now The time just before the start of the call, long
+     */
     private void gameLoop(long now) {
         deltaTime = (now - lastTime) / 1_000_000_000.0;
 
@@ -225,10 +227,18 @@ public class GameController {
         }
     }
 
+    /**
+     * The action to do when I'm in the statistics menu.
+     * It exits from it
+     * @param e The keyEvent
+     */
     public void statisticsKeyReleased(KeyEvent e) {
         gameModel.getStatistics().getGameClock().start();
     }
 
+    /**
+     * Checks if it i showing statistics
+     */
     private void checkShowingStatistics() {
         if (!pressedKeys.contains(KeyCode.CONTROL)) {
             gameModel.setShowingStatistics(false);
@@ -236,6 +246,10 @@ public class GameController {
         }
     }
 
+    /**
+     * Key pressed event handling if inside the main game
+     * @param e KeyEvent
+     */
     private void mainGameKeyPressed(KeyEvent e) {
         if (e.getCode() == KeyCode.ESCAPE) {
             gameModel.setPaused(true);
@@ -264,6 +278,10 @@ public class GameController {
         }
     }
 
+    /**
+     * The key released event if inside the main game
+     * @param e
+     */
     private void mainGameKeyReleased(KeyEvent e) {
         if ((e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT)
                 && gameModel.getAgent().isGrounded()) {
@@ -294,6 +312,9 @@ public class GameController {
         }
     }
 
+    /**
+     * The actions and events of the main game that are synchronous with the timeStep are definite in thi method
+     */
     private void mainGame() {
         // OPERATIONS ON THE PLAYER POSITION:
         // if the agent was in air and has now hit the ground, changes the animation
@@ -383,6 +404,10 @@ public class GameController {
             agentHit();
     }
 
+    /**
+     * This method handles the use of the furniture objects in the game
+     * @param deltaTime double time step
+     */
     private void useFurniture(double deltaTime) {
         List<FurniturePiece> furniture = gameModel.getFurniture();
         Rectangle2D agentBorder = getBounds(gameModel.getAgent());
@@ -425,6 +450,10 @@ public class GameController {
         }
     }
 
+    /**
+     * This method handles the platform movement
+     * @param dir The direction in which to move (UP or DOWN)
+     */
     private void platformMovement(Direction dir) {
         List<MovingPlatform> platforms = gameModel.getMovingPlatforms();
         Rectangle2D agentBorder = getBounds(gameModel.getAgent());
@@ -459,7 +488,6 @@ public class GameController {
                         newPosition = new Tuple<>(
                                 platform.getPosition().getFirst(),
                                 slot.getMinY() - MovingPlatform.MOVING_PLATFORM_HEIGHT - 1);
-                        System.out.println("[PRIMO IF] se ho premuto UP qua");
                     } else {
                         if (!platform.nextSlot()) return;
 
@@ -474,36 +502,13 @@ public class GameController {
                                 gameModel.getAgent().getPosition().getFirst(),
                                 gameModel.getAgent().getPosition().getSecond() + difY
                         ));
-                        System.out.println("[PRIMO IF]QUESTO é LO SLOT: " + slot);
                     }
 
                     platform.setPosition(newPosition);
-                    System.out.println("NON USANDO LIFT");
                 }
                 // if the lift is already moving it could now
                 // be on a slot, and it should stop if it is
                 else if (platformBorder.intersects(slot)) {
-//                    Tuple<Double, Double> newPosition;
-//                    if (dir == UP) {
-//                        assert slot != null;
-//                        newPosition = new Tuple<>(
-//                                platform.getPosition().getFirst(), slot.getMinY() - 3);
-//
-//                        System.out.println(slot);
-//                        System.out.println("[SECONDO IF] sto andando già up");
-//                    }
-//                    else {
-//                        assert slot != null;
-//                        System.out.println("[SECONDO IF]QUESTO é LO SLOT: " + slot);
-//                        newPosition = new Tuple<>(platform.getPosition().getFirst(), slot.getMinY() - 3);
-//                        // using difY to keep the agent stuck
-//                        // to the platform when going down
-//                        difY = newPosition.getSecond() - platform.getPosition().getSecond();
-//                        gameModel.getAgent().setPosition(new Tuple<>(
-//                                gameModel.getAgent().getPosition().getFirst(),
-//                                gameModel.getAgent().getPosition().getSecond() + difY
-//                        ));
-//                    }
                     assert slot != null;
                     Tuple<Double, Double> newPosition =  new Tuple<>(
                             platform.getPosition().getFirst(), slot.getMinY() - 3);
@@ -527,7 +532,6 @@ public class GameController {
                     }
                     // reapply the old status of the facing direction
                     gameModel.getAgent().setDirection(gameModel.getAgent().getOldDirection());
-                    System.out.println("USANDO LIFT");
 
                     // stops from moving any further
                     return;
@@ -543,7 +547,6 @@ public class GameController {
                             sister.getPosition().getFirst(),
                             sister.getPosition().getSecond() + difY
                     ));
-                    System.out.println("SARO PRINTATO ESCLUSIVAMENTE UNA VOLTA");
                 }
                 gameModel.moveAgent(dir, deltaTime);
             }
@@ -691,6 +694,9 @@ public class GameController {
         if (!touchedGround) entity.setGrounded(false);
     }
 
+    /**
+     * The function that starts the game loop, called only when starting a game.
+     */
     public void startGameLoop() {
 
 
@@ -707,10 +713,9 @@ public class GameController {
         gameLoopTimer.start();
     }
 
-    public void stopGameLoop() {
-        gameLoopTimer.stop();
-    }
-
+    /**
+     * Handles the collision between entities
+     */
     public void handleCollision() {
         double osY = gameModel.getAgent().getSize().getSecond();
         double osX = gameModel.getAgent().getSize().getFirst();
@@ -735,6 +740,9 @@ public class GameController {
         if(!gameModel.areRobotsDisabled()) enemyCollision(gameModel.getAgent());
     }
 
+    /**
+     * The game ends after some time
+     */
     private void checkTime() {
         // ends the game if the hour is past 18pm
         if (gameModel.getTime() >= 3600 * 18) {
@@ -743,6 +751,10 @@ public class GameController {
         }
     }
 
+    /**
+     * Handles the collision with enemies and the respawn of the agent
+     * @param agent The agent
+     */
     public void enemyCollision(Agent agent) {
         Rectangle2D agentBorder = getBounds(agent);
         for (Enemy enemy : gameModel.getEnemies()) {
@@ -753,24 +765,11 @@ public class GameController {
         }
     }
 
+    /**
+     * Handles the repawn of the agent
+     */
     public void agentHit() {
         gameModel.resetPositions();
         gameModel.addTime(600);
-
-//        stopGameLoop();
-//        // area index 0 because the coordinates are global
-//        gameModel.createAgent(
-//                gameModel.getAgent().getSpawn().getFirst(),
-//                gameModel.getAgent().getSpawn().getSecond(),
-//                0);
-//        GameView gameView = new GameView(view);
-//        gameView.setGameModel(gameModel);
-////        double scaleFactor = Math.min((SCREEN_WIDTH + 15) / LOGICAL_WIDTH, SCREEN_HEIGHT / LOGICAL_HEIGHT);
-//        Scale scale = new Scale(SCALE_FACTOR, SCALE_FACTOR, 0, 0);
-//        gameView.setScale(scale);
-//        view.setGameView(gameView);
-//        GameController gameController = new GameController(gameModel, view);
-//        gameController.startGameLoop();
-//        view.showGame();
     }
 }

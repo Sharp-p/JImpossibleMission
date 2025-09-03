@@ -1,5 +1,8 @@
 package config;
 
+/**
+ * Class that define many constant used in any part of the project
+ */
 public class GameConstants {
     // physical constants
 
@@ -7,8 +10,6 @@ public class GameConstants {
      * Gravity constant in px/s^2
      */
     public static final double GRAVITY = 180.0;
-
-    public static final double FLOOR_Y = 150.0;
 
     // graphical constants
     public static final int LOGICAL_WIDTH = 290;

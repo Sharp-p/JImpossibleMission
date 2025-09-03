@@ -72,7 +72,6 @@ public class AgentPainter extends EntityPainter {
             case LEFT -> drawInverted(gc, scale);
             case UP, DOWN -> {
                 if (((Agent)getEntity()).isGrounded()) {
-                    System.out.println("Vecchia direzione: " + ((Agent)getEntity()).getOldDirection());
                     if (((Agent) getEntity()).getOldDirection() == Direction.LEFT) drawInverted(gc, scale);
                     else getAnimationHandler().render(
                             gc, getEntity().getPosition().getFirst(),

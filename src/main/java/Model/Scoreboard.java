@@ -4,9 +4,15 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
-public class Scoreboard {
+/**
+ * Class that handles the score.csv file and the ScoreboardView
+ */
+public class Scoreboard extends Observable {
     private final Path filePath;
+    private List<String> options = new ArrayList<>();
+    private int selectedIndex = 0;
 
     public Scoreboard(String fileName) {
         this.filePath = Paths.get(fileName);
@@ -19,6 +25,40 @@ public class Scoreboard {
                 e.printStackTrace();
             }
         }
+
+        options.add("Decrescente (temporale)");
+        options.add("Crescente (temporale)");
+        options.add("Decrescente (punteggio)");
+        options.add("Crescente (punteggio)");
+
+        setChanged();
+        notifyObservers();
+    }
+
+    public List<String> getOptions() {
+        return options;
+    }
+
+    public int getSelectedIndex() {
+        return selectedIndex;
+    }
+
+    /**
+     * Updates the selected index and communicates the change of state to the view.
+     */
+    public void previous() {
+        selectedIndex = (selectedIndex - 1 + options.size()) % options.size();
+        setChanged();
+        notifyObservers();
+    }
+
+    /**
+     * Updates the selected index and communicates the change of state to the view.
+     */
+    public void next() {
+        selectedIndex = (selectedIndex + 1) % options.size();
+        setChanged();
+        notifyObservers();
     }
 
     /**
@@ -35,7 +75,7 @@ public class Scoreboard {
     }
 
     /**
-     * Restituisce la lista di tutti gli score
+     * Gets the score as saved in the scoreboard.csv (Oldest to newest)
      */
     public List<ScoreEntry> getScores() {
         List<ScoreEntry> scores = new ArrayList<>();
@@ -55,6 +95,23 @@ public class Scoreboard {
         }
 
         return scores;
+    }
+
+    /**
+     * Returns the scores from the newest to the oldest.
+     * @return
+     */
+    public List<ScoreEntry> getNewestScores() {
+        return getScores().reversed();
+    }
+
+    /**
+     * Get scores sorted from the highest to the lowest.
+     * @return
+     */
+    public List<ScoreEntry> getLowestScores() {
+        List<ScoreEntry> scores = getHighestScores();
+        return scores.reversed();
     }
 
     /**

@@ -47,7 +47,6 @@ public class FurniturePiece extends Entity {
         else {
             setActive(false);
             setVisibility(false);
-            System.out.println("HAI TROVATO IL SEGUENTE CODE: " + code.getType());
             beingSearched = false;
         }
     }

@@ -12,7 +12,6 @@ import java.awt.event.KeyEvent;
 
 import static config.GameConstants.*;
 import static config.GameConstants.LOGICAL_HEIGHT;
-import static config.GameVariables.scale;
 
 /**
  * This class manages the inputs from the keyboard and reacts accordingly
@@ -48,15 +47,16 @@ public class MenuController {
         setMenuListener();
     }
 
+    /**
+     * This method defines the input listeners inside the Menu
+     */
     private void setMenuListener(){
         view.getMenuView().setOnKeyPressed(e -> {
-            System.out.println("Sono stato premuto: " + e.getCode());
             switch(e.getCode()) {
                 case KeyCode.UP -> menuModel.moveUp();
                 case KeyCode.DOWN -> menuModel.moveDown();
                 case KeyCode.ENTER -> {
                     int choice = menuModel.getSelectedIndex();
-                    System.out.println("Hai scelto: " + menuModel.getOptions().get(choice));
 
                     switch (choice) {
                         case 0 -> {
@@ -74,8 +74,8 @@ public class MenuController {
                             view.showGame();
                         }
                         case 1 -> view.showScoreboard();
+                        case 2 -> view.showProfiles();
                         case 3 -> System.exit(0);
-                        default -> System.out.println("CON CALMA ANCORA NON LI HO FATTI STI PANNELLI");
                     }
 
                 }
